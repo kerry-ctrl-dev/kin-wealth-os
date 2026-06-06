@@ -107,7 +107,7 @@ function AuthForm({
 }: {
   cta: string;
   loading: boolean;
-  onSubmit: (email: string, password: string) => void | Promise<void>;
+  onSubmit: (email: string, password: string) => unknown | Promise<unknown>;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

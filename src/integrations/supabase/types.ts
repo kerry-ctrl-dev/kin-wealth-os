@@ -14,7 +14,161 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          date: string
+          id: string
+          message: string
+          severity: Database["public"]["Enums"]["alert_severity"]
+          type: string
+          user_id: string
+        }
+        Insert: {
+          date?: string
+          id?: string
+          message: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          type: string
+          user_id: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          message?: string
+          severity?: Database["public"]["Enums"]["alert_severity"]
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      assets: {
+        Row: {
+          category: Database["public"]["Enums"]["asset_category"]
+          created_at: string
+          id: string
+          liquidity: number
+          name: string
+          source_income_id: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["asset_category"]
+          created_at?: string
+          id?: string
+          liquidity?: number
+          name: string
+          source_income_id?: string | null
+          user_id: string
+          value: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["asset_category"]
+          created_at?: string
+          id?: string
+          liquidity?: number
+          name?: string
+          source_income_id?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_source_income_id_fkey"
+            columns: ["source_income_id"]
+            isOneToOne: false
+            referencedRelation: "income"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          created_at: string
+          current: number
+          deadline: string | null
+          id: string
+          name: string
+          target: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current?: number
+          deadline?: string | null
+          id?: string
+          name: string
+          target: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current?: number
+          deadline?: string | null
+          id?: string
+          name?: string
+          target?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      income: {
+        Row: {
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          date?: string
+          id?: string
+          source: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      snapshots: {
+        Row: {
+          date: string
+          id: string
+          liquidity_ratio: number
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          roi: number
+          total_assets: number
+          user_id: string
+        }
+        Insert: {
+          date?: string
+          id?: string
+          liquidity_ratio: number
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          roi: number
+          total_assets: number
+          user_id: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          liquidity_ratio?: number
+          risk_level?: Database["public"]["Enums"]["risk_level"]
+          roi?: number
+          total_assets?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +177,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      alert_severity: "INFO" | "WARNING" | "DANGER"
+      asset_category: "MMF" | "STOCKS" | "REITS" | "CASH" | "REAL_ESTATE"
+      risk_level: "LOW" | "MEDIUM" | "HIGH"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +306,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      alert_severity: ["INFO", "WARNING", "DANGER"],
+      asset_category: ["MMF", "STOCKS", "REITS", "CASH", "REAL_ESTATE"],
+      risk_level: ["LOW", "MEDIUM", "HIGH"],
+    },
   },
 } as const

@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { supabase } from "@/integrations/supabase/client";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -85,7 +87,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-    ],
+    ].map((m) =>
+      m && "title" in m
+        ? { title: "Personal Wealth OS — Cloud-powered investing dashboard" }
+        : m && "content" in m && m.name === "description"
+          ? { name: "description", content: "A cloud-powered personal wealth operating system for disciplined Kenyan investors." }
+          : m && "content" in m && (m as { property?: string }).property === "og:title"
+            ? { property: "og:title", content: "Personal Wealth OS" }
+            : m && "content" in m && (m as { property?: string }).property === "og:description"
+              ? { property: "og:description", content: "Track MMFs, NSE stocks, REITs, ROI, liquidity and goals in one fintech dashboard." }
+              : m,
+    ),
     links: [
       {
         rel: "stylesheet",
@@ -115,11 +127,21 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => data.subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster richColors theme="dark" position="top-right" />
     </QueryClientProvider>
   );
 }

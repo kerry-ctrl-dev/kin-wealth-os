@@ -79,25 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Personal Wealth OS — Cloud-powered investing dashboard" },
+      { name: "description", content: "A cloud-powered personal wealth OS for disciplined Kenyan investors. Track MMFs, NSE stocks, REITs, ROI, liquidity and goals." },
+      { property: "og:title", content: "Personal Wealth OS" },
+      { property: "og:description", content: "Track MMFs, NSE stocks, REITs, ROI, liquidity and goals in one fintech dashboard." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-    ].map((m) =>
-      m && "title" in m
-        ? { title: "Personal Wealth OS — Cloud-powered investing dashboard" }
-        : m && "content" in m && m.name === "description"
-          ? { name: "description", content: "A cloud-powered personal wealth operating system for disciplined Kenyan investors." }
-          : m && "content" in m && (m as { property?: string }).property === "og:title"
-            ? { property: "og:title", content: "Personal Wealth OS" }
-            : m && "content" in m && (m as { property?: string }).property === "og:description"
-              ? { property: "og:description", content: "Track MMFs, NSE stocks, REITs, ROI, liquidity and goals in one fintech dashboard." }
-              : m,
-    ),
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [
       {
         rel: "stylesheet",

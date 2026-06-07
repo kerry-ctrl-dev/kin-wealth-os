@@ -79,12 +79,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Personal Wealth OS — Cloud-powered investing dashboard" },
+      { title: "Personal Wealth OS" },
       { name: "description", content: "A cloud-powered personal wealth OS for disciplined Kenyan investors. Track MMFs, NSE stocks, REITs, ROI, liquidity and goals." },
       { property: "og:title", content: "Personal Wealth OS" },
-      { property: "og:description", content: "Track MMFs, NSE stocks, REITs, ROI, liquidity and goals in one fintech dashboard." },
+      { property: "og:description", content: "A cloud-powered personal wealth OS for disciplined Kenyan investors. Track MMFs, NSE stocks, REITs, ROI, liquidity and goals." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Personal Wealth OS" },
+      { name: "twitter:description", content: "A cloud-powered personal wealth OS for disciplined Kenyan investors. Track MMFs, NSE stocks, REITs, ROI, liquidity and goals." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c68678cf-3bd5-4f96-bb35-cfdd445ed4e7" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c68678cf-3bd5-4f96-bb35-cfdd445ed4e7" },
     ],
     links: [
       {

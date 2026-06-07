@@ -50,3 +50,25 @@ export const snapshotsQuery = () =>
       return data;
     },
   });
+
+export const profileQuery = () =>
+  queryOptions({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", u.user.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const remindersQuery = () =>
+  queryOptions({
+    queryKey: ["reminders"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("reminders").select("*").order("next_due", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });

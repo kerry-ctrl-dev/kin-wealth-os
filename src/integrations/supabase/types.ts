@@ -46,9 +46,15 @@ export type Database = {
           category: Database["public"]["Enums"]["asset_category"]
           created_at: string
           id: string
+          invested_at: string | null
           liquidity: number
           name: string
+          notes: string | null
+          payment_method: string | null
+          platform: string | null
+          purpose: string | null
           source_income_id: string | null
+          transaction_code: string | null
           user_id: string
           value: number
         }
@@ -56,9 +62,15 @@ export type Database = {
           category: Database["public"]["Enums"]["asset_category"]
           created_at?: string
           id?: string
+          invested_at?: string | null
           liquidity?: number
           name: string
+          notes?: string | null
+          payment_method?: string | null
+          platform?: string | null
+          purpose?: string | null
           source_income_id?: string | null
+          transaction_code?: string | null
           user_id: string
           value: number
         }
@@ -66,9 +78,15 @@ export type Database = {
           category?: Database["public"]["Enums"]["asset_category"]
           created_at?: string
           id?: string
+          invested_at?: string | null
           liquidity?: number
           name?: string
+          notes?: string | null
+          payment_method?: string | null
+          platform?: string | null
+          purpose?: string | null
           source_income_id?: string | null
+          transaction_code?: string | null
           user_id?: string
           value?: number
         }
@@ -135,6 +153,87 @@ export type Database = {
           date?: string
           id?: string
           source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          avatar_url: string | null
+          created_at: string
+          employment_status: string | null
+          full_name: string | null
+          id: string
+          investment_experience: string | null
+          main_goals: string | null
+          monthly_income: number | null
+          onboarded: boolean
+          profession: string | null
+          risk_level: string | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          employment_status?: string | null
+          full_name?: string | null
+          id: string
+          investment_experience?: string | null
+          main_goals?: string | null
+          monthly_income?: number | null
+          onboarded?: boolean
+          profession?: string | null
+          risk_level?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          employment_status?: string | null
+          full_name?: string | null
+          id?: string
+          investment_experience?: string | null
+          main_goals?: string | null
+          monthly_income?: number | null
+          onboarded?: boolean
+          profession?: string | null
+          risk_level?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          completed: boolean
+          created_at: string
+          frequency: string
+          id: string
+          kind: string
+          next_due: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          frequency?: string
+          id?: string
+          kind?: string
+          next_due?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          frequency?: string
+          id?: string
+          kind?: string
+          next_due?: string
+          title?: string
           user_id?: string
         }
         Relationships: []

@@ -1,17 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { Wallet, Activity, Droplets, ShieldAlert, TrendingUp, Bell, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { Link } from "@tanstack/react-router";
+import {
+  Wallet, Activity, Droplets, ShieldAlert, TrendingUp, Bell, ArrowUpRight, ArrowDownRight,
+  Plus, Target as TargetIcon, BellRing, FileDown, Sparkles, Flame,
+} from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MetricCard } from "@/components/MetricCard";
 import { AllocationDonut } from "@/components/AllocationDonut";
-import { assetsQuery, incomeQuery, alertsQuery, goalsQuery } from "@/lib/queries";
+import { assetsQuery, incomeQuery, alertsQuery, goalsQuery, profileQuery, remindersQuery } from "@/lib/queries";
 import {
   allocationPercents, byCategory, CATEGORY_LABEL, computeRisk, computeRoi,
   fmtKES, fmtPct, liquidityRatio, totalIncome, totalValue, type AssetCategory,
 } from "@/lib/finance";
+import { greetByHour, dailyMotivation, computeStreak, disciplineScore } from "@/lib/personalization";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Wealth OS" }] }),
@@ -23,6 +29,8 @@ function Dashboard() {
   const income = useQuery(incomeQuery());
   const alerts = useQuery(alertsQuery());
   const goals = useQuery(goalsQuery());
+  const profile = useQuery(profileQuery());
+  const reminders = useQuery(remindersQuery());
 
   const a = assets.data ?? [];
   const i = income.data ?? [];
@@ -33,6 +41,25 @@ function Dashboard() {
   const risk = computeRisk(a);
   const cats = byCategory(a);
   const allocation = allocationPercents(a);
+
+  const greeting = useMemo(() => greetByHour(profile.data?.full_name ?? "there"), [profile.data?.full_name]);
+  const motivation = useMemo(() => dailyMotivation(new Date()), []);
+  const streak = computeStreak(i.map((x) => x.date));
+  const goalsList = goals.data ?? [];
+  const avgGoalProgress = goalsList.length
+    ? goalsList.reduce((s, g) => s + Math.min(1, Number(g.current) / (Number(g.target) || 1)), 0) / goalsList.length
+    : 0;
+  const reminderRows = reminders.data ?? [];
+  const reminderRate = reminderRows.length ? reminderRows.filter((r) => r.completed).length / reminderRows.length : 1;
+  const stocksConc = total ? cats.STOCKS / total : 0;
+  const score = disciplineScore({
+    streakMonths: streak,
+    liquidityRatio: liq,
+    avgGoalProgress,
+    reminderCompletionRate: reminderRate,
+    stocksConcentration: stocksConc,
+  });
+  const dueReminders = reminderRows.filter((r) => !r.completed && new Date(r.next_due) <= new Date(Date.now() + 7 * 86400_000));
 
   // Snapshot on dashboard load (best-effort, debounced via hash key)
   useEffect(() => {
@@ -53,10 +80,26 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <SectionHeading
-        title="Dashboard"
-        sub="Real-time view of your wealth, allocation and risk."
-      />
+      <div className="fintech-card p-6 relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 opacity-30" style={{ background: "var(--gradient-primary)" }} />
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5" /> Today
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-1">
+              {greeting.text} <span>{greeting.emoji}</span>
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 italic">"{motivation}"</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <ScorePill label="Discipline" value={`${score.score}/100`} />
+            <ScorePill label="Streak" value={`${streak} mo`} icon={streak >= 3 ? <Flame className="h-3.5 w-3.5" /> : null} />
+          </div>
+        </div>
+      </div>
+
+      <QuickActions />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MetricCard
@@ -180,8 +223,69 @@ function Dashboard() {
             <li className="flex justify-between"><span className="text-muted-foreground">Active goals</span><span>{goals.data?.length ?? 0}</span></li>
             <li className="flex justify-between"><span className="text-muted-foreground">Total transactions</span><span>{i.length}</span></li>
           </ul>
+          {(score.strengths.length > 0 || score.weaknesses.length > 0) && (
+            <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <div className="uppercase tracking-widest text-muted-foreground mb-1">Strengths</div>
+                <ul className="space-y-1">{score.strengths.slice(0, 3).map((s) => <li key={s} className="text-[color:var(--success)]">✓ {s}</li>)}</ul>
+              </div>
+              <div>
+                <div className="uppercase tracking-widest text-muted-foreground mb-1">Improve</div>
+                <ul className="space-y-1">{score.weaknesses.slice(0, 3).map((s) => <li key={s} className="text-[color:var(--warning)]">→ {s}</li>)}</ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {dueReminders.length > 0 && (
+        <div className="fintech-card p-6">
+          <h2 className="font-semibold tracking-tight mb-3 flex items-center gap-2"><BellRing className="h-4 w-4" /> Upcoming reminders</h2>
+          <div className="space-y-2">
+            {dueReminders.slice(0, 5).map((r) => (
+              <div key={r.id} className="flex items-center justify-between text-sm border border-border rounded-md p-3">
+                <div>
+                  <div className="font-medium">{r.title}</div>
+                  <div className="text-xs text-muted-foreground">{r.kind} · {r.frequency}</div>
+                </div>
+                <div className="text-xs text-muted-foreground">{new Date(r.next_due).toLocaleDateString()}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ScorePill({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="rounded-full border border-border bg-background/60 backdrop-blur px-3 py-1.5 text-xs flex items-center gap-2">
+      <span className="uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="font-semibold metric-value flex items-center gap-1">{icon}{value}</span>
+    </div>
+  );
+}
+
+function QuickActions() {
+  const actions = [
+    { to: "/income", label: "Add Income", icon: Plus },
+    { to: "/portfolio", label: "Add Investment", icon: Wallet },
+    { to: "/goals", label: "Create Goal", icon: TargetIcon },
+    { to: "/reminders", label: "Set Reminder", icon: BellRing },
+    { to: "/charts", label: "Analytics", icon: Activity },
+    { to: "/alerts", label: "Alerts", icon: Bell },
+  ] as const;
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      {actions.map((a) => (
+        <Button key={a.to} asChild variant="outline" className="justify-start h-auto py-3">
+          <Link to={a.to}>
+            <a.icon className="h-4 w-4" />
+            <span className="text-sm">{a.label}</span>
+          </Link>
+        </Button>
+      ))}
     </div>
   );
 }

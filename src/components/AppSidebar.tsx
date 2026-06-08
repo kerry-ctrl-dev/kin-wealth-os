@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Wallet, PieChart, Target, LineChart, Bell, LogOut, TrendingUp,
-  Sparkles, BellRing, ListChecks,
+  Sparkles, BellRing, ListChecks, FileText, Calendar, Award, Settings,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -20,8 +20,12 @@ const items = [
   { title: "Investments", url: "/portfolio", icon: PieChart },
   { title: "Goals", url: "/goals", icon: Target },
   { title: "Analytics", url: "/charts", icon: LineChart },
+  { title: "Calendar", url: "/calendar", icon: Calendar },
   { title: "Reminders", url: "/reminders", icon: BellRing },
+  { title: "Reports", url: "/reports", icon: FileText },
+  { title: "Achievements", url: "/achievements", icon: Award },
   { title: "Alerts", url: "/alerts", icon: Bell },
+  { title: "Settings", url: "/settings", icon: Settings },
 ] as const;
 
 export function AppSidebar() {

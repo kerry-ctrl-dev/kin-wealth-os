@@ -36,7 +36,7 @@ function AchievementsPage() {
     <div className="space-y-6">
       <SectionHeading
         title="Achievements"
-        subtitle={`${unlocked} of ${badges.length} badges earned · keep building the habit`}
+        sub={`${unlocked} of ${badges.length} badges earned · keep building the habit`}
         icon={<Award className="h-5 w-5" />}
       />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">

@@ -72,7 +72,7 @@ function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <SectionHeading title="Settings" subtitle="Manage your profile and preferences" icon={<SettingsIcon className="h-5 w-5" />} />
+      <SectionHeading title="Settings" sub="Manage your profile and preferences" icon={<SettingsIcon className="h-5 w-5" />} />
 
       <div className="fintech-card p-6 space-y-4">
         <h2 className="font-semibold">Profile</h2>

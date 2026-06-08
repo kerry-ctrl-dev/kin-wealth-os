@@ -45,7 +45,7 @@ function CalendarPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Financial Calendar" subtitle="Income entries, reminders, and goal deadlines" icon={<CalIcon className="h-5 w-5" />} />
+      <SectionHeading title="Financial Calendar" sub="Income entries, reminders, and goal deadlines" icon={<CalIcon className="h-5 w-5" />} />
 
       <div className="fintech-card p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">

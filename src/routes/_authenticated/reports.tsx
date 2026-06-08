@@ -29,7 +29,7 @@ function ReportsPage() {
     downloadFile(`wealth-os-${period}-report-${new Date().toISOString().slice(0, 10)}.txt`, reportToText(report), "text/plain;charset=utf-8");
   }
   function exportCSV(kind: "income" | "assets" | "goals") {
-    const rows =
+    const rows: Record<string, unknown>[] =
       kind === "income" ? (income.data ?? []).map((r) => ({ date: r.date, source: r.source, amount: r.amount }))
       : kind === "assets" ? (assets.data ?? []).map((r) => ({ created_at: r.created_at, category: r.category, name: r.name, value: r.value, liquidity: r.liquidity, platform: r.platform ?? "", payment_method: r.payment_method ?? "" }))
       : (goals.data ?? []).map((r) => ({ name: r.name, target: r.target, current: r.current, deadline: r.deadline ?? "" }));
@@ -38,7 +38,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" subtitle="Daily, weekly, and monthly summaries. Export anything as CSV." icon={<FileText className="h-5 w-5" />} />
+      <SectionHeading title="Report Center" sub="Daily, weekly, and monthly summaries. Export anything as CSV." icon={<FileText className="h-5 w-5" />} />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>

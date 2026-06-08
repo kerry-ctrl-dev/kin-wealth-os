@@ -38,7 +38,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" sub="Daily, weekly, and monthly summaries. Export anything as CSV." icon={<FileText className="h-5 w-5" />} />
+      <SectionHeading title="Report Center" sub="Daily, weekly, and monthly summaries. Export anything as CSV." />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>

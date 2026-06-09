@@ -9,7 +9,8 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { MetricCard } from "@/components/MetricCard";
 import { AllocationDonut } from "@/components/AllocationDonut";
-import { assetsQuery, incomeQuery, alertsQuery, goalsQuery, profileQuery, remindersQuery } from "@/lib/queries";
+import { assetsQuery, incomeQuery, alertsQuery, goalsQuery, profileQuery, remindersQuery, expensesQuery, snapshotsQuery } from "@/lib/queries";
+import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   allocationPercents, byCategory, CATEGORY_LABEL, computeRisk, computeRoi,
   fmtKES, fmtPct, liquidityRatio, totalIncome, totalValue, type AssetCategory,
@@ -31,6 +32,8 @@ function Dashboard() {
   const goals = useQuery(goalsQuery());
   const profile = useQuery(profileQuery());
   const reminders = useQuery(remindersQuery());
+  const expenses = useQuery(expensesQuery());
+  const snapshots = useQuery(snapshotsQuery());
 
   const a = assets.data ?? [];
   const i = income.data ?? [];
@@ -60,6 +63,12 @@ function Dashboard() {
     stocksConcentration: stocksConc,
   });
   const dueReminders = reminderRows.filter((r) => !r.completed && new Date(r.next_due) <= new Date(Date.now() + 7 * 86400_000));
+
+  const now = new Date();
+  const monthExp = (expenses.data ?? []).filter((r) => { const d = new Date(r.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).reduce((s, r) => s + Number(r.amount), 0);
+  const monthInc = i.filter((r) => { const d = new Date(r.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).reduce((s, r) => s + Number(r.amount), 0);
+  const netFlow = monthInc - monthExp;
+  const trend = (snapshots.data ?? []).slice(-30).map((s) => ({ d: new Date(s.date).toLocaleDateString(), v: Number(s.total_assets) }));
 
   // Snapshot on dashboard load (best-effort, debounced via hash key)
   useEffect(() => {
@@ -100,6 +109,47 @@ function Dashboard() {
       </div>
 
       <QuickActions />
+
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="fintech-card p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-semibold tracking-tight">Net worth trend</h2>
+            <span className="text-xs text-muted-foreground">Last {trend.length} snapshots</span>
+          </div>
+          {trend.length > 1 ? (
+            <div className="h-44">
+              <ResponsiveContainer>
+                <AreaChart data={trend}>
+                  <defs>
+                    <linearGradient id="nw" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.6} />
+                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="d" hide />
+                  <YAxis hide domain={["dataMin", "dataMax"]} />
+                  <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 12 }} formatter={(v: number) => fmtKES(v)} />
+                  <Area type="monotone" dataKey="v" stroke="var(--color-primary)" strokeWidth={2} fill="url(#nw)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground py-6">Snapshots are captured automatically — your trend will appear here as your portfolio evolves.</p>
+          )}
+        </div>
+        <div className="fintech-card p-6">
+          <h2 className="font-semibold tracking-tight">Cash flow this month</h2>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+            <div className="rounded-md bg-background/40 border border-border p-3"><div className="text-muted-foreground text-xs">Income</div><div className="metric-value font-semibold mt-1">{fmtKES(monthInc)}</div></div>
+            <div className="rounded-md bg-background/40 border border-border p-3"><div className="text-muted-foreground text-xs">Expenses</div><div className="metric-value font-semibold mt-1">{fmtKES(monthExp)}</div></div>
+          </div>
+          <div className="mt-3 rounded-md p-3 border" style={{ borderColor: netFlow >= 0 ? "color-mix(in oklab, var(--success) 40%, transparent)" : "color-mix(in oklab, var(--danger) 40%, transparent)" }}>
+            <div className="text-xs text-muted-foreground">Net</div>
+            <div className="metric-value text-2xl font-semibold" style={{ color: netFlow >= 0 ? "var(--success)" : "var(--danger)" }}>{fmtKES(netFlow)}</div>
+          </div>
+          <Link to="/expenses" className="text-xs text-primary mt-3 inline-flex items-center gap-1">Manage expenses →</Link>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MetricCard

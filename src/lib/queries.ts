@@ -72,3 +72,43 @@ export const remindersQuery = () =>
       return data;
     },
   });
+
+export const expensesQuery = () =>
+  queryOptions({
+    queryKey: ["expenses"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("expenses").select("*").order("date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const budgetsQuery = () =>
+  queryOptions({
+    queryKey: ["budgets"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("budgets").select("*").order("category", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const recurringQuery = () =>
+  queryOptions({
+    queryKey: ["recurring"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("recurring").select("*").order("next_run", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const documentsQuery = () =>
+  queryOptions({
+    queryKey: ["documents"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });

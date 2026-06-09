@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/SectionHeading";
-import { AssistantWidget } from "@/components/AssistantWidget";
 
 export const Route = createFileRoute("/_authenticated/assistant")({
   head: () => ({ meta: [{ title: "AI Assistant — Wealth OS" }] }),
@@ -20,7 +19,6 @@ function AssistantPage() {
           <li>"What's my safest path to KES 1M?"</li>
         </ul>
       </div>
-      <AssistantWidget defaultOpen />
     </div>
   );
 }

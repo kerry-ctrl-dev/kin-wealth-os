@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Settings as SettingsIcon, Save, LogOut } from "lucide-react";
+import { Settings as SettingsIcon, Save, LogOut, Upload } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { profileQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { uploadAvatar } from "@/lib/avatar";
+import { useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Wealth OS" }] }),
@@ -22,9 +24,11 @@ function SettingsPage() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const [form, setForm] = useState({
-    full_name: "", profession: "", age: "", employment_status: "", monthly_income: "", risk_level: "", main_goals: "", investment_experience: "",
+    full_name: "", profession: "", age: "", employment_status: "", monthly_income: "", risk_level: "", main_goals: "", investment_experience: "", phone: "", avatar_url: "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!profile.data) return;
@@ -37,8 +41,25 @@ function SettingsPage() {
       risk_level: profile.data.risk_level ?? "",
       main_goals: profile.data.main_goals ?? "",
       investment_experience: profile.data.investment_experience ?? "",
+      phone: (profile.data as { phone?: string }).phone ?? "",
+      avatar_url: profile.data.avatar_url ?? "",
     });
   }, [profile.data]);
+
+  async function handleAvatar(file: File) {
+    setUploading(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      const url = await uploadAvatar(file, u.user.id);
+      setForm((f) => ({ ...f, avatar_url: url }));
+      await supabase.from("profiles").update({ avatar_url: url }).eq("id", u.user.id);
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Photo updated");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Upload failed");
+    } finally { setUploading(false); }
+  }
 
   async function save() {
     setSaving(true);
@@ -53,6 +74,7 @@ function SettingsPage() {
       risk_level: form.risk_level || null,
       main_goals: form.main_goals || null,
       investment_experience: form.investment_experience || null,
+      phone: form.phone || null,
     }).eq("id", u.user.id);
     setSaving(false);
     if (error) toast.error(error.message);
@@ -76,8 +98,25 @@ function SettingsPage() {
 
       <div className="fintech-card p-6 space-y-4">
         <h2 className="font-semibold">Profile</h2>
+        <div className="flex items-center gap-4">
+          {form.avatar_url ? (
+            <img src={form.avatar_url} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
+          ) : (
+            <div className="h-20 w-20 rounded-full grid place-items-center bg-primary/15 text-primary text-xl font-semibold border border-border">
+              {(form.full_name || "U").slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div>
+            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && handleAvatar(e.target.files[0])} />
+            <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+              <Upload className="h-4 w-4" /> {uploading ? "Uploading…" : "Change photo"}
+            </Button>
+            <p className="text-xs text-muted-foreground mt-1">JPG/PNG, up to a few MB.</p>
+          </div>
+        </div>
         <div className="grid sm:grid-cols-2 gap-3">
           <Field label="Full name"><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></Field>
+          <Field label="Phone number"><Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+254 7…" /></Field>
           <Field label="Profession"><Input value={form.profession} onChange={(e) => setForm({ ...form, profession: e.target.value })} /></Field>
           <Field label="Age"><Input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} /></Field>
           <Field label="Monthly income (KES)"><Input type="number" value={form.monthly_income} onChange={(e) => setForm({ ...form, monthly_income: e.target.value })} /></Field>

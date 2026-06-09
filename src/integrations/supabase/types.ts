@@ -100,6 +100,96 @@ export type Database = {
           },
         ]
       }
+      budgets: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          monthly_limit: number
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          monthly_limit: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          monthly_limit?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          category: string | null
+          created_at: string
+          file_path: string
+          id: string
+          mime_type: string | null
+          name: string
+          size_bytes: number | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          file_path: string
+          id?: string
+          mime_type?: string | null
+          name: string
+          size_bytes?: number | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          file_path?: string
+          id?: string
+          mime_type?: string | null
+          name?: string
+          size_bytes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          date: string
+          id: string
+          method: string | null
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          date?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          date?: string
+          id?: string
+          method?: string | null
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           created_at: string
@@ -169,6 +259,7 @@ export type Database = {
           main_goals: string | null
           monthly_income: number | null
           onboarded: boolean
+          phone: string | null
           profession: string | null
           risk_level: string | null
           updated_at: string
@@ -184,6 +275,7 @@ export type Database = {
           main_goals?: string | null
           monthly_income?: number | null
           onboarded?: boolean
+          phone?: string | null
           profession?: string | null
           risk_level?: string | null
           updated_at?: string
@@ -199,9 +291,46 @@ export type Database = {
           main_goals?: string | null
           monthly_income?: number | null
           onboarded?: boolean
+          phone?: string | null
           profession?: string | null
           risk_level?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      recurring: {
+        Row: {
+          active: boolean
+          amount: number
+          created_at: string
+          frequency: string
+          id: string
+          label: string
+          next_run: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          amount: number
+          created_at?: string
+          frequency: string
+          id?: string
+          label: string
+          next_run: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          created_at?: string
+          frequency?: string
+          id?: string
+          label?: string
+          next_run?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }

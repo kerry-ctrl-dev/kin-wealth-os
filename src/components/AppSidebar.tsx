@@ -1,8 +1,10 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Wallet, PieChart, Target, LineChart, Bell, LogOut, TrendingUp,
-  Sparkles, BellRing, ListChecks, FileText, Calendar, Award, Settings,
+  Sparkles, BellRing, ListChecks, FileText, Calendar, Award, Settings, ReceiptText,
+  Wallet as WalletIcon, Repeat, FolderLock, Activity,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter, SidebarHeader, useSidebar,
@@ -17,10 +19,16 @@ import { byCategory, liquidityRatio, totalValue } from "@/lib/finance";
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Income", url: "/income", icon: Wallet },
+  { title: "Expenses", url: "/expenses", icon: ReceiptText },
+  { title: "Budgets", url: "/budgets", icon: WalletIcon },
   { title: "Investments", url: "/portfolio", icon: PieChart },
   { title: "Goals", url: "/goals", icon: Target },
+  { title: "Projections", url: "/projections", icon: Activity },
   { title: "Analytics", url: "/charts", icon: LineChart },
   { title: "Calendar", url: "/calendar", icon: Calendar },
+  { title: "Recurring", url: "/recurring", icon: Repeat },
+  { title: "Vault", url: "/vault", icon: FolderLock },
+  { title: "AI Assistant", url: "/assistant", icon: Sparkles },
   { title: "Reminders", url: "/reminders", icon: BellRing },
   { title: "Reports", url: "/reports", icon: FileText },
   { title: "Achievements", url: "/achievements", icon: Award },
@@ -70,9 +78,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="h-8 w-8 rounded-lg grid place-items-center bg-primary text-primary-foreground shadow-[var(--shadow-elegant)]">
-            <TrendingUp className="h-4 w-4" />
-          </div>
+          <img src={logo} alt="Wealth OS logo" className="h-8 w-8" />
           {!collapsed && (
             <div className="leading-tight">
               <div className="text-sm font-semibold">Wealth OS</div>

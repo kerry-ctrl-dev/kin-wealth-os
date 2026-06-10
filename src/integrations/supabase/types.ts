@@ -166,7 +166,10 @@ export type Database = {
           id: string
           method: string | null
           notes: string | null
+          source_income_id: string | null
+          transaction_code: string | null
           user_id: string
+          vendor: string | null
         }
         Insert: {
           amount: number
@@ -176,7 +179,10 @@ export type Database = {
           id?: string
           method?: string | null
           notes?: string | null
+          source_income_id?: string | null
+          transaction_code?: string | null
           user_id: string
+          vendor?: string | null
         }
         Update: {
           amount?: number
@@ -186,9 +192,20 @@ export type Database = {
           id?: string
           method?: string | null
           notes?: string | null
+          source_income_id?: string | null
+          transaction_code?: string | null
           user_id?: string
+          vendor?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_source_income_id_fkey"
+            columns: ["source_income_id"]
+            isOneToOne: false
+            referencedRelation: "income"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       goals: {
         Row: {
@@ -244,6 +261,90 @@ export type Database = {
           id?: string
           source?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      loans: {
+        Row: {
+          amount_repaid: number
+          borrowed_at: string
+          created_at: string
+          due_date: string | null
+          id: string
+          interest_rate: number
+          lender: string
+          notes: string | null
+          principal: number
+          purpose: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_repaid?: number
+          borrowed_at?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          interest_rate?: number
+          lender: string
+          notes?: string | null
+          principal: number
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_repaid?: number
+          borrowed_at?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          interest_rate?: number
+          lender?: string
+          notes?: string | null
+          principal?: number
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      personal_assets: {
+        Row: {
+          acquired_at: string | null
+          category: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          acquired_at?: string | null
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          acquired_at?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          value?: number
         }
         Relationships: []
       }

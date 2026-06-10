@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileQuery, incomeQuery, remindersQuery, assetsQuery } from "@/lib/queries";
 import { computeStreak, disciplineScore } from "@/lib/personalization";
 import { byCategory, liquidityRatio, totalValue } from "@/lib/finance";
+import { useAvatarUrl } from "@/hooks/use-avatar-url";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },

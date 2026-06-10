@@ -112,3 +112,23 @@ export const documentsQuery = () =>
       return data;
     },
   });
+
+export const personalAssetsQuery = () =>
+  queryOptions({
+    queryKey: ["personal_assets"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("personal_assets").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+export const loansQuery = () =>
+  queryOptions({
+    queryKey: ["loans"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("loans").select("*").order("borrowed_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });

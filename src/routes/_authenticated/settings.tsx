@@ -12,6 +12,7 @@ import { profileQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { uploadAvatar } from "@/lib/avatar";
+import { useAvatarUrl } from "@/hooks/use-avatar-url";
 import { useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -29,6 +30,7 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const avatarUrl = useAvatarUrl(form.avatar_url).data;
 
   useEffect(() => {
     if (!profile.data) return;
@@ -51,10 +53,11 @@ function SettingsPage() {
     try {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const url = await uploadAvatar(file, u.user.id);
-      setForm((f) => ({ ...f, avatar_url: url }));
-      await supabase.from("profiles").update({ avatar_url: url }).eq("id", u.user.id);
+      const path = await uploadAvatar(file, u.user.id);
+      setForm((f) => ({ ...f, avatar_url: path }));
+      await supabase.from("profiles").update({ avatar_url: path }).eq("id", u.user.id);
       qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries({ queryKey: ["avatar-url"] });
       toast.success("Photo updated");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Upload failed");
@@ -99,8 +102,8 @@ function SettingsPage() {
       <div className="fintech-card p-6 space-y-4">
         <h2 className="font-semibold">Profile</h2>
         <div className="flex items-center gap-4">
-          {form.avatar_url ? (
-            <img src={form.avatar_url} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
           ) : (
             <div className="h-20 w-20 rounded-full grid place-items-center bg-primary/15 text-primary text-xl font-semibold border border-border">
               {(form.full_name || "U").slice(0, 1).toUpperCase()}

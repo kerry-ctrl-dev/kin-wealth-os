@@ -74,6 +74,7 @@ export function AppSidebar() {
   const first = fullName.trim().split(/\s+/)[0];
   const initials = first.slice(0, 2).toUpperCase();
   const profession = profile.data?.profession ?? "—";
+  const avatarUrl = useAvatarUrl(profile.data?.avatar_url).data;
 
   return (
     <Sidebar collapsible="icon">
@@ -91,8 +92,8 @@ export function AppSidebar() {
           <div className="px-2 pb-3">
             <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-3">
               <div className="flex items-center gap-3">
-                {profile.data?.avatar_url ? (
-                  <img src={profile.data.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover border border-sidebar-border" />
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-9 w-9 rounded-full object-cover border border-sidebar-border" />
                 ) : (
                   <div className="h-9 w-9 rounded-full grid place-items-center bg-primary/15 text-primary text-xs font-semibold">{initials}</div>
                 )}

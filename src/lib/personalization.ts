@@ -74,3 +74,19 @@ export function disciplineScore(args: {
   else weaknesses.push("Trim stock concentration risk");
   return { score, strengths, weaknesses };
 }
+
+/**
+ * Map an internal 0-100 discipline score to a real-world credit-score-style
+ * Wealth Rating (300-850) with a familiar tier label (Poor → Excellent),
+ * mirroring how lenders communicate FICO scores.
+ */
+export function wealthRating(score: number): { value: number; tier: string; min: number; max: number } {
+  const clamped = Math.max(0, Math.min(100, score));
+  const value = Math.round(300 + (clamped / 100) * 550); // 300..850
+  const tier =
+    value >= 800 ? "Excellent" :
+    value >= 740 ? "Very Good" :
+    value >= 670 ? "Good" :
+    value >= 580 ? "Fair" : "Poor";
+  return { value, tier, min: 300, max: 850 };
+}

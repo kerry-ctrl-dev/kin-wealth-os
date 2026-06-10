@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileQuery, incomeQuery, remindersQuery, assetsQuery } from "@/lib/queries";
-import { computeStreak, disciplineScore } from "@/lib/personalization";
+import { computeStreak, disciplineScore, wealthRating } from "@/lib/personalization";
 import { byCategory, liquidityRatio, totalValue } from "@/lib/finance";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
 
@@ -104,8 +104,8 @@ export function AppSidebar() {
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-[10px]">
                 <div className="rounded-md bg-background/40 border border-sidebar-border px-2 py-1.5">
-                  <div className="text-muted-foreground uppercase tracking-wider">Score</div>
-                  <div className="text-sm font-semibold metric-value">{score}<span className="text-muted-foreground">/100</span></div>
+                  <div className="text-muted-foreground uppercase tracking-wider">Wealth Score</div>
+                  <div className="text-sm font-semibold metric-value">{wealthRating(score).value}<span className="text-muted-foreground"> · {wealthRating(score).tier}</span></div>
                 </div>
                 <div className="rounded-md bg-background/40 border border-sidebar-border px-2 py-1.5">
                   <div className="text-muted-foreground uppercase tracking-wider">Streak</div>

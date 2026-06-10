@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, PieChart, ReceiptText, Sparkles, Settings } from "lucide-react";
+import { LayoutDashboard, PieChart, ReceiptText, Sparkles, Coins } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Home" },
   { to: "/portfolio", icon: PieChart, label: "Invest" },
   { to: "/expenses", icon: ReceiptText, label: "Spend" },
+  { to: "/loans", icon: Coins, label: "Loans" },
   { to: "/assistant", icon: Sparkles, label: "Aria" },
-  { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;
 
 export function BottomNav() {

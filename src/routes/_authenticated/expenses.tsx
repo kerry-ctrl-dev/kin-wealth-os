@@ -10,9 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { expensesQuery, incomeQuery } from "@/lib/queries";
+import { expensesQuery, incomeQuery, assetsQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtKES } from "@/lib/finance";
+import { incomeBalances, totalAvailableCash } from "@/lib/balance";
+import { PAYMENT_METHODS } from "@/lib/instruments";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
@@ -85,21 +87,45 @@ function ExpensesPage() {
 
 function AddExpense() {
   const qc = useQueryClient();
+  const { data: income } = useQuery(incomeQuery());
+  const { data: assets } = useQuery(assetsQuery());
+  const { data: expenses } = useQuery(expensesQuery());
+  const balances = incomeBalances(income ?? [], assets ?? [], expenses ?? []);
+  const available = totalAvailableCash(income ?? [], assets ?? [], expenses ?? []);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ amount: "", category: "Food", method: "", notes: "", date: new Date().toISOString().slice(0, 10) });
+  const [form, setForm] = useState({
+    amount: "", category: "Food", method: "M-Pesa", notes: "",
+    date: new Date().toISOString().slice(0, 10),
+    transaction_code: "", vendor: "", source_income_id: "",
+  });
   const [saving, setSaving] = useState(false);
   async function save() {
     const amt = Number(form.amount);
     if (!amt || amt <= 0) return toast.error("Amount must be > 0");
+    if (form.source_income_id) {
+      const bal = balances.get(form.source_income_id);
+      if (bal && amt > bal.remaining + 0.001) return toast.error(`Selected income only has ${bal.remaining.toFixed(2)} KES left`);
+    }
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) { setSaving(false); return; }
     const { error } = await supabase.from("expenses").insert({
-      user_id: u.user.id, amount: amt, category: form.category, method: form.method || null, notes: form.notes || null, date: new Date(form.date).toISOString(),
+      user_id: u.user.id, amount: amt, category: form.category,
+      method: form.method || null, notes: form.notes || null,
+      date: new Date(form.date).toISOString(),
+      transaction_code: form.transaction_code || null,
+      vendor: form.vendor || null,
+      source_income_id: form.source_income_id || null,
     });
     setSaving(false);
     if (error) toast.error(error.message);
-    else { toast.success("Expense added"); setOpen(false); setForm({ amount: "", category: "Food", method: "", notes: "", date: new Date().toISOString().slice(0, 10) }); qc.invalidateQueries({ queryKey: ["expenses"] }); }
+    else {
+      toast.success("Expense added");
+      setOpen(false);
+      setForm({ amount: "", category: "Food", method: "M-Pesa", notes: "", date: new Date().toISOString().slice(0, 10), transaction_code: "", vendor: "", source_income_id: "" });
+      qc.invalidateQueries({ queryKey: ["expenses"] });
+      qc.invalidateQueries({ queryKey: ["income"] });
+    }
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -107,6 +133,9 @@ function AddExpense() {
       <DialogContent>
         <DialogHeader><DialogTitle>New Expense</DialogTitle></DialogHeader>
         <div className="space-y-3">
+          <div className="rounded-md border border-border bg-secondary/30 p-2 text-xs text-muted-foreground">
+            Available cash from income: <span className="font-semibold text-foreground">{fmtKES(available)}</span>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Amount (KES)</Label><Input type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} /></div>
             <div><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
@@ -117,7 +146,30 @@ function AddExpense() {
               <SelectContent>{CATS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div><Label>Payment method (optional)</Label><Input value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value })} placeholder="M-Pesa, Card, Cash…" /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Payment method</Label>
+              <Select value={form.method} onValueChange={(v) => setForm({ ...form, method: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{PAYMENT_METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div><Label>M-Pesa / bank ref</Label><Input value={form.transaction_code} onChange={(e) => setForm({ ...form, transaction_code: e.target.value })} placeholder="QFG3X8R…" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Vendor</Label><Input value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} placeholder="Naivas, Uber…" /></div>
+            <div><Label>Funded by (income)</Label>
+              <Select value={form.source_income_id || "none"} onValueChange={(v) => setForm({ ...form, source_income_id: v === "none" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Not linked</SelectItem>
+                  {(income ?? []).map((inc) => {
+                    const bal = balances.get(inc.id);
+                    return <SelectItem key={inc.id} value={inc.id}>{inc.source} · {fmtKES(bal?.remaining ?? Number(inc.amount))} left</SelectItem>;
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
           <div className="flex justify-end"><Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button></div>
         </div>

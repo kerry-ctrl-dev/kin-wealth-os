@@ -4,18 +4,19 @@ import { useEffect, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Wallet, Activity, Droplets, ShieldAlert, TrendingUp, Bell, ArrowUpRight, ArrowDownRight,
-  Plus, Target as TargetIcon, BellRing, FileDown, Sparkles, Flame,
+  Plus, Target as TargetIcon, BellRing, FileDown, Sparkles, Flame, Home as HomeIcon, Coins,
 } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MetricCard } from "@/components/MetricCard";
 import { AllocationDonut } from "@/components/AllocationDonut";
-import { assetsQuery, incomeQuery, alertsQuery, goalsQuery, profileQuery, remindersQuery, expensesQuery, snapshotsQuery } from "@/lib/queries";
+import { assetsQuery, incomeQuery, alertsQuery, goalsQuery, profileQuery, remindersQuery, expensesQuery, snapshotsQuery, personalAssetsQuery, loansQuery } from "@/lib/queries";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   allocationPercents, byCategory, CATEGORY_LABEL, computeRisk, computeRoi,
   fmtKES, fmtPct, liquidityRatio, totalIncome, totalValue, type AssetCategory,
 } from "@/lib/finance";
 import { greetByHour, dailyMotivation, computeStreak, disciplineScore, wealthRating } from "@/lib/personalization";
+import { netWorth, totalAvailableCash, totalLoansOutstanding, personalAssetsValue } from "@/lib/balance";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -34,10 +35,19 @@ function Dashboard() {
   const reminders = useQuery(remindersQuery());
   const expenses = useQuery(expensesQuery());
   const snapshots = useQuery(snapshotsQuery());
+  const personalAssets = useQuery(personalAssetsQuery());
+  const loans = useQuery(loansQuery());
 
   const a = assets.data ?? [];
   const i = income.data ?? [];
+  const pa = personalAssets.data ?? [];
+  const ln = loans.data ?? [];
+  const exp = expenses.data ?? [];
   const total = totalValue(a);
+  const nw = netWorth(a, pa, ln);
+  const availableCash = totalAvailableCash(i, a, exp);
+  const debt = totalLoansOutstanding(ln);
+  const personalVal = personalAssetsValue(pa);
   const invested = totalIncome(i);
   const roi = computeRoi(a, i);
   const liq = liquidityRatio(a);
@@ -160,8 +170,8 @@ function Dashboard() {
         />
         <MetricCard
           label="Net Worth"
-          value={fmtKES(total)}
-          sub="All accounts combined"
+          value={fmtKES(nw)}
+          sub={`Invest ${fmtKES(total)} + Items ${fmtKES(personalVal)} − Debt ${fmtKES(debt)}`}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <MetricCard
@@ -183,6 +193,12 @@ function Dashboard() {
           sub="Cash + MMF / Total"
           icon={<Droplets className="h-4 w-4" />}
         />
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <MetricCard label="Available cash" value={fmtKES(availableCash)} sub="Income not yet allocated" icon={<Wallet className="h-4 w-4" />} tone={availableCash <= 0 ? "warning" : "success"} />
+        <MetricCard label="Personal assets" value={fmtKES(personalVal)} sub={`${pa.length} items`} icon={<HomeIcon className="h-4 w-4" />} />
+        <MetricCard label="Loans outstanding" value={fmtKES(debt)} sub={`${ln.filter((l) => l.status !== "REPAID").length} active`} icon={<Coins className="h-4 w-4" />} tone={debt > 0 ? "warning" : "success"} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -321,10 +337,10 @@ function QuickActions() {
   const actions = [
     { to: "/income", label: "Add Income", icon: Plus },
     { to: "/portfolio", label: "Add Investment", icon: Wallet },
+    { to: "/personal-assets", label: "Add Asset", icon: HomeIcon },
+    { to: "/loans", label: "Record Loan", icon: Coins },
     { to: "/goals", label: "Create Goal", icon: TargetIcon },
-    { to: "/reminders", label: "Set Reminder", icon: BellRing },
-    { to: "/charts", label: "Analytics", icon: Activity },
-    { to: "/alerts", label: "Alerts", icon: Bell },
+    { to: "/reports", label: "Reports", icon: FileDown },
   ] as const;
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">

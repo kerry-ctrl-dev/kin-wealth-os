@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { FileDown, FileText, Sparkles } from "lucide-react";
+import { FileDown, FileText, Sparkles, ChevronDown } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { assetsQuery, incomeQuery, goalsQuery } from "@/lib/queries";
-import { buildReport, reportToText, toCSV, downloadFile, type ReportPeriod } from "@/lib/reports";
+import { buildReport, toCSV, downloadFile, type ReportPeriod } from "@/lib/reports";
+import { exportReportPDF } from "@/lib/pdf-report";
+import { profileQuery } from "@/lib/queries";
 import { CATEGORY_LABEL, fmtKES, fmtPct } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/reports")({
@@ -18,15 +20,17 @@ function ReportsPage() {
   const assets = useQuery(assetsQuery());
   const income = useQuery(incomeQuery());
   const goals = useQuery(goalsQuery());
+  const profile = useQuery(profileQuery());
   const [period, setPeriod] = useState<ReportPeriod>("daily");
+  const [showCsv, setShowCsv] = useState(false);
 
   const report = useMemo(
     () => buildReport(period, assets.data ?? [], income.data ?? [], goals.data ?? []),
     [period, assets.data, income.data, goals.data],
   );
 
-  function exportReportTxt() {
-    downloadFile(`wealth-os-${period}-report-${new Date().toISOString().slice(0, 10)}.txt`, reportToText(report), "text/plain;charset=utf-8");
+  function exportPDF() {
+    exportReportPDF(report, { profile: profile.data?.full_name ?? undefined });
   }
   function exportCSV(kind: "income" | "assets" | "goals") {
     const rows: Record<string, unknown>[] =
@@ -38,7 +42,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" sub="Daily, weekly, and monthly summaries. Export anything as CSV." />
+      <SectionHeading title="Report Center" sub="Branded PDF reports for daily, weekly, and monthly views. Raw CSV is optional." />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>
@@ -48,7 +52,7 @@ function ReportsPage() {
               <TabsTrigger value="weekly">Weekly</TabsTrigger>
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
             </TabsList>
-            <Button variant="outline" onClick={exportReportTxt}><FileDown className="h-4 w-4" /> Download summary</Button>
+            <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Download PDF report</Button>
           </div>
 
           <TabsContent value={period} className="mt-4">
@@ -90,13 +94,20 @@ function ReportsPage() {
       </div>
 
       <div className="fintech-card p-6">
-        <h2 className="font-semibold mb-3">Export data</h2>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => exportCSV("income")}><FileDown className="h-4 w-4" /> Income CSV</Button>
-          <Button variant="outline" onClick={() => exportCSV("assets")}><FileDown className="h-4 w-4" /> Investments CSV</Button>
-          <Button variant="outline" onClick={() => exportCSV("goals")}><FileDown className="h-4 w-4" /> Goals CSV</Button>
-        </div>
-        <p className="text-xs text-muted-foreground mt-3">Files open in Excel, Google Sheets, and Numbers.</p>
+        <button onClick={() => setShowCsv((s) => !s)} className="w-full flex items-center justify-between text-left">
+          <div>
+            <h2 className="font-semibold">Optional: raw CSV exports</h2>
+            <p className="text-xs text-muted-foreground">For spreadsheets — most users only need the PDF above.</p>
+          </div>
+          <ChevronDown className={`h-4 w-4 transition-transform ${showCsv ? "rotate-180" : ""}`} />
+        </button>
+        {showCsv && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Button variant="outline" onClick={() => exportCSV("income")}><FileDown className="h-4 w-4" /> Income CSV</Button>
+            <Button variant="outline" onClick={() => exportCSV("assets")}><FileDown className="h-4 w-4" /> Investments CSV</Button>
+            <Button variant="outline" onClick={() => exportCSV("goals")}><FileDown className="h-4 w-4" /> Goals CSV</Button>
+          </div>
+        )}
       </div>
     </div>
   );

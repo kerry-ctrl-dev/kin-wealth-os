@@ -19,7 +19,9 @@ import { Route as AuthenticatedRemindersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedRecurringRouteImport } from './routes/_authenticated/recurring'
 import { Route as AuthenticatedProjectionsRouteImport } from './routes/_authenticated/projections'
 import { Route as AuthenticatedPortfolioRouteImport } from './routes/_authenticated/portfolio'
+import { Route as AuthenticatedPersonalAssetsRouteImport } from './routes/_authenticated/personal-assets'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedLoansRouteImport } from './routes/_authenticated/loans'
 import { Route as AuthenticatedIncomeRouteImport } from './routes/_authenticated/income'
 import { Route as AuthenticatedGoalsRouteImport } from './routes/_authenticated/goals'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
@@ -81,9 +83,20 @@ const AuthenticatedPortfolioRoute = AuthenticatedPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPersonalAssetsRoute =
+  AuthenticatedPersonalAssetsRouteImport.update({
+    id: '/personal-assets',
+    path: '/personal-assets',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLoansRoute = AuthenticatedLoansRouteImport.update({
+  id: '/loans',
+  path: '/loans',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedIncomeRoute = AuthenticatedIncomeRouteImport.update({
@@ -151,7 +164,9 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/goals': typeof AuthenticatedGoalsRoute
   '/income': typeof AuthenticatedIncomeRoute
+  '/loans': typeof AuthenticatedLoansRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/personal-assets': typeof AuthenticatedPersonalAssetsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
   '/projections': typeof AuthenticatedProjectionsRoute
   '/recurring': typeof AuthenticatedRecurringRoute
@@ -173,7 +188,9 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/goals': typeof AuthenticatedGoalsRoute
   '/income': typeof AuthenticatedIncomeRoute
+  '/loans': typeof AuthenticatedLoansRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/personal-assets': typeof AuthenticatedPersonalAssetsRoute
   '/portfolio': typeof AuthenticatedPortfolioRoute
   '/projections': typeof AuthenticatedProjectionsRoute
   '/recurring': typeof AuthenticatedRecurringRoute
@@ -197,7 +214,9 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/goals': typeof AuthenticatedGoalsRoute
   '/_authenticated/income': typeof AuthenticatedIncomeRoute
+  '/_authenticated/loans': typeof AuthenticatedLoansRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/personal-assets': typeof AuthenticatedPersonalAssetsRoute
   '/_authenticated/portfolio': typeof AuthenticatedPortfolioRoute
   '/_authenticated/projections': typeof AuthenticatedProjectionsRoute
   '/_authenticated/recurring': typeof AuthenticatedRecurringRoute
@@ -221,7 +240,9 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/goals'
     | '/income'
+    | '/loans'
     | '/onboarding'
+    | '/personal-assets'
     | '/portfolio'
     | '/projections'
     | '/recurring'
@@ -243,7 +264,9 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/goals'
     | '/income'
+    | '/loans'
     | '/onboarding'
+    | '/personal-assets'
     | '/portfolio'
     | '/projections'
     | '/recurring'
@@ -266,7 +289,9 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/goals'
     | '/_authenticated/income'
+    | '/_authenticated/loans'
     | '/_authenticated/onboarding'
+    | '/_authenticated/personal-assets'
     | '/_authenticated/portfolio'
     | '/_authenticated/projections'
     | '/_authenticated/recurring'
@@ -354,11 +379,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortfolioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/personal-assets': {
+      id: '/_authenticated/personal-assets'
+      path: '/personal-assets'
+      fullPath: '/personal-assets'
+      preLoaderRoute: typeof AuthenticatedPersonalAssetsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/loans': {
+      id: '/_authenticated/loans'
+      path: '/loans'
+      fullPath: '/loans'
+      preLoaderRoute: typeof AuthenticatedLoansRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/income': {
@@ -445,7 +484,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRoute
   AuthenticatedIncomeRoute: typeof AuthenticatedIncomeRoute
+  AuthenticatedLoansRoute: typeof AuthenticatedLoansRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPersonalAssetsRoute: typeof AuthenticatedPersonalAssetsRoute
   AuthenticatedPortfolioRoute: typeof AuthenticatedPortfolioRoute
   AuthenticatedProjectionsRoute: typeof AuthenticatedProjectionsRoute
   AuthenticatedRecurringRoute: typeof AuthenticatedRecurringRoute
@@ -466,7 +507,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedGoalsRoute: AuthenticatedGoalsRoute,
   AuthenticatedIncomeRoute: AuthenticatedIncomeRoute,
+  AuthenticatedLoansRoute: AuthenticatedLoansRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPersonalAssetsRoute: AuthenticatedPersonalAssetsRoute,
   AuthenticatedPortfolioRoute: AuthenticatedPortfolioRoute,
   AuthenticatedProjectionsRoute: AuthenticatedProjectionsRoute,
   AuthenticatedRecurringRoute: AuthenticatedRecurringRoute,

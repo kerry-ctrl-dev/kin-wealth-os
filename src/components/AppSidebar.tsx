@@ -2,7 +2,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Wallet, PieChart, Target, LineChart, Bell, LogOut, TrendingUp,
   Sparkles, BellRing, ListChecks, FileText, Calendar, Award, Settings, ReceiptText,
-  Wallet as WalletIcon, Repeat, FolderLock, Activity,
+  Wallet as WalletIcon, Repeat, FolderLock, Activity, Home as HomeIcon, Coins,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import {
@@ -23,6 +23,8 @@ const items = [
   { title: "Expenses", url: "/expenses", icon: ReceiptText },
   { title: "Budgets", url: "/budgets", icon: WalletIcon },
   { title: "Investments", url: "/portfolio", icon: PieChart },
+  { title: "Personal Assets", url: "/personal-assets", icon: HomeIcon },
+  { title: "Loans", url: "/loans", icon: Coins },
   { title: "Goals", url: "/goals", icon: Target },
   { title: "Projections", url: "/projections", icon: Activity },
   { title: "Analytics", url: "/charts", icon: LineChart },

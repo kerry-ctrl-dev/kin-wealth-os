@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { incomeQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { allocateIncome, fmtKES } from "@/lib/finance";
@@ -27,9 +28,10 @@ function IncomePage() {
   const { data: income } = useQuery(incomeQuery());
   const [source, setSource] = useState("");
   const [amount, setAmount] = useState("");
+  const [autoAllocate, setAutoAllocate] = useState(false);
 
   const addIncome = useMutation({
-    mutationFn: async (input: { source: string; amount: number }) => {
+    mutationFn: async (input: { source: string; amount: number; autoAllocate: boolean }) => {
       const { data: u } = await supabase.auth.getUser();
       const uid = u.user!.id;
       const { data: inserted, error } = await supabase
@@ -38,15 +40,18 @@ function IncomePage() {
         .select()
         .single();
       if (error) throw error;
-      const rows = allocateIncome(input.amount).map((r) => ({
-        user_id: uid, name: r.name, category: r.category,
-        value: r.value, liquidity: r.liquidity, source_income_id: inserted.id,
-      }));
-      const { error: aErr } = await supabase.from("assets").insert(rows);
-      if (aErr) throw aErr;
+      if (input.autoAllocate) {
+        const rows = allocateIncome(input.amount).map((r) => ({
+          user_id: uid, name: r.name, category: r.category,
+          value: r.value, liquidity: r.liquidity, source_income_id: inserted.id,
+        }));
+        const { error: aErr } = await supabase.from("assets").insert(rows);
+        if (aErr) throw aErr;
+      }
+      return { autoAllocated: input.autoAllocate };
     },
-    onSuccess: () => {
-      toast.success("Income allocated 40/40/20 across MMF / Stocks / REITs");
+    onSuccess: (res) => {
+      toast.success(res.autoAllocated ? "Income recorded & allocated 40/40/20" : "Income recorded");
       qc.invalidateQueries({ queryKey: ["income"] });
       qc.invalidateQueries({ queryKey: ["assets"] });
       setSource(""); setAmount("");
@@ -68,25 +73,34 @@ function IncomePage() {
 
   return (
     <div>
-      <SectionHeading title="Income" sub="Each entry is auto-allocated: 40% MMF · 40% NSE stocks · 20% REITs." />
+      <SectionHeading title="Income" sub="Track every shilling earned. Optionally auto-invest each entry into MMF / Stocks / REITs." />
       <form
-        className="fintech-card p-5 grid sm:grid-cols-[1fr_180px_auto] gap-3 items-end mb-6"
+        className="fintech-card p-5 mb-6 space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           const parsed = Schema.safeParse({ source, amount });
           if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
-          addIncome.mutate(parsed.data);
+          addIncome.mutate({ ...parsed.data, autoAllocate });
         }}
       >
-        <div className="space-y-2">
-          <Label htmlFor="src">Source</Label>
-          <Input id="src" value={source} onChange={(e) => setSource(e.target.value)} placeholder="Stipend, side hustle…" />
+        <div className="grid sm:grid-cols-[1fr_180px_auto] gap-3 items-end">
+          <div className="space-y-2">
+            <Label htmlFor="src">Source</Label>
+            <Input id="src" value={source} onChange={(e) => setSource(e.target.value)} placeholder="Stipend, side hustle…" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="amt">Amount (KES)</Label>
+            <Input id="amt" type="number" min={1} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="10000" />
+          </div>
+          <Button type="submit" disabled={addIncome.isPending}><Plus className="h-4 w-4" /> Add income</Button>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="amt">Amount (KES)</Label>
-          <Input id="amt" type="number" min={1} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="10000" />
+        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-secondary/30 p-3">
+          <div>
+            <Label htmlFor="auto" className="text-sm font-medium">Auto-allocate 40/40/20</Label>
+            <p className="text-xs text-muted-foreground">Split this income into MMF, NSE stocks and REITs automatically.</p>
+          </div>
+          <Switch id="auto" checked={autoAllocate} onCheckedChange={setAutoAllocate} />
         </div>
-        <Button type="submit" disabled={addIncome.isPending}><Plus className="h-4 w-4" /> Add income</Button>
       </form>
       <div className="fintech-card overflow-hidden">
         <table className="w-full text-sm">

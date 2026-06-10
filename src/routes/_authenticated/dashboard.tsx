@@ -15,7 +15,7 @@ import {
   allocationPercents, byCategory, CATEGORY_LABEL, computeRisk, computeRoi,
   fmtKES, fmtPct, liquidityRatio, totalIncome, totalValue, type AssetCategory,
 } from "@/lib/finance";
-import { greetByHour, dailyMotivation, computeStreak, disciplineScore } from "@/lib/personalization";
+import { greetByHour, dailyMotivation, computeStreak, disciplineScore, wealthRating } from "@/lib/personalization";
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -102,7 +102,7 @@ function Dashboard() {
             <p className="text-sm text-muted-foreground mt-1 italic">"{motivation}"</p>
           </div>
           <div className="flex items-center gap-2">
-            <ScorePill label="Discipline" value={`${score.score}/100`} />
+            <ScorePill label={`Wealth · ${wealthRating(score.score).tier}`} value={`${wealthRating(score.score).value}`} />
             <ScorePill label="Streak" value={`${streak} mo`} icon={streak >= 3 ? <Flame className="h-3.5 w-3.5" /> : null} />
           </div>
         </div>

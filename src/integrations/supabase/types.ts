@@ -269,6 +269,7 @@ export type Database = {
           amount_repaid: number
           borrowed_at: string
           created_at: string
+          direction: string
           due_date: string | null
           id: string
           interest_rate: number
@@ -284,6 +285,7 @@ export type Database = {
           amount_repaid?: number
           borrowed_at?: string
           created_at?: string
+          direction?: string
           due_date?: string | null
           id?: string
           interest_rate?: number
@@ -299,6 +301,7 @@ export type Database = {
           amount_repaid?: number
           borrowed_at?: string
           created_at?: string
+          direction?: string
           due_date?: string | null
           id?: string
           interest_rate?: number

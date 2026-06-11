@@ -1,0 +1,3 @@
+ALTER TABLE public.loans
+  ADD COLUMN IF NOT EXISTS direction text NOT NULL DEFAULT 'BORROWED'
+    CHECK (direction IN ('BORROWED','LENT'));

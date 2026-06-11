@@ -73,7 +73,7 @@ function IncomePage() {
 
   return (
     <div>
-      <SectionHeading title="Income" sub="Track every shilling earned. Optionally auto-invest each entry into MMF / Stocks / REITs." />
+      <SectionHeading title="Income" sub="Track every shilling earned. Optionally auto-allocate each entry across MMF / Stocks / REITs / Savings." />
       <form
         className="fintech-card p-5 mb-6 space-y-4"
         onSubmit={(e) => {

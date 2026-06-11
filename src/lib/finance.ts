@@ -8,10 +8,11 @@ export type Asset = Tables<"assets">;
 export type Income = Tables<"income">;
 export type Goal = Tables<"goals">;
 
-export const ALLOCATION: Record<"MMF" | "STOCKS" | "REITS", number> = {
-  MMF: 0.4,
-  STOCKS: 0.4,
+export const ALLOCATION: Record<"MMF" | "STOCKS" | "REITS" | "CASH", number> = {
+  MMF: 0.3,
+  STOCKS: 0.3,
   REITS: 0.2,
+  CASH: 0.2,
 };
 
 export const LIQUIDITY_SCORE: Record<AssetCategory, number> = {
@@ -38,10 +39,11 @@ export const CATEGORY_COLOR: Record<AssetCategory, string> = {
   REAL_ESTATE: "var(--chart-5)",
 };
 
-export const DEFAULT_TICKERS: Record<"STOCKS" | "REITS" | "MMF", string> = {
+export const DEFAULT_TICKERS: Record<"STOCKS" | "REITS" | "MMF" | "CASH", string> = {
   MMF: "CIC Money Market Fund",
   STOCKS: "NSE: SCOM / KCB / EQTY",
   REITS: "Acorn / Vuka REIT",
+  CASH: "Savings (Cash buffer)",
 };
 
 export interface AllocationRow {
@@ -56,6 +58,7 @@ export function allocateIncome(amount: number): AllocationRow[] {
     { category: "MMF", name: DEFAULT_TICKERS.MMF, value: +(amount * ALLOCATION.MMF).toFixed(2), liquidity: LIQUIDITY_SCORE.MMF },
     { category: "STOCKS", name: DEFAULT_TICKERS.STOCKS, value: +(amount * ALLOCATION.STOCKS).toFixed(2), liquidity: LIQUIDITY_SCORE.STOCKS },
     { category: "REITS", name: DEFAULT_TICKERS.REITS, value: +(amount * ALLOCATION.REITS).toFixed(2), liquidity: LIQUIDITY_SCORE.REITS },
+    { category: "CASH", name: DEFAULT_TICKERS.CASH, value: +(amount * ALLOCATION.CASH).toFixed(2), liquidity: LIQUIDITY_SCORE.CASH },
   ];
 }
 

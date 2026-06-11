@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { goalsQuery } from "@/lib/queries";
+import { goalsQuery, incomeQuery, assetsQuery, expensesQuery } from "@/lib/queries";
 import { fmtKES, monthlyNeeded } from "@/lib/finance";
+import { incomeBalances } from "@/lib/balance";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -28,6 +31,9 @@ const Schema = z.object({
 function GoalsPage() {
   const qc = useQueryClient();
   const { data: goals } = useQuery(goalsQuery());
+  const { data: income } = useQuery(incomeQuery());
+  const { data: assets } = useQuery(assetsQuery());
+  const { data: expenses } = useQuery(expensesQuery());
   const [form, setForm] = useState({ name: "", target: "", current: "0", deadline: "" });
 
   const add = useMutation({
@@ -47,13 +53,7 @@ function GoalsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const updateCurrent = useMutation({
-    mutationFn: async (p: { id: string; current: number }) => {
-      const { error } = await supabase.from("goals").update({ current: p.current }).eq("id", p.id);
-      if (error) throw error;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["goals"] }),
-  });
+  const balances = incomeBalances(income ?? [], assets ?? [], expenses ?? []);
 
   const del = useMutation({
     mutationFn: async (id: string) => {
@@ -104,10 +104,15 @@ function GoalsPage() {
               </div>
               <div className="mt-4 flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">{done ? "Goal reached 🎉" : `Suggested monthly: ${fmtKES(monthly)}`}</span>
-                <Button size="sm" variant="secondary" disabled={done}
-                  onClick={() => updateCurrent.mutate({ id: g.id, current: Number(g.current) + monthly })}>
-                  Log contribution
-                </Button>
+                <ContributeDialog
+                  goalId={g.id}
+                  goalName={g.name}
+                  current={Number(g.current)}
+                  suggested={monthly}
+                  done={done}
+                  income={income ?? []}
+                  balances={balances}
+                />
               </div>
             </div>
           );
@@ -115,5 +120,89 @@ function GoalsPage() {
         {(goals ?? []).length === 0 && <div className="fintech-card p-6 text-sm text-muted-foreground">No goals yet — set your first target above.</div>}
       </div>
     </div>
+  );
+}
+
+function ContributeDialog({
+  goalId, goalName, current, suggested, done, income, balances,
+}: {
+  goalId: string;
+  goalName: string;
+  current: number;
+  suggested: number;
+  done: boolean;
+  income: Array<{ id: string; source: string }>;
+  balances: Map<string, { remaining: number }>;
+}) {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState(String(Math.round(suggested) || 0));
+  const [source, setSource] = useState<string>("OTHER");
+
+  const log = useMutation({
+    mutationFn: async () => {
+      const amt = Number(amount);
+      if (!Number.isFinite(amt) || amt <= 0) throw new Error("Enter a positive amount");
+      if (source !== "OTHER") {
+        const bal = balances.get(source)?.remaining ?? 0;
+        if (amt > bal) throw new Error(`Selected income only has ${fmtKES(bal)} available`);
+      }
+      const { data: u } = await supabase.auth.getUser();
+      const { error } = await supabase.from("goals").update({ current: current + amt }).eq("id", goalId);
+      if (error) throw error;
+      if (source !== "OTHER") {
+        const { error: eErr } = await supabase.from("expenses").insert({
+          user_id: u.user!.id,
+          amount: amt,
+          category: "SAVINGS",
+          vendor: `Goal: ${goalName}`,
+          source_income_id: source,
+          notes: `Contribution to goal "${goalName}"`,
+        });
+        if (eErr) throw eErr;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Contribution logged");
+      qc.invalidateQueries({ queryKey: ["goals"] });
+      qc.invalidateQueries({ queryKey: ["expenses"] });
+      setOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="secondary" disabled={done}>Log contribution</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader><DialogTitle>Contribute to {goalName}</DialogTitle></DialogHeader>
+        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); log.mutate(); }}>
+          <div>
+            <Label>Amount (KES)</Label>
+            <Input type="number" min={1} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <p className="text-[11px] text-muted-foreground mt-1">Suggested monthly: {fmtKES(suggested)}</p>
+          </div>
+          <div>
+            <Label>Source of funds</Label>
+            <Select value={source} onValueChange={setSource}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="OTHER">Other (not tracked)</SelectItem>
+                {income.map((i) => {
+                  const r = balances.get(i.id)?.remaining ?? 0;
+                  return <SelectItem key={i.id} value={i.id}>{i.source} — {fmtKES(r)} left</SelectItem>;
+                })}
+              </SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground mt-1">Picking an income source deducts this contribution from its available balance.</p>
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={log.isPending}>{log.isPending ? "Saving…" : "Log contribution"}</Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

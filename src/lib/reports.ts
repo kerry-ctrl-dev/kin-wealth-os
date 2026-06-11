@@ -1,9 +1,16 @@
 import type { Tables } from "@/integrations/supabase/types";
 import { totalIncome, totalValue, computeRoi, liquidityRatio, byCategory, computeRisk, CATEGORY_LABEL, fmtKES, fmtPct, type AssetCategory } from "./finance";
+import { netWorth as calcNetWorth, totalLoansOutstanding, totalLoansReceivable, personalAssetsValue } from "./balance";
 
 type Asset = Tables<"assets">;
 type Income = Tables<"income">;
 type Goal = Tables<"goals">;
+type Expense = Tables<"expenses">;
+type Budget = Tables<"budgets">;
+type Reminder = Tables<"reminders">;
+type Alert = Tables<"alerts">;
+type PersonalAsset = Tables<"personal_assets">;
+type Loan = Tables<"loans">;
 
 function inRange<T extends { date?: string; created_at?: string }>(rows: T[], field: "date" | "created_at", from: Date, to: Date): T[] {
   return rows.filter((r) => {
@@ -49,12 +56,47 @@ export interface Report {
   allocation: Array<{ category: AssetCategory; value: number; pct: number }>;
   goalsProgress: Array<{ name: string; pct: number }>;
   insights: string[];
+  // Extended
+  netWorth: number;
+  personalAssetsValue: number;
+  loansOutstanding: number;
+  loansReceivable: number;
+  expensesTotal: number;
+  expensesByCategory: Array<{ category: string; value: number }>;
+  expensesList: Array<{ date: string; vendor: string; category: string; amount: number }>;
+  incomeList: Array<{ date: string; source: string; amount: number }>;
+  budgets: Array<{ category: string; limit: number; spent: number; pct: number }>;
+  upcoming: Array<{ title: string; due: string; kind: string }>;
+  alerts: Array<{ severity: string; message: string; date: string }>;
+  creditRemark: string;
+  advice: string[];
 }
 
-export function buildReport(period: ReportPeriod, assets: Asset[], income: Income[], goals: Goal[], ref: Date = new Date()): Report {
+export function buildReport(
+  period: ReportPeriod,
+  assets: Asset[],
+  income: Income[],
+  goals: Goal[],
+  ref: Date = new Date(),
+  extras: {
+    expenses?: Expense[];
+    budgets?: Budget[];
+    reminders?: Reminder[];
+    alerts?: Alert[];
+    personalAssets?: PersonalAsset[];
+    loans?: Loan[];
+  } = {},
+): Report {
   const { from, to, label } = periodRange(period, ref);
   const incomePeriod = inRange(income, "date", from, to);
   const assetsPeriod = inRange(assets, "created_at", from, to);
+  const expenses = extras.expenses ?? [];
+  const budgets = extras.budgets ?? [];
+  const reminders = extras.reminders ?? [];
+  const alerts = extras.alerts ?? [];
+  const personalAssets = extras.personalAssets ?? [];
+  const loans = extras.loans ?? [];
+  const expensesPeriod = inRange(expenses, "date", from, to);
   const cats = byCategory(assets);
   const total = totalValue(assets);
   const allocation = (Object.keys(cats) as AssetCategory[])
@@ -63,6 +105,53 @@ export function buildReport(period: ReportPeriod, assets: Asset[], income: Incom
   const roi = computeRoi(assets, income);
   const liq = liquidityRatio(assets);
   const risk = computeRisk(assets);
+
+  // Expenses by category in period
+  const expByCat = new Map<string, number>();
+  for (const e of expensesPeriod) expByCat.set(e.category, (expByCat.get(e.category) ?? 0) + Number(e.amount));
+  const expensesByCategory = [...expByCat.entries()].map(([category, value]) => ({ category, value })).sort((a, b) => b.value - a.value);
+  const expensesTotal = expensesPeriod.reduce((s, e) => s + Number(e.amount), 0);
+
+  // Budgets vs spent this period
+  const budgetsRows = budgets.map((b) => {
+    const spent = expByCat.get(b.category) ?? 0;
+    const limit = Number(b.monthly_limit);
+    return { category: b.category, limit, spent, pct: limit ? (spent / limit) * 100 : 0 };
+  });
+
+  // Upcoming reminders (next 14 days)
+  const horizon = new Date(); horizon.setDate(horizon.getDate() + 14);
+  const upcoming = reminders
+    .filter((r) => !r.completed && new Date(r.next_due) <= horizon)
+    .sort((a, b) => new Date(a.next_due).getTime() - new Date(b.next_due).getTime())
+    .slice(0, 12)
+    .map((r) => ({ title: r.title, due: r.next_due, kind: r.kind }));
+
+  const alertsRecent = alerts.slice(0, 10).map((a) => ({ severity: a.severity, message: a.message, date: a.date }));
+
+  const debt = totalLoansOutstanding(loans);
+  const receivable = totalLoansReceivable(loans);
+  const nw = calcNetWorth(assets, personalAssets, loans);
+  const paValue = personalAssetsValue(personalAssets);
+
+  // Credit & financial advice
+  const debtToAssets = total + paValue > 0 ? debt / (total + paValue) : 0;
+  let creditRemark: string;
+  if (debt === 0) creditRemark = "Excellent credit standing: you currently carry no outstanding debt. Keep this discipline to qualify for the best rates when you do need credit.";
+  else if (debtToAssets < 0.2) creditRemark = "Healthy credit standing. Your debt is well below 20% of your asset base — lenders will see you as low-risk.";
+  else if (debtToAssets < 0.5) creditRemark = "Manageable credit position. Aim to keep debt under 30% of assets and prioritise paying down the highest-interest balances first.";
+  else creditRemark = "Credit risk is elevated — debt exceeds 50% of your asset base. Pause new borrowing, restructure existing loans, and accelerate repayments before adding investments.";
+
+  const advice: string[] = [];
+  if (incomePeriod.length === 0) advice.push("Log every shilling of income — even small entries — so allocations and balances stay accurate.");
+  if (expensesTotal > incomePeriod.reduce((s, i) => s + Number(i.amount), 0)) advice.push("You spent more than you earned this period. Trim a non-essential category before next cycle.");
+  if (liq < 0.3) advice.push("Build a liquid cash/MMF buffer covering at least 3 months of expenses before adding illiquid investments.");
+  if (roi < 0) advice.push("Your portfolio ROI is negative — rebalance toward stable instruments (MMF, REITs) until conditions improve.");
+  if (debt > 0 && receivable > 0) advice.push("Collect outstanding receivables and use them to retire high-interest debt first.");
+  if (goals.length === 0) advice.push("Set at least one financial goal — disciplined contributors hit targets 3× more often.");
+  if (allocation.some((a) => a.category === "STOCKS" && a.pct > 60)) advice.push("Reduce single-asset concentration: cap NSE stocks at 40–50% of the portfolio.");
+  if (advice.length === 0) advice.push("You're on track. Stay consistent and review allocations monthly.");
+
   const insights: string[] = [];
   if (incomePeriod.length === 0) insights.push("No income recorded this period — add entries to keep your streak.");
   if (liq < 0.3) insights.push("Liquidity is critically low — top up your MMF buffer.");
@@ -84,6 +173,19 @@ export function buildReport(period: ReportPeriod, assets: Asset[], income: Incom
     allocation,
     goalsProgress: goals.map((g) => ({ name: g.name, pct: Math.min(100, (Number(g.current) / (Number(g.target) || 1)) * 100) })),
     insights,
+    netWorth: nw,
+    personalAssetsValue: paValue,
+    loansOutstanding: debt,
+    loansReceivable: receivable,
+    expensesTotal,
+    expensesByCategory,
+    expensesList: expensesPeriod.slice(0, 20).map((e) => ({ date: e.date, vendor: e.vendor ?? e.category, category: e.category, amount: Number(e.amount) })),
+    incomeList: incomePeriod.slice(0, 20).map((i) => ({ date: i.date, source: i.source, amount: Number(i.amount) })),
+    budgets: budgetsRows,
+    upcoming,
+    alerts: alertsRecent,
+    creditRemark,
+    advice,
   };
 }
 

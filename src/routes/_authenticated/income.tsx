@@ -51,7 +51,7 @@ function IncomePage() {
       return { autoAllocated: input.autoAllocate };
     },
     onSuccess: (res) => {
-      toast.success(res.autoAllocated ? "Income recorded & allocated 40/40/20" : "Income recorded");
+      toast.success(res.autoAllocated ? "Income recorded & allocated 30/30/20/20" : "Income recorded");
       qc.invalidateQueries({ queryKey: ["income"] });
       qc.invalidateQueries({ queryKey: ["assets"] });
       setSource(""); setAmount("");
@@ -73,7 +73,7 @@ function IncomePage() {
 
   return (
     <div>
-      <SectionHeading title="Income" sub="Track every shilling earned. Optionally auto-invest each entry into MMF / Stocks / REITs." />
+      <SectionHeading title="Income" sub="Track every shilling earned. Optionally auto-allocate each entry across MMF / Stocks / REITs / Savings." />
       <form
         className="fintech-card p-5 mb-6 space-y-4"
         onSubmit={(e) => {
@@ -96,8 +96,8 @@ function IncomePage() {
         </div>
         <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-secondary/30 p-3">
           <div>
-            <Label htmlFor="auto" className="text-sm font-medium">Auto-allocate 40/40/20</Label>
-            <p className="text-xs text-muted-foreground">Split this income into MMF, NSE stocks and REITs automatically.</p>
+            <Label htmlFor="auto" className="text-sm font-medium">Auto-allocate 30/30/20/20</Label>
+            <p className="text-xs text-muted-foreground">Split this income across MMF, NSE stocks, REITs and Savings automatically.</p>
           </div>
           <Switch id="auto" checked={autoAllocate} onCheckedChange={setAutoAllocate} />
         </div>

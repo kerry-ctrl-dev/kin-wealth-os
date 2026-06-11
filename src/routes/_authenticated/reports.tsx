@@ -5,7 +5,7 @@ import { FileDown, FileText, Sparkles, ChevronDown } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { assetsQuery, incomeQuery, goalsQuery } from "@/lib/queries";
+import { assetsQuery, incomeQuery, goalsQuery, expensesQuery, budgetsQuery, remindersQuery, alertsQuery, personalAssetsQuery, loansQuery } from "@/lib/queries";
 import { buildReport, toCSV, downloadFile, type ReportPeriod } from "@/lib/reports";
 import { exportReportPDF } from "@/lib/pdf-report";
 import { profileQuery } from "@/lib/queries";
@@ -20,13 +20,26 @@ function ReportsPage() {
   const assets = useQuery(assetsQuery());
   const income = useQuery(incomeQuery());
   const goals = useQuery(goalsQuery());
+  const expenses = useQuery(expensesQuery());
+  const budgets = useQuery(budgetsQuery());
+  const reminders = useQuery(remindersQuery());
+  const alerts = useQuery(alertsQuery());
+  const personalAssets = useQuery(personalAssetsQuery());
+  const loans = useQuery(loansQuery());
   const profile = useQuery(profileQuery());
   const [period, setPeriod] = useState<ReportPeriod>("daily");
   const [showCsv, setShowCsv] = useState(false);
 
   const report = useMemo(
-    () => buildReport(period, assets.data ?? [], income.data ?? [], goals.data ?? []),
-    [period, assets.data, income.data, goals.data],
+    () => buildReport(period, assets.data ?? [], income.data ?? [], goals.data ?? [], new Date(), {
+      expenses: expenses.data ?? [],
+      budgets: budgets.data ?? [],
+      reminders: reminders.data ?? [],
+      alerts: alerts.data ?? [],
+      personalAssets: personalAssets.data ?? [],
+      loans: loans.data ?? [],
+    }),
+    [period, assets.data, income.data, goals.data, expenses.data, budgets.data, reminders.data, alerts.data, personalAssets.data, loans.data],
   );
 
   function exportPDF() {

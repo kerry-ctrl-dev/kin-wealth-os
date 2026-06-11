@@ -51,14 +51,23 @@ export function loanOutstanding(l: Loan): number {
 }
 
 export function totalLoansOutstanding(loans: Loan[]): number {
-  return loans.filter((l) => l.status !== "REPAID").reduce((s, l) => s + loanOutstanding(l), 0);
+  return loans
+    .filter((l) => l.status !== "REPAID" && (l.direction ?? "BORROWED") === "BORROWED")
+    .reduce((s, l) => s + loanOutstanding(l), 0);
+}
+
+/** Money the user has lent out to others and not yet been repaid (receivable). */
+export function totalLoansReceivable(loans: Loan[]): number {
+  return loans
+    .filter((l) => l.status !== "REPAID" && l.direction === "LENT")
+    .reduce((s, l) => s + loanOutstanding(l), 0);
 }
 
 export function personalAssetsValue(items: PersonalAsset[]): number {
   return items.reduce((s, p) => s + Number(p.value), 0);
 }
 
-/** Net worth = investments + personal assets - outstanding loans. */
+/** Net worth = investments + personal assets + receivables - outstanding debt. */
 export function netWorth(
   assets: Asset[],
   personalAssets: PersonalAsset[],
@@ -67,5 +76,6 @@ export function netWorth(
   const inv = assets.reduce((s, a) => s + Number(a.value), 0);
   const pa = personalAssetsValue(personalAssets);
   const debt = totalLoansOutstanding(loans);
-  return inv + pa - debt;
+  const receivable = totalLoansReceivable(loans);
+  return inv + pa + receivable - debt;
 }

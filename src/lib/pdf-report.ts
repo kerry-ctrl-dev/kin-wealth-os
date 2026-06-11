@@ -25,10 +25,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
 
   // ---- KPI cards row
   const kpis: Array<[string, string]> = [
+    ["Net Worth", fmtKES(report.netWorth)],
     ["Total Assets", fmtKES(report.totalAssets)],
+    ["Debt", fmtKES(report.loansOutstanding)],
     ["ROI", fmtPct(report.roi, 2)],
-    ["Liquidity", fmtPct(report.liquidity)],
-    ["Risk", report.risk],
   ];
   const cardW = (W - 80 - 30) / 4;
   kpis.forEach(([label, val], idx) => {
@@ -64,6 +64,27 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     margin: { left: 40, right: 40 },
   });
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
+
+  // ---- Net Worth breakdown
+  if (y > 700) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Net Worth", 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Component", "Value"]],
+    body: [
+      ["Investments", fmtKES(report.totalAssets)],
+      ["Personal assets", fmtKES(report.personalAssetsValue)],
+      ["Receivables (owed to you)", fmtKES(report.loansReceivable)],
+      ["Outstanding debt", `- ${fmtKES(report.loansOutstanding)}`],
+      ["Net worth", fmtKES(report.netWorth)],
+    ],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    bodyStyles: { fontSize: 10, cellPadding: 6 },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Allocation
   doc.setFontSize(13);
@@ -113,6 +134,92 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     y += 16;
   }
 
+  // ---- Income detail
+  if (y > 680) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Income This Period", 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Date", "Source", "Amount"]],
+    body: report.incomeList.length
+      ? report.incomeList.map((i) => [new Date(i.date).toLocaleDateString(), i.source, fmtKES(i.amount)])
+      : [["—", "No income recorded", ""]],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+
+  // ---- Expenses
+  if (y > 680) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text(`Expenses This Period — ${fmtKES(report.expensesTotal)}`, 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Date", "Vendor", "Category", "Amount"]],
+    body: report.expensesList.length
+      ? report.expensesList.map((e) => [new Date(e.date).toLocaleDateString(), e.vendor, e.category, fmtKES(e.amount)])
+      : [["—", "No expenses recorded", "", ""]],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+
+  // ---- Budgets
+  if (y > 680) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Budgets", 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Category", "Limit", "Spent", "% used"]],
+    body: report.budgets.length
+      ? report.budgets.map((b) => [b.category, fmtKES(b.limit), fmtKES(b.spent), fmtPct(b.pct)])
+      : [["—", "No budgets set", "", ""]],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+
+  // ---- Upcoming calendar
+  if (y > 680) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Upcoming (next 14 days)", 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Due", "Title", "Kind"]],
+    body: report.upcoming.length
+      ? report.upcoming.map((u) => [new Date(u.due).toLocaleDateString(), u.title, u.kind])
+      : [["—", "Nothing scheduled", ""]],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+
+  // ---- Alerts
+  if (y > 680) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Recent Alerts", 40, y);
+  autoTable(doc, {
+    startY: y + 8,
+    head: [["Severity", "Message", "Date"]],
+    body: report.alerts.length
+      ? report.alerts.map((a) => [a.severity, a.message, new Date(a.date).toLocaleDateString()])
+      : [["—", "No alerts", ""]],
+    headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 6 },
+    columnStyles: { 1: { cellWidth: 320 } },
+    margin: { left: 40, right: 40 },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
+
   // ---- Goals
   if (y > 720) { doc.addPage(); y = 48; }
   doc.setFont("helvetica", "bold");
@@ -144,6 +251,38 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     doc.text(lines, 40, y);
     y += lines.length * 14 + 4;
   });
+
+  // ---- Financial Advice
+  if (y > 700) { doc.addPage(); y = 48; }
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("Financial Advice", 40, y);
+  y += 16;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  report.advice.forEach((ins) => {
+    const lines = doc.splitTextToSize(`• ${ins}`, W - 80);
+    if (y + lines.length * 14 > 800) { doc.addPage(); y = 48; }
+    doc.text(lines, 40, y);
+    y += lines.length * 14 + 4;
+  });
+
+  // ---- Closing remark on credit
+  if (y > 700) { doc.addPage(); y = 48; }
+  y += 8;
+  doc.setDrawColor(226, 232, 240);
+  doc.setFillColor(15, 23, 42);
+  doc.roundedRect(40, y, W - 80, 70, 8, 8, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.text("Closing remark on credit", 56, y + 22);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  const remarkLines = doc.splitTextToSize(report.creditRemark, W - 112);
+  doc.text(remarkLines, 56, y + 40);
+  doc.setTextColor(15, 23, 42);
+  y += 84;
 
   // Footer
   const pageCount = doc.getNumberOfPages();

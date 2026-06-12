@@ -3,8 +3,23 @@ import autoTable from "jspdf-autotable";
 import { CATEGORY_LABEL, fmtKES, fmtPct } from "./finance";
 import type { Report } from "./reports";
 
-/** Generate a styled PDF report and trigger download. */
+/**
+ * Generate a styled PDF report and trigger download.
+ * PDF generation happens client-side only and is not cached.
+ * Only authenticated users can generate reports (enforced by TanStack Router).
+ */
 export function exportReportPDF(report: Report, opts?: { profile?: string }) {
+  // Security: Ensure we're in browser environment
+  if (typeof window === "undefined") {
+    throw new Error("PDF export is only available in browser environment");
+  }
+
+  // Security: Ensure HTTPS in production
+  if (window.location.protocol !== "https:" && !window.location.hostname.includes("localhost")) {
+    console.warn("[Security] PDF export attempted over non-HTTPS connection");
+    throw new Error("PDF export requires a secure connection");
+  }
+
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   let y = 48;
@@ -284,15 +299,17 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   doc.setTextColor(15, 23, 42);
   y += 84;
 
-  // Footer
+  // Footer with generation timestamp
   const pageCount = doc.getNumberOfPages();
+  const generatedAt = new Date().toLocaleString();
   for (let p = 1; p <= pageCount; p++) {
     doc.setPage(p);
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text(`Wealth OS · Generated ${new Date().toLocaleString()}`, 40, 820);
+    doc.text(`Wealth OS · Generated ${generatedAt}`, 40, 820);
     doc.text(`Page ${p} / ${pageCount}`, W - 40, 820, { align: "right" });
   }
 
+  // Save PDF to browser download (not stored on server)
   doc.save(`wealth-os-${report.period}-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

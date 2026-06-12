@@ -1,4 +1,4 @@
-This is a large bundle. I'll ship it in one coordinated pass, but want to confirm scope before touching the database (5 new tables + storage bucket).
+This is how the Wealth-OS is to be
 
 ## What I'll build
 

@@ -9,6 +9,28 @@ import { toast } from "sonner";
 import { TrendingUp, ShieldCheck, BarChart3 } from "lucide-react";
 import { lovable } from "@/integrations/lovable";
 
+// Validation rules
+const PASSWORD_MIN_LENGTH = 12;
+const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]/;
+const PASSWORD_PATTERN_MESSAGE = "Password must contain uppercase, lowercase, number, and special character";
+
+// Email validation helper
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Password validation helper
+function validatePassword(password: string): { valid: boolean; error?: string } {
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return { valid: false, error: `Password must be at least ${PASSWORD_MIN_LENGTH} characters` };
+  }
+  if (!PASSWORD_PATTERN.test(password)) {
+    return { valid: false, error: PASSWORD_PATTERN_MESSAGE };
+  }
+  return { valid: true };
+}
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -30,42 +52,83 @@ function AuthPage() {
   }, [navigate]);
 
   async function signIn(email: string, password: string) {
+    // Validate input
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    
+    if (error) {
+      // Don't expose internal error details
+      const errorMessage = error.message.includes("credentials") 
+        ? "Invalid email or password" 
+        : "Sign in failed. Please try again.";
+      return toast.error(errorMessage);
+    }
+    
     toast.success("Welcome back");
     navigate({ to: "/dashboard", replace: true });
   }
 
   async function signUp(email: string, password: string) {
+    // Validate input
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      toast.error(passwordValidation.error);
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin}/dashboard` },
     });
+    
     if (error) {
       setLoading(false);
-      return toast.error(error.message);
+      const errorMessage = error.message.includes("already registered")
+        ? "This email is already registered"
+        : "Sign up failed. Please try again.";
+      return toast.error(errorMessage);
     }
+    
     const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
+    
     if (signInErr) return toast.success("Account created. Please sign in.");
     toast.success("Welcome to Wealth OS");
     navigate({ to: "/dashboard", replace: true });
   }
 
   async function signInWithGoogle() {
-    setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setLoading(false);
-      toast.error(result.error.message ?? "Google sign-in failed");
+    // Use HTTPS-only redirect URI
+    const redirectUri = window.location.origin;
+    if (!redirectUri.startsWith("https://") && !redirectUri.startsWith("http://localhost")) {
+      toast.error("Insecure connection detected. Please use HTTPS.");
       return;
     }
+
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: redirectUri,
+    });
+    
+    if (result.error) {
+      setLoading(false);
+      toast.error("Google sign-in failed. Please try again.");
+      return;
+    }
+    
     if (result.redirected) return;
     toast.success("Signed in");
     navigate({ to: "/dashboard", replace: true });
@@ -106,10 +169,10 @@ function AuthPage() {
               <TabsTrigger value="signup">Create account</TabsTrigger>
             </TabsList>
             <TabsContent value="signin">
-              <AuthForm cta="Sign in" loading={loading} onSubmit={signIn} />
+              <AuthForm cta="Sign in" loading={loading} onSubmit={signIn} isSignUp={false} />
             </TabsContent>
             <TabsContent value="signup">
-              <AuthForm cta="Create account" loading={loading} onSubmit={signUp} />
+              <AuthForm cta="Create account" loading={loading} onSubmit={signUp} isSignUp={true} />
             </TabsContent>
           </Tabs>
           <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
@@ -117,7 +180,7 @@ function AuthPage() {
           </div>
           <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={signInWithGoogle}>
             <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.3-1.7 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z"/>
+              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.3-1.7 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.6 0 9.3-3.8 9.3-9.3 0-.6 0-1.3-.1-1.9H12z" />
             </svg>
             Continue with Google
           </Button>
@@ -128,14 +191,25 @@ function AuthPage() {
 }
 
 function AuthForm({
-  cta, loading, onSubmit,
+  cta, loading, onSubmit, isSignUp,
 }: {
   cta: string;
   loading: boolean;
+  isSignUp: boolean;
   onSubmit: (email: string, password: string) => unknown | Promise<unknown>;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (isSignUp && value.length > 0) {
+      const validation = validatePassword(value);
+      setPasswordError(validation.valid ? null : validation.error || null);
+    }
+  };
+
   return (
     <form
       className="space-y-4 mt-4"
@@ -146,13 +220,36 @@ function AuthForm({
     >
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+        <Input
+          id="email"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          autoComplete="email"
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+        <Input
+          id="password"
+          type="password"
+          required
+          minLength={PASSWORD_MIN_LENGTH}
+          value={password}
+          onChange={(e) => handlePasswordChange(e.target.value)}
+          placeholder={isSignUp ? "Minimum 12 characters (uppercase, lowercase, number, symbol)" : "••••••••"}
+          autoComplete={isSignUp ? "new-password" : "current-password"}
+        />
+        {passwordError && isSignUp && (
+          <p className="text-sm text-red-500">{passwordError}</p>
+        )}
+        {isSignUp && password.length > 0 && !passwordError && (
+          <p className="text-sm text-green-500">✓ Password is strong</p>
+        )}
       </div>
-      <Button type="submit" disabled={loading} className="w-full">
+      <Button type="submit" disabled={loading || (isSignUp && !!passwordError)} className="w-full">
         {loading ? "Please wait…" : cta}
       </Button>
     </form>

@@ -13,14 +13,24 @@ const items = [
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-background/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)]">
-      <ul className="grid grid-cols-5">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden supports-[backdrop-filter]:bg-background/80">
+      <ul className="mx-auto grid max-w-md grid-cols-5 gap-1 px-2 py-2">
         {items.map((i) => {
           const active = path === i.to;
           return (
             <li key={i.to}>
-              <Link to={i.to} className={cn("flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] transition-colors", active ? "text-primary" : "text-muted-foreground")}>
-                <i.icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_8px_var(--color-primary)]")} />
+              <Link
+                to={i.to}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2.5 text-[10px] font-medium transition-all",
+                  active
+                    ? "bg-primary/12 text-primary shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-primary)_22%,transparent)]"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <i.icon
+                  className={cn("h-5 w-5", active && "drop-shadow-[0_0_10px_var(--color-primary)]")}
+                />
                 <span className="font-medium">{i.label}</span>
               </Link>
             </li>

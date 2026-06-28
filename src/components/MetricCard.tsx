@@ -2,7 +2,11 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export function MetricCard({
-  label, value, sub, icon, tone = "default",
+  label,
+  value,
+  sub,
+  icon,
+  tone = "default",
 }: {
   label: string;
   value: ReactNode;
@@ -17,13 +21,24 @@ export function MetricCard({
     danger: "text-[color:var(--danger)]",
   }[tone];
   return (
-    <div className="fintech-card p-5 flex flex-col gap-2 relative overflow-hidden">
-      <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
+    <div className="fintech-card relative flex flex-col gap-3 overflow-hidden p-5">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-16 opacity-50"
+        style={{
+          background:
+            "linear-gradient(180deg, color-mix(in oklab, var(--color-primary) 10%, transparent), transparent)",
+        }}
+      />
+      <div className="relative flex items-center justify-between">
+        <span className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+          {label}
+        </span>
         {icon && <span className="text-muted-foreground">{icon}</span>}
       </div>
-      <div className={cn("metric-value text-3xl font-semibold", toneClass)}>{value}</div>
-      {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
+      <div className={cn("relative metric-value text-3xl font-semibold sm:text-[2rem]", toneClass)}>
+        {value}
+      </div>
+      {sub && <div className="relative text-xs leading-relaxed text-muted-foreground">{sub}</div>}
     </div>
   );
 }

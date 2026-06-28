@@ -20,6 +20,16 @@ export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
 
+function isSafeImageUrl(url: string | null | undefined): url is string {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 function SettingsPage() {
   const profile = useQuery(profileQuery());
   const qc = useQueryClient();
@@ -31,6 +41,7 @@ function SettingsPage() {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const avatarUrl = useAvatarUrl(form.avatar_url).data;
+  const safeAvatarUrl = isSafeImageUrl(avatarUrl) ? avatarUrl : null;
 
   useEffect(() => {
     if (!profile.data) return;
@@ -102,8 +113,8 @@ function SettingsPage() {
       <div className="fintech-card p-6 space-y-4">
         <h2 className="font-semibold">Profile</h2>
         <div className="flex items-center gap-4">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
+          {safeAvatarUrl ? (
+            <img src={safeAvatarUrl} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
           ) : (
             <div className="h-20 w-20 rounded-full grid place-items-center bg-primary/15 text-primary text-xl font-semibold border border-border">
               {(form.full_name || "U").slice(0, 1).toUpperCase()}

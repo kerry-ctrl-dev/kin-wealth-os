@@ -1,68 +1,95 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Wallet, PieChart, Target, LineChart, Bell, LogOut, TrendingUp,
-  Sparkles, BellRing, ListChecks, FileText, Calendar, Award, Settings, ReceiptText,
-  Wallet as WalletIcon, Repeat, FolderLock, Activity, Home as HomeIcon, Coins,
+  Activity,
+  Award,
+  Bell,
+  BellRing,
+  Calendar,
+  Coins,
+  FileText,
+  FolderLock,
+  Home as HomeIcon,
+  LayoutDashboard,
+  LineChart,
+  LogOut,
+  PieChart,
+  ReceiptText,
+  Repeat,
+  Settings,
+  Sparkles,
+  Target,
+  Wallet,
+  Wallet as WalletIcon,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter, SidebarHeader, useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { profileQuery, incomeQuery, remindersQuery, assetsQuery } from "@/lib/queries";
-import { computeStreak, disciplineScore, wealthRating } from "@/lib/personalization";
-import { byCategory, liquidityRatio, totalValue } from "@/lib/finance";
+import { profileQuery } from "@/lib/queries";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
 
-const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Income", url: "/income", icon: Wallet },
-  { title: "Expenses", url: "/expenses", icon: ReceiptText },
-  { title: "Budgets", url: "/budgets", icon: WalletIcon },
-  { title: "Investments", url: "/portfolio", icon: PieChart },
-  { title: "Personal Assets", url: "/personal-assets", icon: HomeIcon },
-  { title: "Loans", url: "/loans", icon: Coins },
-  { title: "Goals", url: "/goals", icon: Target },
-  { title: "Projections", url: "/projections", icon: Activity },
-  { title: "Analytics", url: "/charts", icon: LineChart },
-  { title: "Calendar", url: "/calendar", icon: Calendar },
-  { title: "Recurring", url: "/recurring", icon: Repeat },
-  { title: "Vault", url: "/vault", icon: FolderLock },
-  { title: "AI Assistant", url: "/assistant", icon: Sparkles },
-  { title: "Reminders", url: "/reminders", icon: BellRing },
-  { title: "Reports", url: "/reports", icon: FileText },
-  { title: "Achievements", url: "/achievements", icon: Award },
-  { title: "Alerts", url: "/alerts", icon: Bell },
-  { title: "Settings", url: "/settings", icon: Settings },
+const sections = [
+  {
+    label: "Overview",
+    items: [
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, hint: "Daily summary" },
+      { title: "Analytics", url: "/charts", icon: LineChart, hint: "Performance trends" },
+      { title: "Reports", url: "/reports", icon: FileText, hint: "Exports and insights" },
+      { title: "Alerts", url: "/alerts", icon: Bell, hint: "Watch important changes" },
+    ],
+  },
+  {
+    label: "Money",
+    items: [
+      { title: "Income", url: "/income", icon: Wallet, hint: "Track earnings" },
+      { title: "Expenses", url: "/expenses", icon: ReceiptText, hint: "Monitor spending" },
+      { title: "Budgets", url: "/budgets", icon: WalletIcon, hint: "Plan monthly limits" },
+      { title: "Goals", url: "/goals", icon: Target, hint: "Save with purpose" },
+      { title: "Recurring", url: "/recurring", icon: Repeat, hint: "Automate entries" },
+      { title: "Reminders", url: "/reminders", icon: BellRing, hint: "Stay on top of tasks" },
+      { title: "Calendar", url: "/calendar", icon: Calendar, hint: "See upcoming items" },
+    ],
+  },
+  {
+    label: "Portfolio",
+    items: [
+      { title: "Investments", url: "/portfolio", icon: PieChart, hint: "Allocation and holdings" },
+      {
+        title: "Personal Assets",
+        url: "/personal-assets",
+        icon: HomeIcon,
+        hint: "Property and valuables",
+      },
+      { title: "Loans", url: "/loans", icon: Coins, hint: "Debts and lending" },
+      { title: "Projections", url: "/projections", icon: Activity, hint: "Forward planning" },
+      { title: "Vault", url: "/vault", icon: FolderLock, hint: "Important documents" },
+      { title: "Achievements", url: "/achievements", icon: Award, hint: "Progress milestones" },
+      { title: "AI Assistant", url: "/assistant", icon: Sparkles, hint: "Ask Aria" },
+      { title: "Settings", url: "/settings", icon: Settings, hint: "Profile and preferences" },
+    ],
+  },
 ] as const;
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { isMobile, setOpenMobile, state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const qc = useQueryClient();
   const profile = useQuery(profileQuery());
-  const income = useQuery(incomeQuery());
-  const assets = useQuery(assetsQuery());
-  const reminders = useQuery(remindersQuery());
-
-  const a = assets.data ?? [];
-  const total = totalValue(a) || 1;
-  const stocksConc = byCategory(a).STOCKS / total;
-  const streak = computeStreak((income.data ?? []).map((x) => x.date));
-  const reminderTotal = (reminders.data ?? []).length || 1;
-  const reminderDone = (reminders.data ?? []).filter((r) => r.completed).length;
-  const { score } = disciplineScore({
-    streakMonths: streak,
-    liquidityRatio: liquidityRatio(a),
-    avgGoalProgress: 0.4,
-    reminderCompletionRate: reminderDone / reminderTotal,
-    stocksConcentration: stocksConc,
-  });
 
   async function signOut() {
     await qc.cancelQueries();
@@ -77,41 +104,55 @@ export function AppSidebar() {
   const initials = first.slice(0, 2).toUpperCase();
   const profession = profile.data?.profession ?? "—";
   const avatarUrl = useAvatarUrl(profile.data?.avatar_url).data;
+  const memberLabel = profile.data?.email ?? "Your financial workspace";
+
+  function handleNavigate() {
+    if (isMobile) setOpenMobile(false);
+  }
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <img src={logo} alt="Wealth OS logo" className="h-8 w-8" />
+        <div className="flex items-center gap-3 px-3 py-3">
+          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-sidebar-border bg-sidebar-accent/40">
+            <img src={logo} alt="Wealth OS logo" className="h-6 w-6" />
+          </div>
           {!collapsed && (
             <div className="leading-tight">
               <div className="text-sm font-semibold">Wealth OS</div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Fintech</div>
+              <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                Calm money management
+              </div>
             </div>
           )}
         </div>
         {!collapsed && (
-          <div className="px-2 pb-3">
-            <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-3">
+          <div className="px-3 pb-4">
+            <div className="rounded-2xl border border-sidebar-border bg-sidebar-accent/35 p-3.5 shadow-[var(--shadow-card)]">
               <div className="flex items-center gap-3">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="" className="h-9 w-9 rounded-full object-cover border border-sidebar-border" />
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-10 w-10 rounded-full border border-sidebar-border object-cover"
+                  />
                 ) : (
-                  <div className="h-9 w-9 rounded-full grid place-items-center bg-primary/15 text-primary text-xs font-semibold">{initials}</div>
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+                    {initials}
+                  </div>
                 )}
                 <div className="min-w-0">
-                  <div className="text-sm font-medium truncate">{first}</div>
-                  <div className="text-[10px] text-muted-foreground truncate">{profession}</div>
+                  <div className="truncate text-sm font-medium">{first}</div>
+                  <div className="truncate text-[11px] text-muted-foreground">{profession}</div>
                 </div>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-[10px]">
-                <div className="rounded-md bg-background/40 border border-sidebar-border px-2 py-1.5">
-                  <div className="text-muted-foreground uppercase tracking-wider">Wealth Score</div>
-                  <div className="text-sm font-semibold metric-value">{wealthRating(score).value}<span className="text-muted-foreground"> · {wealthRating(score).tier}</span></div>
+              <div className="mt-3 rounded-xl border border-sidebar-border bg-background/35 px-3 py-2.5">
+                <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Workspace
                 </div>
-                <div className="rounded-md bg-background/40 border border-sidebar-border px-2 py-1.5">
-                  <div className="text-muted-foreground uppercase tracking-wider">Streak</div>
-                  <div className="text-sm font-semibold metric-value flex items-center gap-1">{streak}<span className="text-muted-foreground">mo</span> {streak >= 3 && <span>🔥</span>}</div>
+                <div className="mt-1 truncate text-sm text-sidebar-foreground">{memberLabel}</div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Start from the dashboard, then dive into the areas that need attention.
                 </div>
               </div>
             </div>
@@ -119,31 +160,48 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                const active = pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={active}>
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {sections.map((section) => (
+          <SidebarGroup key={section.label}>
+            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.items.map((item) => {
+                  const active = pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        className="h-auto rounded-xl px-2.5 py-2.5 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-foreground"
+                      >
+                        <Link
+                          to={item.url}
+                          className="flex items-start gap-3"
+                          onClick={handleNavigate}
+                        >
+                          <item.icon className="mt-0.5 h-4 w-4 shrink-0" />
+                          {!collapsed && (
+                            <span className="min-w-0">
+                              <span className="block text-sm font-medium">{item.title}</span>
+                              <span className="block truncate text-[11px] text-muted-foreground">
+                                {item.hint}
+                              </span>
+                            </span>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={signOut}>
+            <SidebarMenuButton onClick={signOut} className="rounded-xl">
               <LogOut className="h-4 w-4" />
               {!collapsed && <span>Sign out</span>}
             </SidebarMenuButton>

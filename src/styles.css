@@ -62,39 +62,42 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
   /* Dark fintech is the default. */
-  --background: oklch(0.16 0.018 250);
-  --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.205 0.02 250);
+  --background: oklch(0.15 0.018 250);
+  --foreground: oklch(0.98 0.004 250);
+  --card: oklch(0.19 0.02 250);
   --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.21 0.022 250);
+  --popover: oklch(0.205 0.022 250);
   --popover-foreground: oklch(0.97 0.005 250);
-  --primary: oklch(0.78 0.17 150);
+  --primary: oklch(0.79 0.17 150);
   --primary-foreground: oklch(0.18 0.03 150);
-  --secondary: oklch(0.26 0.022 250);
+  --secondary: oklch(0.235 0.022 250);
   --secondary-foreground: oklch(0.95 0.005 250);
-  --muted: oklch(0.24 0.02 250);
-  --muted-foreground: oklch(0.7 0.018 250);
+  --muted: oklch(0.22 0.02 250);
+  --muted-foreground: oklch(0.72 0.018 250);
   --accent: oklch(0.65 0.18 250);
   --accent-foreground: oklch(0.98 0.005 250);
   --destructive: oklch(0.66 0.22 25);
   --destructive-foreground: oklch(0.98 0.005 250);
-  --border: oklch(0.3 0.02 250);
-  --input: oklch(0.27 0.02 250);
-  --ring: oklch(0.78 0.17 150);
-  --chart-1: oklch(0.78 0.17 150);   /* MMF green */
-  --chart-2: oklch(0.7 0.16 240);    /* STOCKS blue */
-  --chart-3: oklch(0.78 0.16 70);    /* REITS amber */
-  --chart-4: oklch(0.68 0.18 310);   /* CASH violet */
-  --chart-5: oklch(0.65 0.17 25);    /* REAL_ESTATE coral */
+  --border: oklch(0.285 0.02 250);
+  --input: oklch(0.255 0.02 250);
+  --ring: oklch(0.79 0.17 150);
+  --chart-1: oklch(0.78 0.17 150); /* MMF green */
+  --chart-2: oklch(0.7 0.16 240); /* STOCKS blue */
+  --chart-3: oklch(0.78 0.16 70); /* REITS amber */
+  --chart-4: oklch(0.68 0.18 310); /* CASH violet */
+  --chart-5: oklch(0.65 0.17 25); /* REAL_ESTATE coral */
   --success: oklch(0.78 0.17 150);
   --warning: oklch(0.82 0.17 80);
   --danger: oklch(0.66 0.22 25);
-  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.17 150), oklch(0.7 0.16 200));
-  --gradient-card: linear-gradient(160deg, oklch(0.22 0.02 250) 0%, oklch(0.18 0.02 250) 100%);
-  --shadow-elegant: 0 10px 40px -10px color-mix(in oklab, oklch(0.78 0.17 150) 25%, transparent);
-  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 5%) inset, 0 20px 40px -20px oklch(0 0 0 / 50%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.79 0.17 150), oklch(0.72 0.16 205));
+  --gradient-card:
+    radial-gradient(120% 140% at 20% 0%, oklch(0.78 0.17 150 / 0.08), transparent 55%),
+    linear-gradient(160deg, oklch(0.205 0.02 250) 0%, oklch(0.16 0.02 250) 100%);
+  --shadow-elegant: 0 14px 50px -18px color-mix(in oklab, oklch(0.79 0.17 150) 26%, transparent);
+  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 7%) inset, 0 24px 55px -28px oklch(0 0 0 / 60%);
+  --shadow-soft: 0 10px 28px -22px oklch(0 0 0 / 55%);
   --sidebar: oklch(0.185 0.02 250);
   --sidebar-foreground: oklch(0.92 0.005 250);
   --sidebar-primary: oklch(0.78 0.17 150);
@@ -119,9 +122,9 @@
     color: var(--color-foreground);
     font-feature-settings: "cv11", "ss01", "ss03";
     background-image:
-      radial-gradient(1200px 600px at 0% -10%, oklch(0.78 0.17 150 / 0.08), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, oklch(0.65 0.18 250 / 0.08), transparent 60%);
-    background-attachment: fixed;
+      radial-gradient(1100px 600px at 0% -10%, oklch(0.79 0.17 150 / 0.09), transparent 60%),
+      radial-gradient(900px 520px at 100% 0%, oklch(0.65 0.18 250 / 0.08), transparent 60%),
+      radial-gradient(900px 520px at 30% 110%, oklch(0.68 0.18 310 / 0.06), transparent 65%);
   }
 }
 
@@ -133,7 +136,7 @@
 
 @utility fintech-card {
   background: var(--gradient-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in oklab, var(--color-border) 90%, transparent);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
@@ -144,12 +147,20 @@
 }
 
 @keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 @utility animate-accordion-down {
   animation: accordion-down 0.2s ease-out;

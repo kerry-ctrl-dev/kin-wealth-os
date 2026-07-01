@@ -1,0 +1,49 @@
+{
+  "name": "whatsapp-clone",
+  "version": "1.0.0",
+  "description": "A WhatsApp clone with group chats, private chats, profile settings, and call functionalities",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server/index.js",
+    "client": "react-scripts start"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.0.0",
+    "axios": "^1.4.0",
+    "socket.io-client": "^4.5.0",
+    "firebase": "^9.22.0",
+    "react-icons": "^4.11.0",
+    "tailwindcss": "^3.3.0",
+    "zustand": "^4.3.0",
+    "date-fns": "^2.30.0",
+    "peerjs": "^1.5.0",
+    "react-hot-toast": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "concurrently": "^8.2.0",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

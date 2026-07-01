@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
+ * Design system definition - Copilot Money Inspired.
  *
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
@@ -62,54 +62,121 @@
 }
 
 :root {
-  --radius: 1rem;
-  /* Dark fintech is the default. */
-  --background: oklch(0.15 0.018 250);
-  --foreground: oklch(0.98 0.004 250);
-  --card: oklch(0.19 0.02 250);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.205 0.022 250);
-  --popover-foreground: oklch(0.97 0.005 250);
-  --primary: oklch(0.79 0.17 150);
-  --primary-foreground: oklch(0.18 0.03 150);
-  --secondary: oklch(0.235 0.022 250);
-  --secondary-foreground: oklch(0.95 0.005 250);
-  --muted: oklch(0.22 0.02 250);
-  --muted-foreground: oklch(0.72 0.018 250);
-  --accent: oklch(0.65 0.18 250);
-  --accent-foreground: oklch(0.98 0.005 250);
-  --destructive: oklch(0.66 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 250);
-  --border: oklch(0.285 0.02 250);
-  --input: oklch(0.255 0.02 250);
-  --ring: oklch(0.79 0.17 150);
-  --chart-1: oklch(0.78 0.17 150); /* MMF green */
-  --chart-2: oklch(0.7 0.16 240); /* STOCKS blue */
-  --chart-3: oklch(0.78 0.16 70); /* REITS amber */
-  --chart-4: oklch(0.68 0.18 310); /* CASH violet */
-  --chart-5: oklch(0.65 0.17 25); /* REAL_ESTATE coral */
-  --success: oklch(0.78 0.17 150);
-  --warning: oklch(0.82 0.17 80);
-  --danger: oklch(0.66 0.22 25);
-  --gradient-primary: linear-gradient(135deg, oklch(0.79 0.17 150), oklch(0.72 0.16 205));
-  --gradient-card:
-    radial-gradient(120% 140% at 20% 0%, oklch(0.78 0.17 150 / 0.08), transparent 55%),
-    linear-gradient(160deg, oklch(0.205 0.02 250) 0%, oklch(0.16 0.02 250) 100%);
-  --shadow-elegant: 0 14px 50px -18px color-mix(in oklab, oklch(0.79 0.17 150) 26%, transparent);
-  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 7%) inset, 0 24px 55px -28px oklch(0 0 0 / 60%);
-  --shadow-soft: 0 10px 28px -22px oklch(0 0 0 / 55%);
-  --sidebar: oklch(0.185 0.02 250);
-  --sidebar-foreground: oklch(0.92 0.005 250);
-  --sidebar-primary: oklch(0.78 0.17 150);
-  --sidebar-primary-foreground: oklch(0.18 0.03 150);
-  --sidebar-accent: oklch(0.26 0.022 250);
-  --sidebar-accent-foreground: oklch(0.97 0.005 250);
-  --sidebar-border: oklch(0.28 0.02 250);
-  --sidebar-ring: oklch(0.78 0.17 150);
+  --radius: 0.75rem;
+  
+  /* Copilot Money-Inspired: Clean, minimal, light backgrounds */
+  /* Light mode (default) */
+  --background: oklch(0.98 0.001 0);
+  --foreground: oklch(0.18 0.008 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.008 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.008 260);
+  
+  /* Primary: Copilot blue-ish accent (vibrant but not aggressive) */
+  --primary: oklch(0.58 0.14 250);
+  --primary-foreground: oklch(1 0 0);
+  
+  /* Secondary: Neutral gray for secondary actions */
+  --secondary: oklch(0.92 0.003 250);
+  --secondary-foreground: oklch(0.3 0.01 260);
+  
+  /* Muted: Soft gray for disabled/secondary text */
+  --muted: oklch(0.88 0.003 250);
+  --muted-foreground: oklch(0.52 0.01 260);
+  
+  /* Accent: Subtle accent for highlights */
+  --accent: oklch(0.58 0.14 250);
+  --accent-foreground: oklch(1 0 0);
+  
+  /* Destructive: Red for warnings/errors */
+  --destructive: oklch(0.63 0.238 25);
+  --destructive-foreground: oklch(1 0 0);
+  
+  /* Border: Subtle light borders */
+  --border: oklch(0.92 0.003 250);
+  --input: oklch(0.96 0.002 250);
+  --ring: oklch(0.58 0.14 250);
+  
+  /* Chart colors - distinct but harmonious */
+  --chart-1: oklch(0.58 0.14 250);  /* Blue */
+  --chart-2: oklch(0.7 0.15 140);   /* Green */
+  --chart-3: oklch(0.75 0.15 70);   /* Amber */
+  --chart-4: oklch(0.63 0.16 15);   /* Orange */
+  --chart-5: oklch(0.63 0.238 25);  /* Red */
+  
+  /* Success, warning, danger */
+  --success: oklch(0.7 0.15 140);
+  --warning: oklch(0.75 0.15 70);
+  --danger: oklch(0.63 0.238 25);
+  
+  /* Gradients - subtle and elegant */
+  --gradient-primary: linear-gradient(135deg, oklch(0.58 0.14 250), oklch(0.65 0.12 240));
+  --gradient-card: linear-gradient(135deg, oklch(1 0 0) 0%, oklch(0.98 0.002 250) 100%);
+  
+  /* Shadows - softer for a lighter aesthetic */
+  --shadow-elegant: 0 4px 12px oklch(0 0 0 / 0.08);
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.06);
+  --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.08);
+  
+  /* Sidebar - light version */
+  --sidebar: oklch(0.98 0.001 0);
+  --sidebar-foreground: oklch(0.18 0.008 260);
+  --sidebar-primary: oklch(0.58 0.14 250);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.92 0.003 250);
+  --sidebar-accent-foreground: oklch(0.18 0.008 260);
+  --sidebar-border: oklch(0.92 0.003 250);
+  --sidebar-ring: oklch(0.58 0.14 250);
 }
 
 .dark {
-  /* Same tokens — app is dark-first. */
+  /* Dark mode option (future enhancement) */
+  --background: oklch(0.12 0.015 260);
+  --foreground: oklch(0.95 0.004 250);
+  --card: oklch(0.16 0.018 260);
+  --card-foreground: oklch(0.95 0.004 250);
+  --popover: oklch(0.18 0.02 260);
+  --popover-foreground: oklch(0.95 0.004 250);
+  
+  --primary: oklch(0.7 0.16 250);
+  --primary-foreground: oklch(0.12 0.015 260);
+  
+  --secondary: oklch(0.25 0.02 260);
+  --secondary-foreground: oklch(0.85 0.01 250);
+  
+  --muted: oklch(0.3 0.02 260);
+  --muted-foreground: oklch(0.65 0.01 250);
+  
+  --accent: oklch(0.7 0.16 250);
+  --accent-foreground: oklch(0.12 0.015 260);
+  
+  --destructive: oklch(0.68 0.2 25);
+  --destructive-foreground: oklch(0.95 0.004 250);
+  
+  --border: oklch(0.25 0.02 260);
+  --input: oklch(0.22 0.018 260);
+  --ring: oklch(0.7 0.16 250);
+  
+  --success: oklch(0.72 0.16 140);
+  --warning: oklch(0.78 0.16 70);
+  --danger: oklch(0.68 0.2 25);
+  
+  --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 250), oklch(0.68 0.14 240));
+  --gradient-card: linear-gradient(135deg, oklch(0.16 0.018 260), oklch(0.14 0.016 260));
+  
+  --shadow-elegant: 0 4px 12px oklch(0 0 0 / 0.4);
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.2), 0 1px 2px oklch(0 0 0 / 0.15);
+  --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.15);
+  
+  --sidebar: oklch(0.14 0.016 260);
+  --sidebar-foreground: oklch(0.92 0.005 250);
+  --sidebar-primary: oklch(0.7 0.16 250);
+  --sidebar-primary-foreground: oklch(0.12 0.015 260);
+  --sidebar-accent: oklch(0.25 0.02 260);
+  --sidebar-accent-foreground: oklch(0.95 0.004 250);
+  --sidebar-border: oklch(0.25 0.02 260);
+  --sidebar-ring: oklch(0.7 0.16 250);
 }
 
 @layer base {
@@ -120,11 +187,14 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
     font-feature-settings: "cv11", "ss01", "ss03";
-    background-image:
-      radial-gradient(1100px 600px at 0% -10%, oklch(0.79 0.17 150 / 0.09), transparent 60%),
-      radial-gradient(900px 520px at 100% 0%, oklch(0.65 0.18 250 / 0.08), transparent 60%),
-      radial-gradient(900px 520px at 30% 110%, oklch(0.68 0.18 310 / 0.06), transparent 65%);
+    background-image: 
+      radial-gradient(400px 300px at 100% 0%, oklch(0.58 0.14 250 / 0.04), transparent 70%),
+      radial-gradient(400px 300px at 0% 100%, oklch(0.7 0.15 140 / 0.03), transparent 70%);
+    background-attachment: fixed;
   }
 }
 
@@ -134,9 +204,11 @@
   --color-danger: var(--danger);
 }
 
+/* Utility classes for Copilot Money aesthetic */
+
 @utility fintech-card {
   background: var(--gradient-card);
-  border: 1px solid color-mix(in oklab, var(--color-border) 90%, transparent);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
@@ -144,6 +216,19 @@
 @utility metric-value {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+}
+
+@utility card-elevated {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elegant);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+@utility card-elevated:hover {
+  box-shadow: 0 8px 24px oklch(0 0 0 / 0.12);
+  transform: translateY(-2px);
 }
 
 @keyframes accordion-down {

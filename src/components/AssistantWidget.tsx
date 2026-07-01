@@ -91,7 +91,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-40 hidden h-14 items-center gap-2 rounded-full px-4 text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] md:inline-flex"
+          className="fixed bottom-24 right-4 z-40 inline-flex h-14 items-center gap-2 rounded-full px-4 text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] md:bottom-6 md:right-6"
           style={{ background: "var(--gradient-primary)" }}
           aria-label="Open AI assistant"
         >
@@ -102,8 +102,9 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
       {open && (
         <div
           className={cn(
-            "fixed z-50 hidden overflow-hidden md:flex md:flex-col",
-            "md:bottom-6 md:right-6 md:h-[600px] md:w-[400px]",
+            "fixed z-50 overflow-hidden",
+            "inset-x-3 bottom-24 h-[70vh]",
+            "md:inset-x-auto md:bottom-6 md:right-6 md:h-[600px] md:w-[400px]",
           )}
         >
           <div className="fintech-card flex h-full flex-col overflow-hidden">

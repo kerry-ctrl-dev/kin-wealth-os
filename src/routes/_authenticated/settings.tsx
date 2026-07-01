@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { profileQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -35,7 +41,16 @@ function SettingsPage() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const [form, setForm] = useState({
-    full_name: "", profession: "", age: "", employment_status: "", monthly_income: "", risk_level: "", main_goals: "", investment_experience: "", phone: "", avatar_url: "",
+    full_name: "",
+    profession: "",
+    age: "",
+    employment_status: "",
+    monthly_income: "",
+    risk_level: "",
+    main_goals: "",
+    investment_experience: "",
+    phone: "",
+    avatar_url: "",
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -72,24 +87,32 @@ function SettingsPage() {
       toast.success("Photo updated");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Upload failed");
-    } finally { setUploading(false); }
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function save() {
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user) { setSaving(false); return; }
-    const { error } = await supabase.from("profiles").update({
-      full_name: form.full_name || null,
-      profession: form.profession || null,
-      age: form.age ? Number(form.age) : null,
-      employment_status: form.employment_status || null,
-      monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
-      risk_level: form.risk_level || null,
-      main_goals: form.main_goals || null,
-      investment_experience: form.investment_experience || null,
-      phone: form.phone || null,
-    }).eq("id", u.user.id);
+    if (!u.user) {
+      setSaving(false);
+      return;
+    }
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: form.full_name || null,
+        profession: form.profession || null,
+        age: form.age ? Number(form.age) : null,
+        employment_status: form.employment_status || null,
+        monthly_income: form.monthly_income ? Number(form.monthly_income) : null,
+        risk_level: form.risk_level || null,
+        main_goals: form.main_goals || null,
+        investment_experience: form.investment_experience || null,
+        phone: form.phone || null,
+      })
+      .eq("id", u.user.id);
     setSaving(false);
     if (error) toast.error(error.message);
     else {
@@ -107,36 +130,95 @@ function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="mx-auto w-full max-w-4xl space-y-8">
       <SectionHeading title="Settings" sub="Manage your profile and preferences" />
 
-      <div className="fintech-card p-6 space-y-4">
-        <h2 className="font-semibold">Profile</h2>
+      <div className="fintech-card p-6 sm:p-7 space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold tracking-tight">Profile</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Keep your details up to date so the dashboard stays personalized.
+            </p>
+          </div>
+          <div className="h-10 w-10 rounded-2xl border border-border/70 bg-background/35 grid place-items-center text-muted-foreground">
+            <SettingsIcon className="h-5 w-5" />
+          </div>
+        </div>
         <div className="flex items-center gap-4">
           {safeAvatarUrl ? (
-            <img src={safeAvatarUrl} alt="Avatar" className="h-20 w-20 rounded-full object-cover border border-border" />
+            <img
+              src={safeAvatarUrl}
+              alt="Avatar"
+              className="h-20 w-20 rounded-full object-cover border border-border/70 shadow-[var(--shadow-soft)]"
+            />
           ) : (
-            <div className="h-20 w-20 rounded-full grid place-items-center bg-primary/15 text-primary text-xl font-semibold border border-border">
+            <div className="h-20 w-20 rounded-full grid place-items-center bg-primary/15 text-primary text-xl font-semibold border border-border/70 shadow-[var(--shadow-soft)]">
               {(form.full_name || "U").slice(0, 1).toUpperCase()}
             </div>
           )}
           <div>
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && handleAvatar(e.target.files[0])} />
-            <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => e.target.files?.[0] && handleAvatar(e.target.files[0])}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+            >
               <Upload className="h-4 w-4" /> {uploading ? "Uploading…" : "Change photo"}
             </Button>
             <p className="text-xs text-muted-foreground mt-1">JPG/PNG, up to a few MB.</p>
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="Full name"><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></Field>
-          <Field label="Phone number"><Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+254 7…" /></Field>
-          <Field label="Profession"><Input value={form.profession} onChange={(e) => setForm({ ...form, profession: e.target.value })} /></Field>
-          <Field label="Age"><Input type="number" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} /></Field>
-          <Field label="Monthly income (KES)"><Input type="number" value={form.monthly_income} onChange={(e) => setForm({ ...form, monthly_income: e.target.value })} /></Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Full name">
+            <Input
+              value={form.full_name}
+              onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+            />
+          </Field>
+          <Field label="Phone number">
+            <Input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="+254 7…"
+            />
+          </Field>
+          <Field label="Profession">
+            <Input
+              value={form.profession}
+              onChange={(e) => setForm({ ...form, profession: e.target.value })}
+            />
+          </Field>
+          <Field label="Age">
+            <Input
+              type="number"
+              value={form.age}
+              onChange={(e) => setForm({ ...form, age: e.target.value })}
+            />
+          </Field>
+          <Field label="Monthly income (KES)">
+            <Input
+              type="number"
+              value={form.monthly_income}
+              onChange={(e) => setForm({ ...form, monthly_income: e.target.value })}
+            />
+          </Field>
           <Field label="Employment status">
-            <Select value={form.employment_status} onValueChange={(v) => setForm({ ...form, employment_status: v })}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={form.employment_status}
+              onValueChange={(v) => setForm({ ...form, employment_status: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="student">Student</SelectItem>
                 <SelectItem value="employed">Employed</SelectItem>
@@ -146,8 +228,13 @@ function SettingsPage() {
             </Select>
           </Field>
           <Field label="Risk preference">
-            <Select value={form.risk_level} onValueChange={(v) => setForm({ ...form, risk_level: v })}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={form.risk_level}
+              onValueChange={(v) => setForm({ ...form, risk_level: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="LOW">Low</SelectItem>
                 <SelectItem value="MEDIUM">Medium</SelectItem>
@@ -156,8 +243,13 @@ function SettingsPage() {
             </Select>
           </Field>
           <Field label="Investment experience">
-            <Select value={form.investment_experience} onValueChange={(v) => setForm({ ...form, investment_experience: v })}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={form.investment_experience}
+              onValueChange={(v) => setForm({ ...form, investment_experience: v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="beginner">Beginner</SelectItem>
                 <SelectItem value="intermediate">Intermediate</SelectItem>
@@ -167,17 +259,28 @@ function SettingsPage() {
           </Field>
         </div>
         <Field label="Main financial goals">
-          <Textarea rows={3} value={form.main_goals} onChange={(e) => setForm({ ...form, main_goals: e.target.value })} />
+          <Textarea
+            rows={3}
+            value={form.main_goals}
+            onChange={(e) => setForm({ ...form, main_goals: e.target.value })}
+          />
         </Field>
-        <div className="flex justify-end">
-          <Button onClick={save} disabled={saving}><Save className="h-4 w-4" /> {saving ? "Saving…" : "Save changes"}</Button>
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div className="text-xs text-muted-foreground">
+            Changes save to your profile immediately and update your dashboard.
+          </div>
+          <Button onClick={save} disabled={saving}>
+            <Save className="h-4 w-4" /> {saving ? "Saving…" : "Save changes"}
+          </Button>
         </div>
       </div>
 
-      <div className="fintech-card p-6">
-        <h2 className="font-semibold">Account</h2>
+      <div className="fintech-card p-6 sm:p-7">
+        <h2 className="font-semibold tracking-tight">Account</h2>
         <p className="text-sm text-muted-foreground mt-1">Sign out from this device.</p>
-        <Button variant="outline" className="mt-3" onClick={signOut}><LogOut className="h-4 w-4" /> Sign out</Button>
+        <Button variant="outline" className="mt-4" onClick={signOut}>
+          <LogOut className="h-4 w-4" /> Sign out
+        </Button>
       </div>
     </div>
   );

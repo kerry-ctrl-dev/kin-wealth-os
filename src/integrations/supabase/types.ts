@@ -268,15 +268,21 @@ export type Database = {
         Row: {
           amount_repaid: number
           borrowed_at: string
+          contact_alt: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           direction: string
           due_date: string | null
           id: string
+          interest_period: string
           interest_rate: number
           lender: string
           notes: string | null
+          payment_instructions: string | null
           principal: number
           purpose: string | null
+          reminder_message: string | null
           status: string
           updated_at: string
           user_id: string
@@ -284,15 +290,21 @@ export type Database = {
         Insert: {
           amount_repaid?: number
           borrowed_at?: string
+          contact_alt?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           direction?: string
           due_date?: string | null
           id?: string
+          interest_period?: string
           interest_rate?: number
           lender: string
           notes?: string | null
+          payment_instructions?: string | null
           principal: number
           purpose?: string | null
+          reminder_message?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -300,15 +312,21 @@ export type Database = {
         Update: {
           amount_repaid?: number
           borrowed_at?: string
+          contact_alt?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           direction?: string
           due_date?: string | null
           id?: string
+          interest_period?: string
           interest_rate?: number
           lender?: string
           notes?: string | null
+          payment_instructions?: string | null
           principal?: number
           purpose?: string | null
+          reminder_message?: string | null
           status?: string
           updated_at?: string
           user_id?: string

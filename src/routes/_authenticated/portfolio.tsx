@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/_authenticated/portfolio")({
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/portfolio")({
 });
 
 function PortfolioPage() {
+  const qc = useQueryClient();
   const { data: assets } = useQuery(assetsQuery());
   const a = assets ?? [];
   const total = totalValue(a);
@@ -31,6 +32,13 @@ function PortfolioPage() {
   const allocation = (Object.keys(cats) as AssetCategory[])
     .filter((c) => cats[c] > 0)
     .map((c) => ({ category: c, value: cats[c], pct: total ? (cats[c] / total) * 100 : 0 }));
+
+  async function del(id: string) {
+    if (!confirm("Delete this investment? This cannot be undone.")) return;
+    const { error } = await supabase.from("assets").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Investment deleted"); qc.invalidateQueries({ queryKey: ["assets"] }); }
+  }
 
   return (
     <div>
@@ -65,6 +73,7 @@ function PortfolioPage() {
               <th className="text-left p-3">Asset</th><th className="text-left p-3">Category</th>
               <th className="text-right p-3">Value</th><th className="text-right p-3">Liquidity</th>
               <th className="text-right p-3">% Portfolio</th><th className="text-left p-3">Added</th>
+              <th className="w-10" />
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -76,9 +85,10 @@ function PortfolioPage() {
                 <td className="p-3 text-right"><span className="inline-block px-2 py-0.5 rounded-full bg-secondary text-xs">{row.liquidity}/5</span></td>
                 <td className="p-3 text-right">{fmtPct(total ? (Number(row.value) / total) * 100 : 0)}</td>
                 <td className="p-3 text-muted-foreground text-xs">{new Date(row.created_at).toLocaleDateString()}</td>
+                <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => del(row.id)} aria-label="Delete"><Trash2 className="h-4 w-4" /></Button></td>
               </tr>
             ))}
-            {a.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No assets — add income to allocate automatically.</td></tr>}
+            {a.length === 0 && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">No assets — add income to allocate automatically.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -126,6 +136,12 @@ function AddInvestmentDialog() {
     form.category === "MMF" ? "Which MMF?" :
     form.category === "STOCKS" ? "Which NSE stock?" :
     form.category === "REITS" ? "Which REIT?" : "Investment name";
+  const categoryHint =
+    form.category === "MMF" ? "Kenyan MMFs: CIC, Sanlam, Britam, NCBA, ICEA, Old Mutual, Cytonn, Etica, Zimele…" :
+    form.category === "STOCKS" ? "NSE picks: SCOM, EQTY, KCB, COOP, EABL, ABSA, KEGN, BAT…" :
+    form.category === "REITS" ? "Available REITs: ILAM Fahari, Acorn ASA D-REIT & I-REIT, LAPTrust Imara, Vuka." :
+    form.category === "CASH" ? "Cash: bank savings, M-Pesa, cash on hand." :
+    "Real estate: land, rental unit, plot.";
 
   const add = useMutation({
     mutationFn: async () => {
@@ -179,11 +195,19 @@ function AddInvestmentDialog() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Field label={categoryNameLabel}>
-              <Input list="instrument-suggestions" value={form.name} onChange={(e) => set("name")(e.target.value)} placeholder={suggestions[0] ?? "Asset name"} />
-              {suggestions.length > 0 && (
-                <datalist id="instrument-suggestions">
-                  {suggestions.map((s) => <option key={s} value={s} />)}
-                </datalist>
+              {suggestions.length > 0 ? (
+                <Select value={form.name} onValueChange={(v) => set("name")(v)}>
+                  <SelectTrigger><SelectValue placeholder={`Choose ${form.category === "MMF" ? "an MMF" : form.category === "STOCKS" ? "an NSE stock" : "a REIT"}…`} /></SelectTrigger>
+                  <SelectContent className="max-h-64">
+                    {suggestions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    <SelectItem value="__other__">Other (type below)</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input value={form.name} onChange={(e) => set("name")(e.target.value)} placeholder="Asset name" />
+              )}
+              {form.name === "__other__" && (
+                <Input className="mt-2" placeholder="Custom name" onChange={(e) => set("name")(e.target.value)} />
               )}
             </Field>
             <Field label="Category">
@@ -192,6 +216,7 @@ function AddInvestmentDialog() {
                 <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{CATEGORY_LABEL[c]}</SelectItem>)}</SelectContent>
               </Select>
             </Field>
+            <div className="col-span-2 -mt-1 text-[11px] text-muted-foreground">{categoryHint}</div>
             <Field label="Amount invested (KES)"><Input type="number" min={1} step="0.01" value={form.value} onChange={(e) => set("value")(e.target.value)} placeholder="5000" /></Field>
             <Field label="Date invested"><Input type="date" value={form.invested_at} onChange={(e) => set("invested_at")(e.target.value)} /></Field>
             <Field label="Funded by (income)">

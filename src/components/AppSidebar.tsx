@@ -1,10 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   Award,
   Bell,
   BellRing,
   Calendar,
+  ChevronDown,
   Coins,
   FileText,
   FolderLock,
@@ -87,9 +89,18 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile, state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const activeSection = useMemo(() => {
+    const match = sections.find((section) => section.items.some((item) => item.url === pathname));
+    return match?.label ?? sections[0].label;
+  }, [pathname]);
+  const [openSection, setOpenSection] = useState(activeSection);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const profile = useQuery(profileQuery());
+
+  useEffect(() => {
+    setOpenSection(activeSection);
+  }, [activeSection]);
 
   async function signOut() {
     await qc.cancelQueries();
@@ -109,6 +120,18 @@ export function AppSidebar() {
   function handleNavigate() {
     if (isMobile) setOpenMobile(false);
   }
+
+  const primaryItems = useMemo(() => {
+    const urls = new Set([
+      "/dashboard",
+      "/portfolio",
+      "/expenses",
+      "/income",
+      "/goals",
+      "/settings",
+    ]);
+    return sections.flatMap((section) => section.items).filter((item) => urls.has(item.url));
+  }, []);
 
   return (
     <Sidebar collapsible="icon">
@@ -160,34 +183,23 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
       <SidebarContent>
-        {sections.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+        {collapsed ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>Main</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {section.items.map((item) => {
+                {primaryItems.map((item) => {
                   const active = pathname === item.url;
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={active}
-                        className="h-auto rounded-xl px-2.5 py-2.5 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-foreground"
-                      >
+                      <SidebarMenuButton asChild isActive={active}>
                         <Link
                           to={item.url}
-                          className="flex items-start gap-3"
+                          className="flex items-center gap-2"
                           onClick={handleNavigate}
                         >
-                          <item.icon className="mt-0.5 h-4 w-4 shrink-0" />
-                          {!collapsed && (
-                            <span className="min-w-0">
-                              <span className="block text-sm font-medium">{item.title}</span>
-                              <span className="block truncate text-[11px] text-muted-foreground">
-                                {item.hint}
-                              </span>
-                            </span>
-                          )}
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          {!collapsed && <span>{item.title}</span>}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -196,7 +208,65 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        ))}
+        ) : (
+          sections.map((section) => {
+            const isOpen = openSection === section.label;
+            return (
+              <SidebarGroup key={section.label}>
+                <SidebarGroupLabel asChild>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenSection((cur) => (cur === section.label ? "" : section.label))
+                    }
+                    className="w-full justify-between gap-2"
+                  >
+                    <span>{section.label}</span>
+                    <ChevronDown
+                      className={
+                        isOpen
+                          ? "rotate-180 transition-transform duration-200"
+                          : "transition-transform duration-200"
+                      }
+                    />
+                  </button>
+                </SidebarGroupLabel>
+                {isOpen ? (
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {section.items.map((item) => {
+                        const active = pathname === item.url;
+                        return (
+                          <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton
+                              asChild
+                              isActive={active}
+                              className="h-auto rounded-xl px-2.5 py-2.5 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-foreground"
+                            >
+                              <Link
+                                to={item.url}
+                                className="flex items-start gap-3"
+                                onClick={handleNavigate}
+                              >
+                                <item.icon className="mt-0.5 h-4 w-4 shrink-0" />
+                                <span className="min-w-0">
+                                  <span className="block text-sm font-medium">{item.title}</span>
+                                  <span className="block truncate text-[11px] text-muted-foreground">
+                                    {item.hint}
+                                  </span>
+                                </span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                ) : null}
+              </SidebarGroup>
+            );
+          })
+        )}
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>

@@ -46,7 +46,11 @@ export function loanOutstanding(l: Loan): number {
   const start = new Date(l.borrowed_at).getTime();
   const ref = Math.min(Date.now(), l.due_date ? new Date(l.due_date).getTime() : Date.now());
   const years = Math.max(0, (ref - start) / (365.25 * 86400_000));
-  const accrued = principal * (1 + rate * years);
+  // interest_period tells us what "rate" means per period. Convert to annual.
+  const period = ((l as unknown as { interest_period?: string }).interest_period ?? "YEARLY").toUpperCase();
+  const periodsPerYear = period === "DAILY" ? 365 : period === "WEEKLY" ? 52 : period === "MONTHLY" ? 12 : 1;
+  const annualRate = rate * periodsPerYear;
+  const accrued = principal * (1 + annualRate * years);
   return Math.max(0, accrued - Number(l.amount_repaid || 0));
 }
 

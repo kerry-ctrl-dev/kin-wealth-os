@@ -104,7 +104,7 @@ export function AppSidebar() {
   const initials = first.slice(0, 2).toUpperCase();
   const profession = profile.data?.profession ?? "—";
   const avatarUrl = useAvatarUrl(profile.data?.avatar_url).data;
-  const memberLabel = profile.data?.email ?? "Your financial workspace";
+  const memberLabel = profile.data?.full_name ?? "Your financial workspace";
 
   function handleNavigate() {
     if (isMobile) setOpenMobile(false);

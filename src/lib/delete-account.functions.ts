@@ -26,15 +26,14 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
     ] as const;
     for (const t of tables) {
       try {
-        await supabaseAdmin.from(t).delete().eq("user_id", uid);
+        // profiles PK is `id` (auth user id); everything else uses `user_id`.
+        const col = t === "profiles" ? "id" : "user_id";
+        await (supabaseAdmin.from(t).delete() as unknown as {
+          eq: (c: string, v: string) => Promise<unknown>;
+        }).eq(col, uid);
       } catch {
         // ignore per-table failures; user deletion below is the source of truth
       }
-    }
-    try {
-      await supabaseAdmin.from("profiles").delete().eq("id", uid);
-    } catch {
-      /* noop */
     }
     const { error } = await supabaseAdmin.auth.admin.deleteUser(uid);
     if (error) throw new Error(error.message);

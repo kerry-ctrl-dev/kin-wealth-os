@@ -1,7 +1,37 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Settings as SettingsIcon, Save, LogOut, Upload } from "lucide-react";
+import {
+  Settings as SettingsIcon,
+  Save,
+  LogOut,
+  Upload,
+  Palette,
+  Type,
+  Sun,
+  Moon,
+  Monitor,
+  AlertTriangle,
+  Trash2,
+  Check,
+} from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteMyAccount } from "@/lib/delete-account.functions";
+import {
+  ACCENTS,
+  FONT_SIZES,
+  FONT_STACKS,
+  applyAppearance,
+  loadAppearance,
+  saveAppearance,
+  watchSystemTheme,
+  type AccentKey,
+  type Appearance,
+  type FontFamilyKey,
+  type FontSizeKey,
+  type ThemeMode,
+} from "@/lib/appearance";
+import { cn } from "@/lib/utils";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +44,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { profileQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -282,6 +320,219 @@ function SettingsPage() {
           <LogOut className="h-4 w-4" /> Sign out
         </Button>
       </div>
+
+      <AppearanceSection />
+      <DangerZone />
+    </div>
+  );
+}
+
+function AppearanceSection() {
+  const [appearance, setAppearance] = useState<Appearance>(() => loadAppearance());
+
+  useEffect(() => {
+    applyAppearance(appearance);
+    saveAppearance(appearance);
+  }, [appearance]);
+
+  useEffect(() => {
+    if (appearance.theme !== "system") return;
+    return watchSystemTheme(() => applyAppearance(appearance));
+  }, [appearance]);
+
+  return (
+    <div className="fintech-card space-y-6 p-6 sm:p-7">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="flex items-center gap-2 font-semibold tracking-tight">
+            <Palette className="h-4 w-4 text-primary" /> Appearance
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Personalize the theme, typography and accent colours of your workspace.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <Label className="text-xs uppercase tracking-widest text-muted-foreground">Theme</Label>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {(
+            [
+              { key: "light", label: "Light", icon: Sun },
+              { key: "dark", label: "Dark", icon: Moon },
+              { key: "system", label: "System", icon: Monitor },
+            ] as { key: ThemeMode; label: string; icon: typeof Sun }[]
+          ).map((opt) => {
+            const active = appearance.theme === opt.key;
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setAppearance({ ...appearance, theme: opt.key })}
+                className={cn(
+                  "flex flex-col items-center gap-2 rounded-2xl border p-4 text-sm transition",
+                  active
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border/70 bg-background/30 text-muted-foreground hover:border-border hover:text-foreground",
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <Label className="text-xs uppercase tracking-widest text-muted-foreground">
+            Font style
+          </Label>
+          <Select
+            value={appearance.font}
+            onValueChange={(v: FontFamilyKey) => setAppearance({ ...appearance, font: v })}
+          >
+            <SelectTrigger className="mt-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(FONT_STACKS) as FontFamilyKey[]).map((k) => (
+                <SelectItem key={k} value={k}>
+                  <span style={{ fontFamily: FONT_STACKS[k].stack }}>{FONT_STACKS[k].label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="text-xs uppercase tracking-widest text-muted-foreground">
+            Font size
+          </Label>
+          <Select
+            value={appearance.size}
+            onValueChange={(v: FontSizeKey) => setAppearance({ ...appearance, size: v })}
+          >
+            <SelectTrigger className="mt-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(FONT_SIZES) as FontSizeKey[]).map((k) => (
+                <SelectItem key={k} value={k}>
+                  {FONT_SIZES[k].label} · {FONT_SIZES[k].px}px
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <Label className="text-xs uppercase tracking-widest text-muted-foreground">
+          Accent colour
+        </Label>
+        <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-8">
+          {(Object.keys(ACCENTS) as AccentKey[]).map((k) => {
+            const a = ACCENTS[k];
+            const active = appearance.accent === k;
+            return (
+              <button
+                key={k}
+                type="button"
+                title={a.label}
+                onClick={() => setAppearance({ ...appearance, accent: k })}
+                className={cn(
+                  "relative flex aspect-square items-center justify-center rounded-2xl border transition",
+                  active
+                    ? "border-foreground/70 ring-2 ring-offset-2 ring-offset-background"
+                    : "border-border/70 hover:border-foreground/40",
+                )}
+                style={{ background: a.swatch }}
+              >
+                {active && <Check className="h-4 w-4 text-white drop-shadow" />}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Applies instantly across the app, charts and sidebar.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DangerZone() {
+  const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const nav = useNavigate();
+  const qc = useQueryClient();
+  const deleteFn = useServerFn(deleteMyAccount);
+
+  async function runDelete() {
+    if (confirm.trim().toUpperCase() !== "DELETE") {
+      toast.error('Type "DELETE" to confirm');
+      return;
+    }
+    setBusy(true);
+    try {
+      await deleteFn();
+      await qc.cancelQueries();
+      qc.clear();
+      await supabase.auth.signOut();
+      toast.success("Your account has been deleted");
+      nav({ to: "/", replace: true });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete account");
+    } finally {
+      setBusy(false);
+      setOpen(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-6 sm:p-7">
+      <h2 className="flex items-center gap-2 font-semibold tracking-tight text-destructive">
+        <AlertTriangle className="h-4 w-4" /> Danger zone
+      </h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Permanently delete your Wealth OS account and every record — income, expenses,
+        investments, goals, loans, reminders and documents. This action cannot be undone.
+      </p>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="destructive" className="mt-4">
+            <Trash2 className="h-4 w-4" /> Delete my account
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" /> Delete account forever?
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            All your data will be erased permanently. To confirm, type{" "}
+            <span className="font-mono font-semibold text-foreground">DELETE</span> below.
+          </p>
+          <Input
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            placeholder="Type DELETE to confirm"
+            className="font-mono"
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={runDelete} disabled={busy}>
+              {busy ? "Deleting…" : "Yes, delete forever"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

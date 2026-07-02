@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Trash2, ReceiptText } from "lucide-react";
+import { Plus, Trash2, ReceiptText, Repeat, Power } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MetricCard } from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { expensesQuery, incomeQuery, assetsQuery } from "@/lib/queries";
+import { expensesQuery, incomeQuery, assetsQuery, recurringQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtKES } from "@/lib/finance";
 import { incomeBalances, totalAvailableCash } from "@/lib/balance";

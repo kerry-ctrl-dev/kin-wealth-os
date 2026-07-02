@@ -104,8 +104,6 @@ function Landing() {
           { icon: Sparkles, title: "Aria AI Advisor", body: "Ask anything. Aria sees your live portfolio and answers in seconds.", featured: true },
           { icon: BarChart3, title: "Live Analytics", body: "Allocation, liquidity, risk — recomputed on every change." },
           { icon: Bell, title: "Smart Alerts", body: "Liquidity warnings, over-budget pings, anomaly detection." },
-          { icon: Award, title: "Achievements", body: "10 unlockable badges to keep the streak alive." },
-          { icon: FolderLock, title: "Private Vault", body: "Encrypted document storage for statements & contracts." },
           { icon: ShieldCheck, title: "Bank-grade Security", body: "Row-level isolation. Your data is yours alone." },
         ]}
       />
@@ -179,7 +177,7 @@ function FeatureRow({ title, items }: { title: string; items: FeatureItem[] }) {
 const FAQ = [
   { q: "Is Wealth OS free?", a: "Yes — sign up and use the full app at no cost. Premium tiers may arrive later." },
   { q: "How is my data protected?", a: "Every record is isolated by row-level security. Only you can see your data — not even other users of the app." },
-  { q: "Does the AI advisor see my numbers?", a: "Aria reads a summary of your portfolio when you ask a question, so its advice is personal. Your raw documents in the Vault are private." },
+  { q: "Does the AI advisor see my numbers?", a: "Aria reads a summary of your portfolio when you ask a question, so its advice is personal — never your raw documents." },
   { q: "What currencies are supported?", a: "Built for KES first, with global asset tracking. Multi-currency support is on the roadmap." },
   { q: "Can I cancel anytime?", a: "Of course. Delete your account from Settings and your data is removed." },
 ];

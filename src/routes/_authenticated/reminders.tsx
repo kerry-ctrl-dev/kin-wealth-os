@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { SectionHeading } from "@/components/SectionHeading";
-import { remindersQuery } from "@/lib/queries";
+import { remindersQuery, alertsQuery, assetsQuery, incomeQuery } from "@/lib/queries";
+import { generateAlerts } from "@/lib/finance";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Plus, Trash2, BellRing, CalendarClock } from "lucide-react";
+import { Plus, Trash2, BellRing, CalendarClock, Bell, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reminders")({
   head: () => ({ meta: [{ title: "Reminders — Wealth OS" }] }),
@@ -138,6 +139,107 @@ function RemindersPage() {
               ))}
             </div>
           </>
+        )}
+      </div>
+
+      <AlertsSection />
+    </div>
+  );
+}
+
+function AlertsSection() {
+  const qc = useQueryClient();
+  const alerts = useQuery(alertsQuery());
+  const assets = useQuery(assetsQuery());
+  const income = useQuery(incomeQuery());
+
+  const regen = useMutation({
+    mutationFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user!.id;
+      const computed = generateAlerts(assets.data ?? [], income.data ?? []);
+      await supabase.from("alerts").delete().eq("user_id", uid);
+      if (computed.length === 0) return;
+      const { error } = await supabase
+        .from("alerts")
+        .insert(computed.map((c) => ({ ...c, user_id: uid })));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Alerts refreshed");
+      qc.invalidateQueries({ queryKey: ["alerts"] });
+    },
+  });
+
+  const dismiss = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("alerts").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["alerts"] }),
+  });
+
+  const rows = alerts.data ?? [];
+
+  return (
+    <div className="fintech-card mt-6 p-5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="flex items-center gap-2 font-semibold tracking-tight">
+            <Bell className="h-4 w-4 text-primary" /> Portfolio alerts
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Liquidity, performance and volatility warnings — computed from your holdings.
+          </p>
+        </div>
+        <Button size="sm" variant="secondary" onClick={() => regen.mutate()} disabled={regen.isPending}>
+          <RefreshCw className="h-4 w-4" /> Recompute
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {rows.map((al) => {
+          const tone =
+            al.severity === "DANGER"
+              ? "var(--danger)"
+              : al.severity === "WARNING"
+                ? "var(--warning)"
+                : "var(--muted-foreground)";
+          return (
+            <div
+              key={al.id}
+              className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/30 p-3"
+            >
+              <div
+                className="grid h-9 w-9 place-items-center rounded-lg"
+                style={{
+                  background: `color-mix(in oklab, ${tone} 15%, transparent)`,
+                  color: tone,
+                }}
+              >
+                <Bell className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[10px] uppercase tracking-widest font-semibold"
+                  style={{ color: tone }}
+                >
+                  {al.severity} · {al.type}
+                </div>
+                <p className="text-sm mt-0.5">{al.message}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {new Date(al.date).toLocaleString()}
+                </p>
+              </div>
+              <Button size="icon" variant="ghost" onClick={() => dismiss.mutate(al.id)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        })}
+        {rows.length === 0 && (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            No alerts — your portfolio looks healthy.
+          </p>
         )}
       </div>
     </div>

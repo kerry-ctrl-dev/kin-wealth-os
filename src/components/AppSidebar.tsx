@@ -43,7 +43,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileQuery } from "@/lib/queries";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
 
-const sections = [
+type NavItem = { title: string; url: string; icon: typeof LayoutDashboard; hint: string };
+type NavSection = { label: string; items: NavItem[] };
+
+const sections: NavSection[] = [
   {
     label: "Overview",
     items: [
@@ -83,7 +86,7 @@ const sections = [
       { title: "Settings", url: "/settings", icon: Settings, hint: "Profile and preferences" },
     ],
   },
-] as const;
+];
 
 export function AppSidebar() {
   const { isMobile, setOpenMobile, state } = useSidebar();
@@ -93,7 +96,7 @@ export function AppSidebar() {
     const match = sections.find((section) => section.items.some((item) => item.url === pathname));
     return match?.label ?? sections[0].label;
   }, [pathname]);
-  const [openSection, setOpenSection] = useState(activeSection);
+  const [openSection, setOpenSection] = useState<string>(activeSection);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const profile = useQuery(profileQuery());
@@ -115,7 +118,7 @@ export function AppSidebar() {
   const initials = first.slice(0, 2).toUpperCase();
   const profession = profile.data?.profession ?? "—";
   const avatarUrl = useAvatarUrl(profile.data?.avatar_url).data;
-  const memberLabel = profile.data?.email ?? "Your financial workspace";
+  const memberLabel = profile.data?.full_name ?? "Your financial workspace";
 
   function handleNavigate() {
     if (isMobile) setOpenMobile(false);

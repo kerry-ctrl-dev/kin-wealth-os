@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   ShieldCheck, BarChart3, PieChart, Target, Bell, ArrowRight, Wallet, Sparkles,
-  ReceiptText, FolderLock, Activity, Repeat, Award, Play, ChevronDown,
+  ReceiptText, Activity, Repeat, Play, ChevronDown,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import hero from "@/assets/landing-hero.jpg";

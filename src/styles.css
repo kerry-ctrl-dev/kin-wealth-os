@@ -224,11 +224,10 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elegant);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-@utility card-elevated:hover {
-  box-shadow: 0 8px 24px oklch(0 0 0 / 0.12);
-  transform: translateY(-2px);
+  &:hover {
+    box-shadow: 0 8px 24px oklch(0 0 0 / 0.12);
+    transform: translateY(-2px);
+  }
 }
 
 @keyframes accordion-down {

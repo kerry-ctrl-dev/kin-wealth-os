@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Trash2, ReceiptText } from "lucide-react";
+import { Plus, Trash2, ReceiptText, Repeat, Power } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MetricCard } from "@/components/MetricCard";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { expensesQuery, incomeQuery, assetsQuery } from "@/lib/queries";
+import { expensesQuery, incomeQuery, assetsQuery, recurringQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtKES } from "@/lib/finance";
 import { incomeBalances, totalAvailableCash } from "@/lib/balance";
@@ -180,7 +180,191 @@ function ExpensesPage() {
           </div>
         </div>
       </div>
+
+      <RecurringSection />
     </div>
+  );
+}
+
+function RecurringSection() {
+  const qc = useQueryClient();
+  const { data } = useQuery(recurringQuery());
+  const rows = (data ?? []).filter((r) => r.type === "expense");
+  async function toggle(id: string, active: boolean) {
+    const { error } = await supabase.from("recurring").update({ active: !active }).eq("id", id);
+    if (error) toast.error(error.message);
+    else qc.invalidateQueries({ queryKey: ["recurring"] });
+  }
+  async function del(id: string) {
+    const { error } = await supabase.from("recurring").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Removed");
+      qc.invalidateQueries({ queryKey: ["recurring"] });
+    }
+  }
+  return (
+    <div className="fintech-card mt-6 p-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="font-semibold tracking-tight flex items-center gap-2">
+            <Repeat className="h-4 w-4 text-primary" /> Recurring expenses
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Bills and subscriptions that repeat on a schedule.
+          </p>
+        </div>
+        <AddRecurring />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            className="rounded-2xl border border-border/70 bg-background/30 p-4"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {r.frequency}
+                </div>
+                <div className="font-medium truncate">{r.label}</div>
+                <div className="metric-value mt-1 text-lg">{fmtKES(Number(r.amount))}</div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => toggle(r.id, r.active)}
+                  title={r.active ? "Pause" : "Resume"}
+                  className={r.active ? "text-primary" : "text-muted-foreground"}
+                >
+                  <Power className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => del(r.id)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Next: {new Date(r.next_run).toLocaleDateString()}
+              {r.active ? "" : " · paused"}
+            </div>
+          </div>
+        ))}
+        {rows.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No recurring expenses yet. Add rent, subscriptions or utilities to automate tracking.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AddRecurring() {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    label: "",
+    amount: "",
+    frequency: "monthly",
+    next_run: new Date().toISOString().slice(0, 10),
+  });
+  const [saving, setSaving] = useState(false);
+  async function save() {
+    if (!form.label.trim() || !Number(form.amount)) return toast.error("Fill all fields");
+    setSaving(true);
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) {
+      setSaving(false);
+      return;
+    }
+    const { error } = await supabase.from("recurring").insert({
+      user_id: u.user.id,
+      type: "expense",
+      label: form.label.trim(),
+      amount: Number(form.amount),
+      frequency: form.frequency,
+      next_run: form.next_run,
+      active: true,
+    });
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Recurring expense added");
+      setOpen(false);
+      setForm({
+        label: "",
+        amount: "",
+        frequency: "monthly",
+        next_run: new Date().toISOString().slice(0, 10),
+      });
+      qc.invalidateQueries({ queryKey: ["recurring"] });
+    }
+  }
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Plus className="h-4 w-4" /> New recurring
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New recurring expense</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Category / label</Label>
+            <Input
+              value={form.label}
+              onChange={(e) => setForm({ ...form, label: e.target.value })}
+              placeholder="Rent, Netflix, Data bundle…"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Amount (KES)</Label>
+              <Input
+                type="number"
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Frequency</Label>
+              <Select
+                value={form.frequency}
+                onValueChange={(v) => setForm({ ...form, frequency: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label>Next run</Label>
+            <Input
+              type="date"
+              value={form.next_run}
+              onChange={(e) => setForm({ ...form, next_run: e.target.value })}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={save} disabled={saving}>
+              {saving ? "Saving…" : "Save"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

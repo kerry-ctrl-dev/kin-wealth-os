@@ -18,7 +18,7 @@ import { personalAssetsValue } from "@/lib/balance";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/personal-assets")({
-  head: () => ({ meta: [{ title: "Personal Assets — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Assets Manager — Wealth OS" }] }),
   component: PersonalAssetsPage,
 });
 
@@ -57,7 +57,7 @@ function PersonalAssetsPage() {
 
   return (
     <div>
-      <SectionHeading title="Personal Assets" sub="Vehicles, household items, electronics, clothes, cash — counted toward net worth." action={<AddDialog />} />
+      <SectionHeading title="Assets Manager" sub="Vehicles, household items, electronics, clothes, cash — counted toward net worth." action={<AddDialog />} />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <MetricCard label="Total value" value={fmtKES(total)} icon={<HomeIcon className="h-4 w-4" />} />
         <MetricCard label="Items" value={String(rows.length)} />

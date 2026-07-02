@@ -1,8 +1,7 @@
-import { Suspense, lazy, type ReactNode, useEffect } from "react";
+import { Suspense, lazy, type ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { BottomNav } from "@/components/BottomNav";
-import { processDueRecurring } from "@/lib/recurring-runner";
 import logo from "@/assets/logo.png";
 
 const AssistantWidget = lazy(async () => {
@@ -10,22 +9,7 @@ const AssistantWidget = lazy(async () => {
   return { default: mod.AssistantWidget };
 });
 
-const LAST_RECURRING_RUN_KEY = "wealth-os:last-recurring-run";
-
 export function AppShell({ children }: { children: ReactNode }) {
-  useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    if (window.localStorage.getItem(LAST_RECURRING_RUN_KEY) === today) return;
-
-    const timer = window.setTimeout(() => {
-      processDueRecurring()
-        .then(() => window.localStorage.setItem(LAST_RECURRING_RUN_KEY, today))
-        .catch(() => {});
-    }, 1200);
-
-    return () => window.clearTimeout(timer);
-  }, []);
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground">

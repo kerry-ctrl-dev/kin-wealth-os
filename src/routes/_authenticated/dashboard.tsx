@@ -67,7 +67,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — MalinGu" }] }),
   component: Dashboard,
 });
 

@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, BellRing, CalendarClock, Bell, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reminders")({
-  head: () => ({ meta: [{ title: "Reminders — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Reminders — MalinGu" }] }),
   component: RemindersPage,
 });
 

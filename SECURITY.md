@@ -1,4 +1,4 @@
-# Security Guidelines for Kin Wealth OS
+# Security Guidelines for MalinGu
 
 This document outlines the security measures implemented in this application and guidelines for maintaining security as the project evolves.
 

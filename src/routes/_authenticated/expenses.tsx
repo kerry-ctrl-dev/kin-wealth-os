@@ -30,7 +30,7 @@ import { PAYMENT_METHODS } from "@/lib/instruments";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
-  head: () => ({ meta: [{ title: "Expenses — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Expenses — MalinGu" }] }),
   component: ExpensesPage,
 });
 

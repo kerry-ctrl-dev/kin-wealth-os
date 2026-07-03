@@ -15,9 +15,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Wealth OS — Your personal financial operating system" },
+      { title: "MalinGu — Your personal financial operating system" },
       { name: "description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS for disciplined investors." },
-      { property: "og:title", content: "Personal Wealth OS" },
+      { property: "og:title", content: "MalinGu" },
       { property: "og:description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS." },
     ],
   }),
@@ -139,9 +139,9 @@ function Landing() {
       <footer className="border-t border-white/10 py-10 px-4 sm:px-8 text-center text-sm text-white/50">
         <div className="flex items-center justify-center gap-2 mb-3">
           <img src={logo} alt="" className="h-6 w-6" />
-          <span className="font-semibold text-white">Wealth OS</span>
+          <span className="font-semibold text-white">MalinGu</span>
         </div>
-        © {new Date().getFullYear()} Personal Wealth OS. Built for disciplined investors.
+        © {new Date().getFullYear()} MalinGu. Built for disciplined investors.
       </footer>
     </div>
   );
@@ -175,7 +175,7 @@ function FeatureRow({ title, items }: { title: string; items: FeatureItem[] }) {
 }
 
 const FAQ = [
-  { q: "Is Wealth OS free?", a: "Yes — sign up and use the full app at no cost. Premium tiers may arrive later." },
+  { q: "Is MalinGu free?", a: "Yes — sign up and use the full app at no cost. Premium tiers may arrive later." },
   { q: "How is my data protected?", a: "Every record is isolated by row-level security. Only you can see your data — not even other users of the app." },
   { q: "Does the AI advisor see my numbers?", a: "Aria reads a summary of your portfolio when you ask a question, so its advice is personal — never your raw documents." },
   { q: "What currencies are supported?", a: "Built for KES first, with global asset tracking. Multi-currency support is on the roadmap." },

@@ -21,7 +21,7 @@ export interface Appearance {
   accent: AccentKey;
 }
 
-const KEY = "wealth-os:appearance";
+const KEY = "malingu:appearance";
 
 export const DEFAULT_APPEARANCE: Appearance = {
   theme: "system",

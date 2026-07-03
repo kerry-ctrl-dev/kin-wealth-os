@@ -1,4 +1,4 @@
-This is how the Wealth-OS is to be
+This is how the MalinGu is to be
 
 ## What I'll build
 

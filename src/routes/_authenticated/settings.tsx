@@ -60,7 +60,7 @@ import { useAvatarUrl } from "@/hooks/use-avatar-url";
 import { useRef } from "react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Settings — MalinGu" }] }),
   component: SettingsPage,
 });
 
@@ -498,7 +498,7 @@ function DangerZone() {
         <AlertTriangle className="h-4 w-4" /> Danger zone
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Permanently delete your Wealth OS account and every record — income, expenses,
+        Permanently delete your MalinGu account and every record — income, expenses,
         investments, goals, loans, reminders and documents. This action cannot be undone.
       </p>
       <Dialog open={open} onOpenChange={setOpen}>

@@ -30,7 +30,7 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
-  doc.text("Wealth OS", 40, 42);
+  doc.text("MalinGu", 40, 42);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
   doc.text(`${report.period.toUpperCase()} REPORT · ${report.label}`, 40, 64);
@@ -306,10 +306,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     doc.setPage(p);
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text(`Wealth OS · Generated ${generatedAt}`, 40, 820);
+    doc.text(`MalinGu · Generated ${generatedAt}`, 40, 820);
     doc.text(`Page ${p} / ${pageCount}`, W - 40, 820, { align: "right" });
   }
 
   // Save PDF to browser download (not stored on server)
-  doc.save(`wealth-os-${report.period}-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`malingu-${report.period}-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

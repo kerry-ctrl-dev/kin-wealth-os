@@ -39,7 +39,7 @@ import { Plus } from "lucide-react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/_authenticated/portfolio")({
-  head: () => ({ meta: [{ title: "Investments — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Investments — MalinGu" }] }),
   component: PortfolioPage,
 });
 

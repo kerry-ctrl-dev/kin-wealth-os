@@ -191,7 +191,7 @@ export function buildReport(
 
 export function reportToText(r: Report): string {
   const lines: string[] = [];
-  lines.push(`Wealth OS — ${r.period.toUpperCase()} REPORT`);
+  lines.push(`MalinGu — ${r.period.toUpperCase()} REPORT`);
   lines.push(r.label);
   lines.push("");
   lines.push(`Total Assets: ${fmtKES(r.totalAssets)}`);

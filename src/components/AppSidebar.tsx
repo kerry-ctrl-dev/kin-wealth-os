@@ -133,11 +133,11 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
           <div className="grid h-10 w-10 place-items-center rounded-2xl border border-sidebar-border bg-sidebar-accent/40">
-            <img src={logo} alt="Wealth OS logo" className="h-6 w-6" />
+            <img src={logo} alt="MalinGu logo" className="h-6 w-6" />
           </div>
           {!collapsed && (
             <div className="leading-tight">
-              <div className="text-sm font-semibold">Wealth OS</div>
+              <div className="text-sm font-semibold">MalinGu</div>
               <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
                 Calm money management
               </div>

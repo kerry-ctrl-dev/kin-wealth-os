@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/goals")({
-  head: () => ({ meta: [{ title: "Goals — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Goals — MalinGu" }] }),
   component: GoalsPage,
 });
 

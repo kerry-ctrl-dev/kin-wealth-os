@@ -12,7 +12,7 @@ import { profileQuery } from "@/lib/queries";
 import { CATEGORY_LABEL, fmtKES, fmtPct } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/reports")({
-  head: () => ({ meta: [{ title: "Reports — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Reports — MalinGu" }] }),
   component: ReportsPage,
 });
 
@@ -50,7 +50,7 @@ function ReportsPage() {
       kind === "income" ? (income.data ?? []).map((r) => ({ date: r.date, source: r.source, amount: r.amount }))
       : kind === "assets" ? (assets.data ?? []).map((r) => ({ created_at: r.created_at, category: r.category, name: r.name, value: r.value, liquidity: r.liquidity, platform: r.platform ?? "", payment_method: r.payment_method ?? "" }))
       : (goals.data ?? []).map((r) => ({ name: r.name, target: r.target, current: r.current, deadline: r.deadline ?? "" }));
-    downloadFile(`wealth-os-${kind}-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(rows));
+    downloadFile(`malingu-${kind}-${new Date().toISOString().slice(0, 10)}.csv`, toCSV(rows));
   }
 
   return (

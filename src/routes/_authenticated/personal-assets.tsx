@@ -18,7 +18,7 @@ import { personalAssetsValue } from "@/lib/balance";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/personal-assets")({
-  head: () => ({ meta: [{ title: "Assets Manager — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Assets Manager — MalinGu" }] }),
   component: PersonalAssetsPage,
 });
 

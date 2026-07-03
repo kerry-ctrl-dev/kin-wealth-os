@@ -16,9 +16,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "MalinGu — Your personal financial operating system" },
-      { name: "description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS for disciplined investors." },
+      { name: "description", content: "Investments, expenses, goals, AI advisor and a private vault — manage, grow and protect everything you value." },
       { property: "og:title", content: "MalinGu" },
-      { property: "og:description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS." },
+      { property: "og:description", content: "Investments, expenses, goals, AI advisor and a private vault — manage, grow and protect everything you value." },
     ],
   }),
   component: Landing,

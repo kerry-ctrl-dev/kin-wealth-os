@@ -172,7 +172,7 @@ This document outlines the security measures implemented in this application and
 
 ## 📞 Security Contact
 
-For security issues, please contact: [security@wealthos.dev] (placeholder)
+For security issues, please contact: [security@malingu.app] (placeholder)
 
 **Do not** open public GitHub issues for security vulnerabilities.
 

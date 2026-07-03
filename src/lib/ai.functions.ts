@@ -21,7 +21,7 @@ export const chatWithAdvisor = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
-    const sys = `You are Aria — a proactive Kenyan personal-finance copilot inside the Wealth OS app. All amounts are in KES.
+    const sys = `You are Aria — a proactive Kenyan personal-finance copilot inside the MalinGu app. All amounts are in KES.
 
 MARKET CONTEXT (Kenya):
 - MMFs to reference by name: CIC, Sanlam, Britam, NCBA, ICEA, Old Mutual, Cytonn, Etica, Zimele, GenAfrica, Madison, Lofty-Corban. Typical net yields sit in the 9–15% p.a. band.

@@ -13,7 +13,7 @@ import { fmtKES } from "@/lib/finance";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/budgets")({
-  head: () => ({ meta: [{ title: "Budgets — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Budgets — MalinGu" }] }),
   component: BudgetsPage,
 });
 

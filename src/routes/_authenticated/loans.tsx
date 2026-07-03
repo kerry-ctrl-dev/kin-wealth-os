@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { exportLoanReportPDF, defaultReminderMessage } from "@/lib/loan-report";
 
 export const Route = createFileRoute("/_authenticated/loans")({
-  head: () => ({ meta: [{ title: "Loans — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Loans — MalinGu" }] }),
   component: LoansPage,
 });
 

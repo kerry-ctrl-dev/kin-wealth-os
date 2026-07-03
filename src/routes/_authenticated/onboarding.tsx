@@ -27,7 +27,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
-  head: () => ({ meta: [{ title: "Welcome — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Welcome — MalinGu" }] }),
   component: Onboarding,
 });
 
@@ -209,7 +209,7 @@ function Onboarding() {
             </div>
             <div>
               <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                Welcome to Wealth OS
+                Welcome to MalinGu
               </div>
               <div className="font-semibold tracking-tight">Set up your workspace</div>
             </div>
@@ -348,7 +348,7 @@ function Onboarding() {
               </Button>
             ) : (
               <Button onClick={finish} disabled={!canFinish || busy} className="rounded-xl">
-                {busy ? "Finishing…" : "Enter Wealth OS"} <ArrowRight className="h-4 w-4" />
+                {busy ? "Finishing…" : "Enter MalinGu"} <ArrowRight className="h-4 w-4" />
               </Button>
             )}
           </div>

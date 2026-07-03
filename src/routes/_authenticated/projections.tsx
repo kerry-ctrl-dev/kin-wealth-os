@@ -9,7 +9,7 @@ import { assetsQuery } from "@/lib/queries";
 import { fmtKES, totalValue } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/projections")({
-  head: () => ({ meta: [{ title: "Projections — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Projections — MalinGu" }] }),
   component: Projections,
 });
 

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/SectionHeading";
 
 export const Route = createFileRoute("/_authenticated/assistant")({
-  head: () => ({ meta: [{ title: "AI Assistant — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "AI Assistant — MalinGu" }] }),
   component: AssistantPage,
 });
 

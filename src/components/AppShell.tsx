@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
               <div className="min-w-0">
                 <div className="truncate text-sm font-semibold tracking-tight sm:text-base">
-                  Personal Wealth OS
+                  MalinGu
                 </div>
                 <div className="hidden text-xs text-muted-foreground sm:block">
                   Cleaner investing workflows, portfolio tracking, and planning

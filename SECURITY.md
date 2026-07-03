@@ -1,4 +1,4 @@
-# Security Guidelines for Kin Wealth OS
+# Security Guidelines for MalinGu
 
 This document outlines the security measures implemented in this application and guidelines for maintaining security as the project evolves.
 
@@ -172,7 +172,7 @@ This document outlines the security measures implemented in this application and
 
 ## 📞 Security Contact
 
-For security issues, please contact: [security@wealthos.dev] (placeholder)
+For security issues, please contact: [security@malingu.app] (placeholder)
 
 **Do not** open public GitHub issues for security vulnerabilities.
 

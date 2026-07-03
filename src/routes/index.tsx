@@ -15,10 +15,10 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Wealth OS — Your personal financial operating system" },
-      { name: "description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS for disciplined investors." },
-      { property: "og:title", content: "Personal Wealth OS" },
-      { property: "og:description", content: "Investments, expenses, goals, AI advisor and a private vault — one unified wealth OS." },
+      { title: "MalinGu — Your personal financial operating system" },
+      { name: "description", content: "Investments, expenses, goals, AI advisor and a private vault — manage, grow and protect everything you value." },
+      { property: "og:title", content: "MalinGu" },
+      { property: "og:description", content: "Investments, expenses, goals, AI advisor and a private vault — manage, grow and protect everything you value." },
     ],
   }),
   component: Landing,
@@ -45,7 +45,7 @@ function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src={logo} alt="" className="h-8 w-8" />
-            <span className="font-bold tracking-tight text-lg">WEALTH<span className="text-primary">OS</span></span>
+            <span className="font-bold tracking-tight text-lg">Malin<span className="text-primary">Gu</span></span>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/auth"><Button variant="ghost" size="sm" className="text-white hover:bg-white/10">Sign in</Button></Link>
@@ -62,19 +62,19 @@ function Landing() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-24">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-primary font-semibold">
-              <Sparkles className="h-3.5 w-3.5" /> AI-powered wealth
+              <Sparkles className="h-3.5 w-3.5" /> Mali Yangu · My Wealth
             </span>
             <h1 className="mt-4 text-5xl sm:text-7xl font-black tracking-tight leading-[1.02] drop-shadow-2xl">
-              Your money,<br/>finally <span className="text-primary">in one place.</span>
+              Your Wealth.<br/>Your Future.<br/><span className="text-primary">Your Control.</span>
             </h1>
             <p className="mt-5 text-lg sm:text-xl text-white/80 max-w-xl">
-              Track investments, expenses, goals and budgets. Get an AI advisor that knows your portfolio. Build wealth like the disciplined 1%.
+              MalinGu helps individuals and businesses manage, grow and protect everything they value — from daily finances to long-term wealth.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link to="/auth"><Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-base font-semibold h-12 px-6">
-                <Play className="h-5 w-5 fill-current" /> Get started — it's free
+                <Play className="h-5 w-5 fill-current" /> Get Started
               </Button></Link>
-              <a href="#features"><Button size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 h-12 px-6">More info</Button></a>
+              <a href="#features"><Button size="lg" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 h-12 px-6">Learn More</Button></a>
             </div>
             <p className="mt-4 text-xs text-white/60">No credit card required. Cancel anytime.</p>
           </div>
@@ -139,9 +139,9 @@ function Landing() {
       <footer className="border-t border-white/10 py-10 px-4 sm:px-8 text-center text-sm text-white/50">
         <div className="flex items-center justify-center gap-2 mb-3">
           <img src={logo} alt="" className="h-6 w-6" />
-          <span className="font-semibold text-white">Wealth OS</span>
+          <span className="font-semibold text-white">MalinGu</span>
         </div>
-        © {new Date().getFullYear()} Personal Wealth OS. Built for disciplined investors.
+        © {new Date().getFullYear()} MalinGu. Built for disciplined investors.
       </footer>
     </div>
   );
@@ -175,7 +175,7 @@ function FeatureRow({ title, items }: { title: string; items: FeatureItem[] }) {
 }
 
 const FAQ = [
-  { q: "Is Wealth OS free?", a: "Yes — sign up and use the full app at no cost. Premium tiers may arrive later." },
+  { q: "Is MalinGu free?", a: "Yes — sign up and use the full app at no cost. Premium tiers may arrive later." },
   { q: "How is my data protected?", a: "Every record is isolated by row-level security. Only you can see your data — not even other users of the app." },
   { q: "Does the AI advisor see my numbers?", a: "Aria reads a summary of your portfolio when you ask a question, so its advice is personal — never your raw documents." },
   { q: "What currencies are supported?", a: "Built for KES first, with global asset tracking. Multi-currency support is on the roadmap." },

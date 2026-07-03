@@ -44,7 +44,7 @@ function validatePassword(password: string): { valid: boolean; error?: string } 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Personal Wealth OS" },
+      { title: "Sign in — MalinGu" },
       {
         name: "description",
         content: "Sign in or create an account to access your wealth dashboard.",
@@ -130,7 +130,7 @@ function AuthPage() {
     setLoading(false);
 
     if (data.session) {
-      toast.success("Welcome to Wealth OS");
+      toast.success("Welcome to MalinGu");
       navigate({ to: "/dashboard", replace: true });
       return;
     }
@@ -192,7 +192,7 @@ function AuthPage() {
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>
-                <div className="font-semibold tracking-tight">Personal Wealth OS</div>
+                <div className="font-semibold tracking-tight">MalinGu</div>
                 <div className="text-xs text-muted-foreground">
                   Disciplined investing, clearer decisions
                 </div>
@@ -249,7 +249,7 @@ function AuthPage() {
               <TrendingUp className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-semibold tracking-tight">Personal Wealth OS</div>
+              <div className="font-semibold tracking-tight">MalinGu</div>
               <div className="text-xs text-muted-foreground">Cleaner money decisions</div>
             </div>
           </div>
@@ -305,7 +305,7 @@ function AuthPage() {
             </Button>
 
             <div className="mt-4 text-center text-xs text-muted-foreground">
-              By continuing, you agree to use Wealth OS for personal financial planning.
+              By continuing, you agree to use MalinGu for personal financial planning.
             </div>
           </div>
         </div>
@@ -415,7 +415,7 @@ function AuthForm({
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Use the email and password tied to your Wealth OS account.
+            Use the email and password tied to your MalinGu account.
           </p>
         )}
       </div>

@@ -10,7 +10,7 @@ import { AllocationDonut } from "@/components/AllocationDonut";
 import { byCategory, CATEGORY_LABEL, fmtKES, totalValue, type AssetCategory } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/charts")({
-  head: () => ({ meta: [{ title: "Charts — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Charts — MalinGu" }] }),
   component: ChartsPage,
 });
 

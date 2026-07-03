@@ -8,7 +8,7 @@ import { incomeQuery, remindersQuery, goalsQuery } from "@/lib/queries";
 import { fmtKES } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
-  head: () => ({ meta: [{ title: "Calendar — Wealth OS" }] }),
+  head: () => ({ meta: [{ title: "Calendar — MalinGu" }] }),
   component: CalendarPage,
 });
 

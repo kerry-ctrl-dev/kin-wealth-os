@@ -195,8 +195,8 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       <SectionHeading
-        title="Dashboard"
-        sub="A cleaner command center for your money, portfolio, and next actions."
+        title="Mali Yangu Command Center"
+        sub="Your wealth, your future, your control — all in one Kenyan-built cockpit."
       />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
@@ -208,7 +208,7 @@ function Dashboard() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                <Sparkles className="h-3.5 w-3.5" /> Today
+                <Sparkles className="h-3.5 w-3.5" /> Mali Yangu · Today
               </div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
                 {greeting.text} <span>{greeting.emoji}</span>
@@ -247,14 +247,14 @@ function Dashboard() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild className="rounded-full px-5">
-              <Link to="/portfolio">Review portfolio</Link>
+              <Link to="/portfolio">Grow my wealth</Link>
             </Button>
             <Button
               asChild
               variant="outline"
               className="rounded-full border-border/70 bg-background/45 px-5"
             >
-              <Link to="/expenses">Tidy up spending</Link>
+              <Link to="/expenses">Tame my spending</Link>
             </Button>
           </div>
         </div>
@@ -664,7 +664,7 @@ function QuickActions() {
       <div>
         <h2 className="text-sm font-semibold tracking-tight">Quick actions</h2>
         <p className="text-sm text-muted-foreground">
-          Jump into the updates people make most often.
+          One tap into the moves that build Mali Yangu the fastest.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

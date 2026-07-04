@@ -450,8 +450,8 @@ function Dashboard() {
                     }}
                     itemStyle={{ color: "var(--color-foreground)", fontSize: 13, fontWeight: 600 }}
                     labelFormatter={(l) => `${l}`}
-                    formatter={(v: number | null, name) => [
-                      v == null ? "—" : fmtKES(v),
+                    formatter={(v, name) => [
+                      v == null ? "—" : fmtKES(Number(v)),
                       name === "p" ? "Previous" : "Current",
                     ]}
                   />

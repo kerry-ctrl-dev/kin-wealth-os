@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Wallet,
@@ -164,9 +164,24 @@ function Dashboard() {
         alertCount > 0 ? "Portfolio items need attention" : "Portfolio currently looks stable",
     },
   ] as const;
-  const trend = (snapshots.data ?? [])
-    .slice(-30)
-    .map((s) => ({ d: new Date(s.date).toLocaleDateString(), v: Number(s.total_assets) }));
+  const trendAll = (snapshots.data ?? []).map((s) => ({
+    date: new Date(s.date),
+    d: new Date(s.date).toLocaleDateString(),
+    v: Number(s.total_assets),
+  }));
+  const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">("30D");
+  const trend = useMemo(() => {
+    if (trendRange === "ALL") return trendAll;
+    const days = trendRange === "7D" ? 7 : trendRange === "30D" ? 30 : 90;
+    const cutoff = Date.now() - days * 86400_000;
+    return trendAll.filter((p) => p.date.getTime() >= cutoff);
+  }, [trendAll, trendRange]);
+  const trendDelta = useMemo(() => {
+    if (trend.length < 2) return { abs: 0, pct: 0 };
+    const first = trend[0].v;
+    const last = trend[trend.length - 1].v;
+    return { abs: last - first, pct: first ? ((last - first) / first) * 100 : 0 };
+  }, [trend]);
 
   // Snapshot on dashboard load (best-effort, debounced via hash key)
   useEffect(() => {
@@ -292,14 +307,51 @@ function Dashboard() {
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-semibold tracking-tight">Net worth trend</h2>
-            <span className="text-xs text-muted-foreground">Last {trend.length} snapshots</span>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="font-semibold tracking-tight truncate">Net worth trend</h2>
+              {trend.length > 1 && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  <span
+                    className={
+                      trendDelta.abs >= 0
+                        ? "text-[color:var(--success)]"
+                        : "text-[color:var(--danger)]"
+                    }
+                  >
+                    {trendDelta.abs >= 0 ? "▲" : "▼"} {fmtKES(Math.abs(trendDelta.abs))} (
+                    {fmtPct(trendDelta.pct, 1)})
+                  </span>{" "}
+                  · {trend.length} pts
+                </p>
+              )}
+            </div>
+            <div
+              role="tablist"
+              aria-label="Time range"
+              className="inline-flex shrink-0 rounded-full border border-border/70 bg-background/40 p-0.5 text-xs"
+            >
+              {(["7D", "30D", "90D", "ALL"] as const).map((r) => (
+                <button
+                  key={r}
+                  role="tab"
+                  aria-selected={trendRange === r}
+                  onClick={() => setTrendRange(r)}
+                  className={`rounded-full px-2.5 py-1 transition-colors ${
+                    trendRange === r
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
           </div>
           {trend.length > 1 ? (
-            <div className="h-44">
-              <ResponsiveContainer>
-                <AreaChart data={trend}>
+            <div className="h-44 sm:h-56 -mx-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trend} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                   <defs>
                     <linearGradient id="nw" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.6} />
@@ -309,11 +361,21 @@ function Dashboard() {
                   <XAxis dataKey="d" hide />
                   <YAxis hide domain={["dataMin", "dataMax"]} />
                   <Tooltip
+                    cursor={{ stroke: "var(--color-primary)", strokeOpacity: 0.35, strokeWidth: 1 }}
                     contentStyle={{
                       background: "var(--color-popover)",
                       border: "1px solid var(--color-border)",
                       borderRadius: 12,
+                      padding: "8px 10px",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
                     }}
+                    labelStyle={{
+                      color: "var(--color-muted-foreground)",
+                      fontSize: 11,
+                      marginBottom: 2,
+                    }}
+                    itemStyle={{ color: "var(--color-foreground)", fontSize: 13, fontWeight: 600 }}
+                    labelFormatter={(l) => `${l}`}
                     formatter={(v: number) => fmtKES(v)}
                   />
                   <Area
@@ -322,14 +384,17 @@ function Dashboard() {
                     stroke="var(--color-primary)"
                     strokeWidth={2}
                     fill="url(#nw)"
+                    activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--color-background)" }}
+                    isAnimationActive
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground py-6">
-              Snapshots are captured automatically — your trend will appear here as your portfolio
-              evolves.
+              {trendAll.length > 0
+                ? "Not enough data in this range — try a wider window."
+                : "Snapshots are captured automatically — your trend will appear here as your portfolio evolves."}
             </p>
           )}
         </div>

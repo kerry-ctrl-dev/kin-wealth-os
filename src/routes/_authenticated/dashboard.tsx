@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { type ReactNode, useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Wallet,
@@ -164,9 +164,24 @@ function Dashboard() {
         alertCount > 0 ? "Portfolio items need attention" : "Portfolio currently looks stable",
     },
   ] as const;
-  const trend = (snapshots.data ?? [])
-    .slice(-30)
-    .map((s) => ({ d: new Date(s.date).toLocaleDateString(), v: Number(s.total_assets) }));
+  const trendAll = (snapshots.data ?? []).map((s) => ({
+    date: new Date(s.date),
+    d: new Date(s.date).toLocaleDateString(),
+    v: Number(s.total_assets),
+  }));
+  const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">("30D");
+  const trend = useMemo(() => {
+    if (trendRange === "ALL") return trendAll;
+    const days = trendRange === "7D" ? 7 : trendRange === "30D" ? 30 : 90;
+    const cutoff = Date.now() - days * 86400_000;
+    return trendAll.filter((p) => p.date.getTime() >= cutoff);
+  }, [trendAll, trendRange]);
+  const trendDelta = useMemo(() => {
+    if (trend.length < 2) return { abs: 0, pct: 0 };
+    const first = trend[0].v;
+    const last = trend[trend.length - 1].v;
+    return { abs: last - first, pct: first ? ((last - first) / first) * 100 : 0 };
+  }, [trend]);
 
   // Snapshot on dashboard load (best-effort, debounced via hash key)
   useEffect(() => {

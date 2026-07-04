@@ -385,14 +385,51 @@ function Dashboard() {
               ))}
             </div>
           </div>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => setCompare((v) => !v)}
+              aria-pressed={compare}
+              disabled={trendRange === "ALL"}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                compare
+                  ? "border-primary/60 bg-primary/10 text-primary"
+                  : "border-border/70 bg-background/40 text-muted-foreground hover:text-foreground"
+              } disabled:cursor-not-allowed disabled:opacity-40`}
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: compare ? "var(--color-primary)" : "var(--color-muted-foreground)" }}
+              />
+              Compare previous {trendRange === "ALL" ? "period" : trendRange}
+            </button>
+            {compare && prevDelta && (
+              <span className="text-[11px] text-muted-foreground">
+                vs previous:{" "}
+                <span
+                  className={
+                    prevDelta.vs >= 0
+                      ? "text-[color:var(--success)]"
+                      : "text-[color:var(--danger)]"
+                  }
+                >
+                  {prevDelta.vs >= 0 ? "▲" : "▼"} {fmtPct(Math.abs(prevDelta.vs), 1)}
+                </span>
+              </span>
+            )}
+          </div>
           {trend.length > 1 ? (
             <div className="h-44 sm:h-56 -mx-2">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trend} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <AreaChart data={compareData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                   <defs>
                     <linearGradient id="nw" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.6} />
                       <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="nwPrev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-muted-foreground)" stopOpacity={0.25} />
+                      <stop offset="100%" stopColor="var(--color-muted-foreground)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="d" hide />
@@ -413,8 +450,23 @@ function Dashboard() {
                     }}
                     itemStyle={{ color: "var(--color-foreground)", fontSize: 13, fontWeight: 600 }}
                     labelFormatter={(l) => `${l}`}
-                    formatter={(v: number) => fmtKES(v)}
+                    formatter={(v: number | null, name) => [
+                      v == null ? "—" : fmtKES(v),
+                      name === "p" ? "Previous" : "Current",
+                    ]}
                   />
+                  {compare && (
+                    <Area
+                      type="monotone"
+                      dataKey="p"
+                      stroke="var(--color-muted-foreground)"
+                      strokeWidth={1.5}
+                      strokeDasharray="4 4"
+                      fill="url(#nwPrev)"
+                      connectNulls
+                      isAnimationActive={false}
+                    />
+                  )}
                   <Area
                     type="monotone"
                     dataKey="v"

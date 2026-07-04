@@ -170,6 +170,7 @@ function Dashboard() {
     v: Number(s.total_assets),
   }));
   const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">("30D");
+  const [compare, setCompare] = useState(false);
   const trend = useMemo(() => {
     if (trendRange === "ALL") return trendAll;
     const days = trendRange === "7D" ? 7 : trendRange === "30D" ? 30 : 90;
@@ -182,6 +183,42 @@ function Dashboard() {
     const last = trend[trend.length - 1].v;
     return { abs: last - first, pct: first ? ((last - first) / first) * 100 : 0 };
   }, [trend]);
+  const compareData = useMemo(() => {
+    if (!compare || trend.length < 2) return trend.map((p) => ({ ...p, p: null as number | null }));
+    const rangeMs =
+      trendRange === "ALL"
+        ? trend[trend.length - 1].date.getTime() - trend[0].date.getTime()
+        : (trendRange === "7D" ? 7 : trendRange === "30D" ? 30 : 90) * 86400_000;
+    const prevStart = trend[0].date.getTime() - rangeMs;
+    const prevEnd = trend[0].date.getTime();
+    const prev = trendAll.filter(
+      (p) => p.date.getTime() >= prevStart && p.date.getTime() < prevEnd,
+    );
+    // Map previous points onto current x-axis by offset from window start.
+    return trend.map((cur) => {
+      const targetTs = cur.date.getTime() - rangeMs;
+      let closest: (typeof prev)[number] | null = null;
+      let best = Infinity;
+      for (const q of prev) {
+        const diff = Math.abs(q.date.getTime() - targetTs);
+        if (diff < best) {
+          best = diff;
+          closest = q;
+        }
+      }
+      return { ...cur, p: closest ? closest.v : null };
+    });
+  }, [compare, trend, trendAll, trendRange]);
+  const prevDelta = useMemo(() => {
+    if (!compare) return null;
+    const prevPts = compareData.filter((p) => p.p != null) as Array<{ p: number }>;
+    if (prevPts.length < 2) return null;
+    const first = prevPts[0].p;
+    const last = prevPts[prevPts.length - 1].p;
+    const curLast = trend[trend.length - 1].v;
+    const vs = last ? ((curLast - last) / last) * 100 : 0;
+    return { first, last, vs };
+  }, [compare, compareData, trend]);
 
   // Snapshot on dashboard load (best-effort, debounced via hash key)
   useEffect(() => {

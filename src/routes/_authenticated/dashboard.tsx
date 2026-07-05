@@ -443,9 +443,9 @@ function Dashboard() {
                   <YAxis hide domain={["dataMin", "dataMax"]} />
                   <Tooltip
                     cursor={{ stroke: "var(--color-primary)", strokeOpacity: 0.35, strokeWidth: 1 }}
-                    content={(props: { active?: boolean; payload?: Array<{ payload: { d: string; v: number; p: number | null } }> }) => {
+                    content={((props: { active?: boolean; payload?: Array<{ payload?: { d: string; v: number; p: number | null } }> }) => {
                       const { active, payload } = props;
-                      if (!active || !payload || !payload.length) return null;
+                      if (!active || !payload || !payload.length || !payload[0].payload) return null;
                       const row = payload[0].payload;
                       const cur = row.v;
                       const prev = row.p;
@@ -503,7 +503,7 @@ function Dashboard() {
                           )}
                         </div>
                       );
-                    }}
+                    }) as never}
                   />
                   {compare && (
                     <Area

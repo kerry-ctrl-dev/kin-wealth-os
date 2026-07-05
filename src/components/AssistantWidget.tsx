@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, Send, X } from "lucide-react";
@@ -31,6 +31,82 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   const [busy, setBusy] = useState(false);
   const send = useServerFn(chatWithAdvisor);
   const scroller = useRef<HTMLDivElement>(null);
+
+  // Draggable floating button — position persisted per device.
+  const POS_KEY = "malingu:aria:pos";
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = window.localStorage.getItem(POS_KEY);
+      return raw ? (JSON.parse(raw) as { x: number; y: number }) : null;
+    } catch {
+      return null;
+    }
+  });
+  const dragState = useRef<{
+    id: number;
+    dx: number;
+    dy: number;
+    moved: boolean;
+  } | null>(null);
+
+  const clamp = (x: number, y: number, w = 64, h = 56) => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    return {
+      x: Math.min(Math.max(8, x), vw - w - 8),
+      y: Math.min(Math.max(8, y), vh - h - 8),
+    };
+  };
+
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    dragState.current = {
+      id: e.pointerId,
+      dx: e.clientX - rect.left,
+      dy: e.clientY - rect.top,
+      moved: false,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, []);
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    const s = dragState.current;
+    if (!s || s.id !== e.pointerId) return;
+    const nx = e.clientX - s.dx;
+    const ny = e.clientY - s.dy;
+    if (!s.moved && (Math.abs(e.movementX) > 2 || Math.abs(e.movementY) > 2)) s.moved = true;
+    const w = e.currentTarget.offsetWidth;
+    const h = e.currentTarget.offsetHeight;
+    setPos(clamp(nx, ny, w, h));
+  }, []);
+  const onPointerUp = useCallback(
+    (e: React.PointerEvent<HTMLButtonElement>) => {
+      const s = dragState.current;
+      dragState.current = null;
+      if (!s) return;
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+      if (pos) {
+        try {
+          window.localStorage.setItem(POS_KEY, JSON.stringify(pos));
+        } catch {
+          /* ignore */
+        }
+      }
+      if (!s.moved) setOpen(true);
+    },
+    [pos],
+  );
+  // Keep in-view on resize.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onResize = () => setPos((p) => (p ? clamp(p.x, p.y) : p));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const assets = useQuery({ ...assetsQuery(), enabled: open });
   const income = useQuery({ ...incomeQuery(), enabled: open });
@@ -90,10 +166,21 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     <>
       {!open && (
         <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-24 right-4 z-40 inline-flex h-14 items-center gap-2 rounded-full px-4 text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] md:bottom-6 md:right-6"
-          style={{ background: "var(--gradient-primary)" }}
-          aria-label="Open AI assistant"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          className={cn(
+            "z-40 inline-flex h-14 touch-none select-none items-center gap-2 rounded-full px-4 text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] active:scale-[0.98]",
+            pos ? "fixed" : "fixed bottom-24 right-4 md:bottom-6 md:right-6",
+          )}
+          style={{
+            background: "var(--gradient-primary)",
+            ...(pos ? { left: pos.x, top: pos.y } : null),
+            cursor: "grab",
+          }}
+          aria-label="Open AI assistant — drag to move"
+          title="Drag to move · tap to open"
         >
           <Sparkles className="h-6 w-6" />
           <span className="pr-1 text-sm font-medium">Ask Aria</span>

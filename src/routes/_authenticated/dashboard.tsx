@@ -170,7 +170,14 @@ function Dashboard() {
     v: Number(s.total_assets),
   }));
   const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">("30D");
-  const [compare, setCompare] = useState(false);
+  const [compare, setCompare] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("malingu:dash:compare") === "1";
+  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("malingu:dash:compare", compare ? "1" : "0");
+  }, [compare]);
   const trend = useMemo(() => {
     if (trendRange === "ALL") return trendAll;
     const days = trendRange === "7D" ? 7 : trendRange === "30D" ? 30 : 90;
@@ -436,24 +443,67 @@ function Dashboard() {
                   <YAxis hide domain={["dataMin", "dataMax"]} />
                   <Tooltip
                     cursor={{ stroke: "var(--color-primary)", strokeOpacity: 0.35, strokeWidth: 1 }}
-                    contentStyle={{
-                      background: "var(--color-popover)",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: 12,
-                      padding: "8px 10px",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
-                    }}
-                    labelStyle={{
-                      color: "var(--color-muted-foreground)",
-                      fontSize: 11,
-                      marginBottom: 2,
-                    }}
-                    itemStyle={{ color: "var(--color-foreground)", fontSize: 13, fontWeight: 600 }}
-                    labelFormatter={(l) => `${l}`}
-                    formatter={(v, name) => [
-                      v == null ? "—" : fmtKES(Number(v)),
-                      name === "p" ? "Previous" : "Current",
-                    ]}
+                    content={((props: { active?: boolean; payload?: Array<{ payload?: { d: string; v: number; p: number | null } }> }) => {
+                      const { active, payload } = props;
+                      if (!active || !payload || !payload.length || !payload[0].payload) return null;
+                      const row = payload[0].payload;
+                      const cur = row.v;
+                      const prev = row.p;
+                      const diff = prev != null ? cur - prev : null;
+                      const pct = prev != null && prev !== 0 ? ((cur - prev) / prev) * 100 : null;
+                      const up = diff != null && diff >= 0;
+                      return (
+                        <div
+                          style={{
+                            background: "var(--color-popover)",
+                            border: "1px solid var(--color-border)",
+                            borderRadius: 12,
+                            padding: "10px 12px",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+                            minWidth: 160,
+                          }}
+                        >
+                          <div style={{ color: "var(--color-muted-foreground)", fontSize: 11, marginBottom: 6 }}>
+                            {row.d}
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+                            <span style={{ color: "var(--color-muted-foreground)" }}>Current</span>
+                            <span style={{ color: "var(--color-foreground)", fontWeight: 600 }}>{fmtKES(cur)}</span>
+                          </div>
+                          {compare && (
+                            <>
+                              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13, marginTop: 3 }}>
+                                <span style={{ color: "var(--color-muted-foreground)" }}>Previous</span>
+                                <span style={{ color: "var(--color-foreground)", fontWeight: 600 }}>
+                                  {prev == null ? "—" : fmtKES(prev)}
+                                </span>
+                              </div>
+                              {diff != null && (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    gap: 12,
+                                    fontSize: 12,
+                                    marginTop: 6,
+                                    paddingTop: 6,
+                                    borderTop: "1px dashed var(--color-border)",
+                                    color: up ? "var(--success)" : "var(--danger)",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  <span>Δ</span>
+                                  <span>
+                                    {up ? "▲" : "▼"} {fmtKES(Math.abs(diff))}
+                                    {pct != null ? ` (${fmtPct(Math.abs(pct), 1)})` : ""}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    }) as never}
                   />
                   {compare && (
                     <Area

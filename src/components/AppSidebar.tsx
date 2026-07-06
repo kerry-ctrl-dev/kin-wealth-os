@@ -18,6 +18,8 @@ import {
   Target,
   Wallet,
   Wallet as WalletIcon,
+  Palette,
+  Zap,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import {
@@ -75,6 +77,8 @@ const sections: NavSection[] = [
       { title: "Loans", url: "/loans", icon: Coins, hint: "Debts and lending" },
       { title: "Projections", url: "/projections", icon: Activity, hint: "Forward planning" },
       { title: "AI Assistant", url: "/assistant", icon: Sparkles, hint: "Ask Aria" },
+      { title: "Alerts", url: "/alerts", icon: Zap, hint: "Configure triggers" },
+      { title: "Appearance", url: "/appearance", icon: Palette, hint: "Theme, palette, density" },
       { title: "Settings", url: "/settings", icon: Settings, hint: "Profile and preferences" },
     ],
   },

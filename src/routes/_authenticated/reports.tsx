@@ -10,6 +10,8 @@ import { buildReport, toCSV, downloadFile, type ReportPeriod } from "@/lib/repor
 import { exportReportPDF } from "@/lib/pdf-report";
 import { profileQuery } from "@/lib/queries";
 import { CATEGORY_LABEL, fmtKES, fmtPct } from "@/lib/finance";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({ meta: [{ title: "Reports — MalinGu" }] }),
@@ -29,6 +31,10 @@ function ReportsPage() {
   const profile = useQuery(profileQuery());
   const [period, setPeriod] = useState<ReportPeriod>("daily");
   const [showCsv, setShowCsv] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const monthAgo = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
+  const [fromDate, setFromDate] = useState<string>(monthAgo);
+  const [toDate, setToDate] = useState<string>(today);
 
   const report = useMemo(
     () => buildReport(period, assets.data ?? [], income.data ?? [], goals.data ?? [], new Date(), {
@@ -38,8 +44,9 @@ function ReportsPage() {
       alerts: alerts.data ?? [],
       personalAssets: personalAssets.data ?? [],
       loans: loans.data ?? [],
+      custom: period === "custom" ? { from: new Date(fromDate), to: new Date(toDate) } : undefined,
     }),
-    [period, assets.data, income.data, goals.data, expenses.data, budgets.data, reminders.data, alerts.data, personalAssets.data, loans.data],
+    [period, fromDate, toDate, assets.data, income.data, goals.data, expenses.data, budgets.data, reminders.data, alerts.data, personalAssets.data, loans.data],
   );
 
   function exportPDF() {
@@ -64,9 +71,23 @@ function ReportsPage() {
               <TabsTrigger value="daily">Daily</TabsTrigger>
               <TabsTrigger value="weekly">Weekly</TabsTrigger>
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
+              <TabsTrigger value="custom">Custom</TabsTrigger>
             </TabsList>
             <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Download PDF report</Button>
           </div>
+
+          {period === "custom" && (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 max-w-md">
+              <div>
+                <Label className="text-xs uppercase tracking-widest text-muted-foreground">From</Label>
+                <Input type="date" value={fromDate} max={toDate} onChange={(e) => setFromDate(e.target.value)} />
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-widest text-muted-foreground">To</Label>
+                <Input type="date" value={toDate} min={fromDate} max={today} onChange={(e) => setToDate(e.target.value)} />
+              </div>
+            </div>
+          )}
 
           <TabsContent value={period} className="mt-4">
             <div className="text-xs uppercase tracking-widest text-muted-foreground">{report.label}</div>

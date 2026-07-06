@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Sparkles, Send, X } from "lucide-react";
+import { Sparkles, Send, X, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { assetsQuery, incomeQuery, expensesQuery, goalsQuery } from "@/lib/queries";
+import { assetsQuery, incomeQuery, expensesQuery, goalsQuery, profileQuery } from "@/lib/queries";
 import {
   fmtKES,
   totalIncome,
@@ -15,8 +15,24 @@ import {
 } from "@/lib/finance";
 import { chatWithAdvisor } from "@/lib/ai.functions";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+type OnboardStep =
+  | { key: "main_goals"; prompt: string }
+  | { key: "risk_level"; prompt: string }
+  | { key: "income_cadence"; prompt: string }
+  | { key: "holdings"; prompt: string };
+
+const ONBOARD_STEPS: OnboardStep[] = [
+  { key: "main_goals", prompt: "Karibu! I'm Aria. Let's set up your Kenyan wealth profile in 4 quick questions.\n\n1️⃣ What are your top 1–3 financial goals right now? (e.g. Buy land in Kiambu by 2028, build KES 500k emergency fund, quit employment in 5 years)" },
+  { key: "risk_level", prompt: "2️⃣ How much investment risk feel right for you — LOW (mostly MMF/T-bills), MEDIUM (mixed with NSE/REITs), or HIGH (heavy stocks/alt)?" },
+  { key: "income_cadence", prompt: "3️⃣ How is your income paid? (monthly salary, weekly/daily hustle, commission, business, mixed…)" },
+  { key: "holdings", prompt: "4️⃣ Roughly, what do you already hold today? (KES in M-Pesa/bank, MMF at Cytonn/Sanlam/etc, NSE stocks, SACCO shares, land/property, etc.)" },
+];
 
 export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -29,6 +45,9 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [onboarding, setOnboarding] = useState<{ step: number; answers: Record<string, string> } | null>(null);
+  const qc = useQueryClient();
+  const profile = useQuery({ ...profileQuery(), enabled: open });
   const send = useServerFn(chatWithAdvisor);
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -147,6 +166,47 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   async function submit() {
     const text = input.trim();
     if (!text || busy) return;
+    // Onboarding capture
+    if (onboarding) {
+      const cur = ONBOARD_STEPS[onboarding.step];
+      const nextAnswers = { ...onboarding.answers, [cur.key]: text };
+      const nextMsgs: Msg[] = [...msgs, { role: "user", content: text }];
+      setInput("");
+      if (onboarding.step + 1 < ONBOARD_STEPS.length) {
+        const next = ONBOARD_STEPS[onboarding.step + 1];
+        setMsgs([...nextMsgs, { role: "assistant", content: next.prompt }]);
+        setOnboarding({ step: onboarding.step + 1, answers: nextAnswers });
+      } else {
+        setBusy(true);
+        try {
+          const { data: u } = await supabase.auth.getUser();
+          if (u.user) {
+            const risk = /HIGH/i.test(nextAnswers.risk_level ?? "") ? "HIGH" : /LOW/i.test(nextAnswers.risk_level ?? "") ? "LOW" : "MEDIUM";
+            const combinedGoals = `${nextAnswers.main_goals}\n\nIncome cadence: ${nextAnswers.income_cadence}\nCurrent holdings: ${nextAnswers.holdings}`;
+            await supabase.from("profiles").update({
+              main_goals: combinedGoals,
+              risk_level: risk,
+              onboarded: true,
+            }).eq("id", u.user.id);
+            qc.invalidateQueries({ queryKey: ["profile"] });
+            toast.success("Your profile is saved");
+          }
+          setMsgs([
+            ...nextMsgs,
+            {
+              role: "assistant",
+              content: `Asante! I've saved your setup to your dashboard profile.\n\nQuick take on what you shared:\n• Risk: ${nextAnswers.risk_level}\n• Cadence: ${nextAnswers.income_cadence}\n\nBased on Kenyan mid-2026 rates, a common starting split is 40% MMF (net ~9–12%), 30% NSE bluechips (SCOM, EQTY, KCB), 15% REITs (ILAM, Acorn) and 15% cash buffer — tune to your risk. Ask me anything to go deeper.`,
+            },
+          ]);
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "Could not save profile");
+        } finally {
+          setBusy(false);
+          setOnboarding(null);
+        }
+      }
+      return;
+    }
     const next = [...msgs, { role: "user" as const, content: text }];
     setMsgs(next);
     setInput("");
@@ -161,6 +221,13 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
       setBusy(false);
     }
   }
+
+  function startOnboarding() {
+    setOnboarding({ step: 0, answers: {} });
+    setMsgs((m) => [...m, { role: "assistant", content: ONBOARD_STEPS[0].prompt }]);
+  }
+
+  const showOnboardCta = open && !onboarding && profile.data && !profile.data.main_goals;
 
   return (
     <>
@@ -215,6 +282,19 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               </p>
             </div>
             <div ref={scroller} className="flex-1 space-y-2 overflow-auto p-3">
+              {showOnboardCta && (
+                <button
+                  onClick={startOnboarding}
+                  className="w-full rounded-xl border border-primary/40 bg-primary/10 p-3 text-left text-sm hover:bg-primary/15"
+                >
+                  <div className="flex items-center gap-2 font-medium text-primary">
+                    <Wand2 className="h-4 w-4" /> Start Kenyan onboarding (4 questions)
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Aria will collect your goals, risk, income cadence and current holdings, then save them to your profile.
+                  </div>
+                </button>
+              )}
               {msgs.map((m, idx) => (
                 <div
                   key={idx}
@@ -232,14 +312,16 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
             </div>
             <div className="border-t border-border bg-background/70 p-3">
               <div className="mb-2 text-[11px] text-muted-foreground">
-                Context loads only when the assistant opens, keeping the rest of the app faster.
+                {onboarding
+                  ? `Setup ${onboarding.step + 1}/${ONBOARD_STEPS.length} — answer to continue.`
+                  : "Context loads only when the assistant opens, keeping the rest of the app faster."}
               </div>
               <div className="flex items-center gap-2">
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submit()}
-                  placeholder="Ask Aria…"
+                  placeholder={onboarding ? "Type your answer…" : "Ask Aria…"}
                   disabled={busy}
                 />
                 <Button onClick={submit} disabled={busy || !input.trim()} size="icon">

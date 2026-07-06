@@ -13,12 +13,18 @@ export type AccentKey =
   | "teal"
   | "orange"
   | "slate";
+export type ChartPaletteKey = "default" | "ocean" | "sunset" | "forest" | "mono";
+export type DensityKey = "compact" | "comfortable" | "spacious";
+export type DefaultRangeKey = "7D" | "30D" | "90D" | "ALL";
 
 export interface Appearance {
   theme: ThemeMode;
   font: FontFamilyKey;
   size: FontSizeKey;
   accent: AccentKey;
+  chartPalette: ChartPaletteKey;
+  density: DensityKey;
+  defaultRange: DefaultRangeKey;
 }
 
 const KEY = "malingu:appearance";
@@ -28,6 +34,9 @@ export const DEFAULT_APPEARANCE: Appearance = {
   font: "system",
   size: "md",
   accent: "blue",
+  chartPalette: "default",
+  density: "comfortable",
+  defaultRange: "30D",
 };
 
 export const FONT_STACKS: Record<FontFamilyKey, { label: string; stack: string }> = {
@@ -60,6 +69,27 @@ export const ACCENTS: Record<
   teal: { label: "Teal", swatch: "#14b8a6", light: "0.62 0.13 190", dark: "0.72 0.13 190" },
   orange: { label: "Sunset", swatch: "#f97316", light: "0.65 0.18 45", dark: "0.74 0.18 45" },
   slate: { label: "Slate", swatch: "#475569", light: "0.4 0.03 250", dark: "0.7 0.02 250" },
+};
+
+export const CHART_PALETTES: Record<ChartPaletteKey, { label: string; colors: string[] }> = {
+  default: { label: "Default", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#f43f5e"] },
+  ocean:   { label: "Ocean",   colors: ["#0ea5e9", "#22d3ee", "#6366f1", "#14b8a6", "#3b82f6"] },
+  sunset:  { label: "Sunset",  colors: ["#f97316", "#f59e0b", "#ef4444", "#ec4899", "#8b5cf6"] },
+  forest:  { label: "Forest",  colors: ["#10b981", "#84cc16", "#65a30d", "#0d9488", "#14532d"] },
+  mono:    { label: "Mono",    colors: ["#475569", "#64748b", "#94a3b8", "#cbd5e1", "#334155"] },
+};
+
+export const DENSITY_LABEL: Record<DensityKey, string> = {
+  compact: "Compact",
+  comfortable: "Comfortable",
+  spacious: "Spacious",
+};
+
+export const DEFAULT_RANGE_LABEL: Record<DefaultRangeKey, string> = {
+  "7D": "Last 7 days",
+  "30D": "Last 30 days",
+  "90D": "Last 90 days",
+  ALL: "All time",
 };
 
 export function loadAppearance(): Appearance {
@@ -106,6 +136,19 @@ export function applyAppearance(a: Appearance) {
 
   const size = FONT_SIZES[a.size] ?? FONT_SIZES.md;
   root.style.fontSize = `${size.px}px`;
+
+  // Chart palette — overrides --chart-1..5 (accent overrides --chart-1 above, so
+  // apply palette after only when user picked a non-default palette).
+  const palette = CHART_PALETTES[a.chartPalette] ?? CHART_PALETTES.default;
+  if (a.chartPalette !== "default") {
+    palette.colors.forEach((c, i) => root.style.setProperty(`--chart-${i + 1}`, c));
+  } else {
+    // Reset chart-2..5 to defaults defined in styles.css by removing overrides
+    for (let i = 2; i <= 5; i++) root.style.removeProperty(`--chart-${i}`);
+  }
+
+  // Widget density
+  root.dataset.density = a.density;
 }
 
 // Serialized inline script that runs before hydration to prevent theme flash.
@@ -117,7 +160,9 @@ export const APPEARANCE_BOOT_SCRIPT = `(function(){try{var raw=localStorage.getI
   ACCENTS,
 )};var fonts=${JSON.stringify(FONT_STACKS)};var sizes=${JSON.stringify(
   FONT_SIZES,
-)};var mode=a.theme;var resolved=mode==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):mode;var r=document.documentElement;r.classList.toggle('dark',resolved==='dark');r.dataset.theme=resolved;var acc=accents[a.accent]||accents.blue;var v=resolved==='dark'?acc.dark:acc.light;r.style.setProperty('--primary','oklch('+v+')');r.style.setProperty('--accent','oklch('+v+')');r.style.setProperty('--ring','oklch('+v+')');r.style.setProperty('--sidebar-primary','oklch('+v+')');r.style.setProperty('--sidebar-ring','oklch('+v+')');r.style.setProperty('--chart-1','oklch('+v+')');var f=fonts[a.font]||fonts.system;r.style.setProperty('--app-font',f.stack);var s=sizes[a.size]||sizes.md;r.style.fontSize=s.px+'px';}catch(e){}})();`;
+)};var palettes=${JSON.stringify(
+  CHART_PALETTES,
+)};var mode=a.theme;var resolved=mode==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):mode;var r=document.documentElement;r.classList.toggle('dark',resolved==='dark');r.dataset.theme=resolved;var acc=accents[a.accent]||accents.blue;var v=resolved==='dark'?acc.dark:acc.light;r.style.setProperty('--primary','oklch('+v+')');r.style.setProperty('--accent','oklch('+v+')');r.style.setProperty('--ring','oklch('+v+')');r.style.setProperty('--sidebar-primary','oklch('+v+')');r.style.setProperty('--sidebar-ring','oklch('+v+')');r.style.setProperty('--chart-1','oklch('+v+')');var f=fonts[a.font]||fonts.system;r.style.setProperty('--app-font',f.stack);var s=sizes[a.size]||sizes.md;r.style.fontSize=s.px+'px';var p=palettes[a.chartPalette]||palettes.default;if(a.chartPalette!=='default'){p.colors.forEach(function(c,i){r.style.setProperty('--chart-'+(i+1),c);});}r.dataset.density=a.density||'comfortable';}catch(e){}})();`;
 
 export function watchSystemTheme(cb: () => void): () => void {
   if (typeof window === "undefined") return () => {};

@@ -35,6 +35,7 @@ import {
   personalAssetsQuery,
   loansQuery,
 } from "@/lib/queries";
+import { budgetsQuery } from "@/lib/queries";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
   allocationPercents,
@@ -65,6 +66,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { loadAppearance } from "@/lib/appearance";
+import { evaluateAlerts, syncAlertsToDb } from "@/lib/alert-engine";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — MalinGu" }] }),
@@ -82,6 +86,7 @@ function Dashboard() {
   const snapshots = useQuery(snapshotsQuery());
   const personalAssets = useQuery(personalAssetsQuery());
   const loans = useQuery(loansQuery());
+  const budgets = useQuery(budgetsQuery());
 
   const a = assets.data ?? [];
   const i = income.data ?? [];
@@ -169,7 +174,9 @@ function Dashboard() {
     d: new Date(s.date).toLocaleDateString(),
     v: Number(s.total_assets),
   }));
-  const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">("30D");
+  const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">(
+    () => loadAppearance().defaultRange,
+  );
   const [compare, setCompare] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem("malingu:dash:compare") === "1";
@@ -248,6 +255,25 @@ function Dashboard() {
         .then(() => {});
     });
   }, [assets.data, income.data, total, roi, liq, risk]);
+
+  // Evaluate configurable alert triggers once data is loaded; write new ones to DB.
+  const qcInvalidate = useQueryClient();
+  useEffect(() => {
+    if (
+      !assets.data || !goals.data || !expenses.data || !loans.data
+    ) return;
+    const triggers = evaluateAlerts({
+      assets: assets.data,
+      goals: goals.data,
+      expenses: expenses.data,
+      budgets: budgets.data ?? [],
+      loans: loans.data,
+    });
+    if (triggers.length === 0) return;
+    syncAlertsToDb(triggers).then((n) => {
+      if (n > 0) qcInvalidate.invalidateQueries({ queryKey: ["alerts"] });
+    });
+  }, [assets.data, goals.data, expenses.data, budgets.data, loans.data, qcInvalidate]);
 
   const recent = i.slice(0, 5);
 

@@ -21,9 +21,22 @@ function inRange<T extends { date?: string; created_at?: string }>(rows: T[], fi
   });
 }
 
-export type ReportPeriod = "daily" | "weekly" | "monthly";
+export type ReportPeriod = "daily" | "weekly" | "monthly" | "custom";
 
-export function periodRange(period: ReportPeriod, ref: Date = new Date()): { from: Date; to: Date; label: string } {
+export function periodRange(
+  period: ReportPeriod,
+  ref: Date = new Date(),
+  custom?: { from: Date; to: Date },
+): { from: Date; to: Date; label: string } {
+  if (period === "custom" && custom) {
+    const from = new Date(custom.from); from.setHours(0, 0, 0, 0);
+    const to = new Date(custom.to); to.setHours(23, 59, 59, 999);
+    return {
+      from,
+      to,
+      label: `${from.toLocaleDateString()} – ${to.toLocaleDateString()}`,
+    };
+  }
   const to = new Date(ref);
   const from = new Date(ref);
   if (period === "daily") {
@@ -85,9 +98,10 @@ export function buildReport(
     alerts?: Alert[];
     personalAssets?: PersonalAsset[];
     loans?: Loan[];
+    custom?: { from: Date; to: Date };
   } = {},
 ): Report {
-  const { from, to, label } = periodRange(period, ref);
+  const { from, to, label } = periodRange(period, ref, extras.custom);
   const incomePeriod = inRange(income, "date", from, to);
   const assetsPeriod = inRange(assets, "created_at", from, to);
   const expenses = extras.expenses ?? [];

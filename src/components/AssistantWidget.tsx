@@ -183,14 +183,38 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     // Onboarding capture
     if (onboarding) {
       const cur = ONBOARD_STEPS[onboarding.step];
+      const invalid = validateStep(cur.key, text);
+      if (invalid) {
+        setMsgs([...msgs, { role: "user", content: text }, { role: "assistant", content: `⚠️ ${invalid}` }]);
+        setInput("");
+        return;
+      }
       const nextAnswers = { ...onboarding.answers, [cur.key]: text };
       const nextMsgs: Msg[] = [...msgs, { role: "user", content: text }];
       setInput("");
       if (onboarding.step + 1 < ONBOARD_STEPS.length) {
         const next = ONBOARD_STEPS[onboarding.step + 1];
         setMsgs([...nextMsgs, { role: "assistant", content: next.prompt }]);
-        setOnboarding({ step: onboarding.step + 1, answers: nextAnswers });
+        const state = { step: onboarding.step + 1, answers: nextAnswers };
+        setOnboarding(state);
+        persistOnboarding(state);
       } else {
+        // Only write to the profile when every step has a valid answer.
+        const missing = ONBOARD_STEPS.filter((s) => validateStep(s.key, nextAnswers[s.key] ?? ""));
+        if (missing.length) {
+          const first = ONBOARD_STEPS.findIndex((s) => s.key === missing[0].key);
+          const state = { step: first, answers: nextAnswers };
+          setOnboarding(state);
+          persistOnboarding(state);
+          setMsgs([
+            ...nextMsgs,
+            {
+              role: "assistant",
+              content: `Almost there — I still need a proper answer for one step, so nothing has been saved yet.\n\n${ONBOARD_STEPS[first].prompt}`,
+            },
+          ]);
+          return;
+        }
         setBusy(true);
         try {
           const { data: u } = await supabase.auth.getUser();
@@ -217,6 +241,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
         } finally {
           setBusy(false);
           setOnboarding(null);
+          persistOnboarding(null);
         }
       }
       return;
@@ -237,7 +262,10 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   }
 
   function startOnboarding() {
-    setOnboarding({ step: 0, answers: {} });
+    const state = { step: 0, answers: {} };
+    setOnboarding(state);
+    persistOnboarding(state);
+    setResumable(null);
     setMsgs((m) => [...m, { role: "assistant", content: ONBOARD_STEPS[0].prompt }]);
   }
 

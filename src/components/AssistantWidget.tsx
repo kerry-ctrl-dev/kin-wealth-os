@@ -373,6 +373,20 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               </p>
             </div>
             <div ref={scroller} className="flex-1 space-y-2 overflow-auto p-3">
+              {open && !onboarding && resumable && (
+                <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
+                  <div className="flex items-center gap-2 font-medium text-primary">
+                    <Wand2 className="h-4 w-4" /> Resume your setup (step {resumable.step + 1} of {ONBOARD_STEPS.length})
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Nothing was saved yet — continue where you left off, or start over.
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <Button size="sm" onClick={resumeOnboarding}>Continue</Button>
+                    <Button size="sm" variant="ghost" onClick={discardOnboarding}>Discard</Button>
+                  </div>
+                </div>
+              )}
               {showOnboardCta && (
                 <button
                   onClick={startOnboarding}

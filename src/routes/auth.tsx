@@ -188,7 +188,7 @@ function AuthPage() {
         <div className="flex w-full flex-col justify-between p-12">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--shadow-elegant)]">
+              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[image:var(--gradient-gold)] text-[color:var(--gold-foreground)] shadow-[var(--glow-gold)]">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <div>
@@ -205,7 +205,7 @@ function AuthPage() {
 
           <div className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <Sparkles className="h-3.5 w-3.5 text-[color:var(--gold)]" />
               Built to stay calm, fast, and focused
             </div>
             <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight">
@@ -245,7 +245,7 @@ function AuthPage() {
       <div className="flex items-center justify-center px-5 py-8 sm:px-6">
         <div className="w-full max-w-md">
           <div className="mb-6 flex items-center gap-3 lg:hidden">
-            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[var(--shadow-elegant)]">
+            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[image:var(--gradient-gold)] text-[color:var(--gold-foreground)] shadow-[var(--glow-gold)]">
               <TrendingUp className="h-5 w-5" />
             </div>
             <div>
@@ -254,8 +254,8 @@ function AuthPage() {
             </div>
           </div>
 
-          <div className="fintech-card p-6 sm:p-8">
-            <div className="rounded-2xl border border-border/70 bg-background/35 p-4">
+          <div className="glass-panel animate-panel-in p-6 sm:p-8">
+            <div className="rounded-2xl border border-[color:var(--glass-border)] bg-background/25 p-4 backdrop-blur-sm">
               <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
                 Welcome back
               </div>
@@ -291,7 +291,7 @@ function AuthPage() {
             <Button
               type="button"
               variant="outline"
-              className="h-11 w-full rounded-xl border-border/70 bg-background/45"
+              className="h-11 w-full rounded-xl border-[color:var(--glass-border)] bg-background/45 backdrop-blur-sm"
               disabled={loading}
               onClick={signInWithGoogle}
             >
@@ -441,8 +441,8 @@ function FeatureCard({
   copy: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background/40 p-4 backdrop-blur-sm">
-      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 text-primary">
+      <div className="glass-panel p-4">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[color:var(--emerald)]/15 text-[color:var(--emerald)]">
         {icon}
       </div>
       <div className="mt-3 text-sm font-medium">{title}</div>

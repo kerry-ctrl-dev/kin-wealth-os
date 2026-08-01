@@ -329,11 +329,10 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           className={cn(
-            "z-40 inline-flex h-14 touch-none select-none items-center gap-2 rounded-full px-4 text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] active:scale-[0.98]",
+            "aria-orb z-40 inline-flex h-14 touch-none select-none items-center gap-2 rounded-full border border-[color:var(--glass-border)] px-4 text-[color:var(--gold-foreground)] shadow-[var(--shadow-elegant)] transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]",
             pos ? "fixed" : "fixed bottom-24 right-4 md:bottom-6 md:right-6",
           )}
           style={{
-            background: "var(--gradient-primary)",
             ...(pos ? { left: pos.x, top: pos.y } : null),
             cursor: "grab",
           }}
@@ -341,7 +340,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
           title="Drag to move · tap to open"
         >
           <Sparkles className="h-6 w-6" />
-          <span className="pr-1 text-sm font-medium">Ask Aria</span>
+          <span className="pr-1 text-sm font-semibold tracking-tight">Ask Aria</span>
         </button>
       )}
       {open && (
@@ -352,23 +351,23 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
             "md:inset-x-auto md:bottom-6 md:right-6 md:h-[600px] md:w-[400px]",
           )}
         >
-          <div className="fintech-card flex h-full flex-col overflow-hidden">
+          <div className="glass-panel animate-panel-in flex h-full flex-col overflow-hidden">
             <div
-              className="border-b border-border p-4"
-              style={{ background: "var(--gradient-primary)" }}
+              className="aria-orb border-b border-[color:var(--glass-border)] p-4"
+              style={{ animation: "none" }}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 font-semibold text-primary-foreground">
+                <div className="flex items-center gap-2 font-semibold text-[color:var(--gold-foreground)]">
                   <Sparkles className="h-4 w-4" /> Aria · AI Assistant
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  className="text-primary-foreground/80 hover:text-primary-foreground"
+                  className="text-[color:var(--gold-foreground)]/70 transition-colors hover:text-[color:var(--gold-foreground)]"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <p className="mt-2 text-xs text-primary-foreground/80">
+              <p className="mt-2 text-xs text-[color:var(--gold-foreground)]/80">
                 Ask about portfolio health, spending patterns, goals, or next moves.
               </p>
             </div>

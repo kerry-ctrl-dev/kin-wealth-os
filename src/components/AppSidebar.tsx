@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileQuery } from "@/lib/queries";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
+import { cn } from "@/lib/utils";
 
 type NavItem = { title: string; url: string; icon: typeof LayoutDashboard; hint: string };
 type NavSection = { label: string; items: NavItem[] };

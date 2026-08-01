@@ -34,6 +34,19 @@ const ONBOARD_STEPS: OnboardStep[] = [
   { key: "holdings", prompt: "4️⃣ Roughly, what do you already hold today? (KES in M-Pesa/bank, MMF at Cytonn/Sanlam/etc, NSE stocks, SACCO shares, land/property, etc.)" },
 ];
 
+const ONBOARD_KEY = "malingu:aria:onboarding";
+
+/** Per-step validation — keeps incomplete/garbage answers out of the profile. */
+function validateStep(key: OnboardStep["key"], value: string): string | null {
+  const v = value.trim();
+  if (v.length < 3) return "Please give a little more detail (at least 3 characters).";
+  if (v.length > 500) return "That's a bit long — keep it under 500 characters.";
+  if (key === "risk_level" && !/(low|medium|med|high)/i.test(v))
+    return "Please answer LOW, MEDIUM or HIGH (you can add a note after it).";
+  if (key === "holdings" && !/[a-z0-9]/i.test(v)) return "Please describe what you hold, or type \"nothing yet\".";
+  return null;
+}
+
 export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   const [msgs, setMsgs] = useState<Msg[]>([
@@ -46,6 +59,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [onboarding, setOnboarding] = useState<{ step: number; answers: Record<string, string> } | null>(null);
+  const [resumable, setResumable] = useState<{ step: number; answers: Record<string, string> } | null>(null);
   const qc = useQueryClient();
   const profile = useQuery({ ...profileQuery(), enabled: open });
   const send = useServerFn(chatWithAdvisor);
@@ -169,14 +183,38 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     // Onboarding capture
     if (onboarding) {
       const cur = ONBOARD_STEPS[onboarding.step];
+      const invalid = validateStep(cur.key, text);
+      if (invalid) {
+        setMsgs([...msgs, { role: "user", content: text }, { role: "assistant", content: `⚠️ ${invalid}` }]);
+        setInput("");
+        return;
+      }
       const nextAnswers = { ...onboarding.answers, [cur.key]: text };
       const nextMsgs: Msg[] = [...msgs, { role: "user", content: text }];
       setInput("");
       if (onboarding.step + 1 < ONBOARD_STEPS.length) {
         const next = ONBOARD_STEPS[onboarding.step + 1];
         setMsgs([...nextMsgs, { role: "assistant", content: next.prompt }]);
-        setOnboarding({ step: onboarding.step + 1, answers: nextAnswers });
+        const state = { step: onboarding.step + 1, answers: nextAnswers };
+        setOnboarding(state);
+        persistOnboarding(state);
       } else {
+        // Only write to the profile when every step has a valid answer.
+        const missing = ONBOARD_STEPS.filter((s) => validateStep(s.key, nextAnswers[s.key] ?? ""));
+        if (missing.length) {
+          const first = ONBOARD_STEPS.findIndex((s) => s.key === missing[0].key);
+          const state = { step: first, answers: nextAnswers };
+          setOnboarding(state);
+          persistOnboarding(state);
+          setMsgs([
+            ...nextMsgs,
+            {
+              role: "assistant",
+              content: `Almost there — I still need a proper answer for one step, so nothing has been saved yet.\n\n${ONBOARD_STEPS[first].prompt}`,
+            },
+          ]);
+          return;
+        }
         setBusy(true);
         try {
           const { data: u } = await supabase.auth.getUser();
@@ -198,11 +236,14 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               content: `Asante! I've saved your setup to your dashboard profile.\n\nQuick take on what you shared:\n• Risk: ${nextAnswers.risk_level}\n• Cadence: ${nextAnswers.income_cadence}\n\nBased on Kenyan mid-2026 rates, a common starting split is 40% MMF (net ~9–12%), 30% NSE bluechips (SCOM, EQTY, KCB), 15% REITs (ILAM, Acorn) and 15% cash buffer — tune to your risk. Ask me anything to go deeper.`,
             },
           ]);
+          setOnboarding(null);
+          persistOnboarding(null);
         } catch (e) {
+          // Keep the saved state so the user can retry / resume later.
           toast.error(e instanceof Error ? e.message : "Could not save profile");
+          persistOnboarding({ step: ONBOARD_STEPS.length - 1, answers: nextAnswers });
         } finally {
           setBusy(false);
-          setOnboarding(null);
         }
       }
       return;
@@ -223,11 +264,61 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   }
 
   function startOnboarding() {
-    setOnboarding({ step: 0, answers: {} });
+    const state = { step: 0, answers: {} };
+    setOnboarding(state);
+    persistOnboarding(state);
+    setResumable(null);
     setMsgs((m) => [...m, { role: "assistant", content: ONBOARD_STEPS[0].prompt }]);
   }
 
-  const showOnboardCta = open && !onboarding && profile.data && !profile.data.main_goals;
+  const showOnboardCta = open && !onboarding && !resumable && profile.data && !profile.data.main_goals;
+
+  // Load any saved half-finished setup so it can be resumed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(ONBOARD_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { step: number; answers: Record<string, string> };
+      if (
+        parsed &&
+        typeof parsed.step === "number" &&
+        parsed.step >= 0 &&
+        parsed.step < ONBOARD_STEPS.length &&
+        parsed.answers
+      )
+        setResumable(parsed);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function persistOnboarding(state: { step: number; answers: Record<string, string> } | null) {
+    try {
+      if (state) window.localStorage.setItem(ONBOARD_KEY, JSON.stringify(state));
+      else window.localStorage.removeItem(ONBOARD_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function resumeOnboarding() {
+    if (!resumable) return;
+    setOnboarding(resumable);
+    setMsgs((m) => [
+      ...m,
+      {
+        role: "assistant",
+        content: `Welcome back — let's pick up where we left off (step ${resumable.step + 1} of ${ONBOARD_STEPS.length}).\n\n${ONBOARD_STEPS[resumable.step].prompt}`,
+      },
+    ]);
+    setResumable(null);
+  }
+
+  function discardOnboarding() {
+    persistOnboarding(null);
+    setResumable(null);
+  }
 
   return (
     <>
@@ -282,6 +373,20 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               </p>
             </div>
             <div ref={scroller} className="flex-1 space-y-2 overflow-auto p-3">
+              {open && !onboarding && resumable && (
+                <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
+                  <div className="flex items-center gap-2 font-medium text-primary">
+                    <Wand2 className="h-4 w-4" /> Resume your setup (step {resumable.step + 1} of {ONBOARD_STEPS.length})
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Nothing was saved yet — continue where you left off, or start over.
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <Button size="sm" onClick={resumeOnboarding}>Continue</Button>
+                    <Button size="sm" variant="ghost" onClick={discardOnboarding}>Discard</Button>
+                  </div>
+                </div>
+              )}
               {showOnboardCta && (
                 <button
                   onClick={startOnboarding}

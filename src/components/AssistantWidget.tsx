@@ -34,6 +34,19 @@ const ONBOARD_STEPS: OnboardStep[] = [
   { key: "holdings", prompt: "4️⃣ Roughly, what do you already hold today? (KES in M-Pesa/bank, MMF at Cytonn/Sanlam/etc, NSE stocks, SACCO shares, land/property, etc.)" },
 ];
 
+const ONBOARD_KEY = "malingu:aria:onboarding";
+
+/** Per-step validation — keeps incomplete/garbage answers out of the profile. */
+function validateStep(key: OnboardStep["key"], value: string): string | null {
+  const v = value.trim();
+  if (v.length < 3) return "Please give a little more detail (at least 3 characters).";
+  if (v.length > 500) return "That's a bit long — keep it under 500 characters.";
+  if (key === "risk_level" && !/(low|medium|med|high)/i.test(v))
+    return "Please answer LOW, MEDIUM or HIGH (you can add a note after it).";
+  if (key === "holdings" && !/[a-z0-9]/i.test(v)) return "Please describe what you hold, or type \"nothing yet\".";
+  return null;
+}
+
 export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   const [msgs, setMsgs] = useState<Msg[]>([
@@ -46,6 +59,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [onboarding, setOnboarding] = useState<{ step: number; answers: Record<string, string> } | null>(null);
+  const [resumable, setResumable] = useState<{ step: number; answers: Record<string, string> } | null>(null);
   const qc = useQueryClient();
   const profile = useQuery({ ...profileQuery(), enabled: open });
   const send = useServerFn(chatWithAdvisor);
@@ -228,6 +242,53 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   }
 
   const showOnboardCta = open && !onboarding && profile.data && !profile.data.main_goals;
+
+  // Load any saved half-finished setup so it can be resumed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(ONBOARD_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { step: number; answers: Record<string, string> };
+      if (
+        parsed &&
+        typeof parsed.step === "number" &&
+        parsed.step >= 0 &&
+        parsed.step < ONBOARD_STEPS.length &&
+        parsed.answers
+      )
+        setResumable(parsed);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function persistOnboarding(state: { step: number; answers: Record<string, string> } | null) {
+    try {
+      if (state) window.localStorage.setItem(ONBOARD_KEY, JSON.stringify(state));
+      else window.localStorage.removeItem(ONBOARD_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function resumeOnboarding() {
+    if (!resumable) return;
+    setOnboarding(resumable);
+    setMsgs((m) => [
+      ...m,
+      {
+        role: "assistant",
+        content: `Welcome back — let's pick up where we left off (step ${resumable.step + 1} of ${ONBOARD_STEPS.length}).\n\n${ONBOARD_STEPS[resumable.step].prompt}`,
+      },
+    ]);
+    setResumable(null);
+  }
+
+  function discardOnboarding() {
+    persistOnboarding(null);
+    setResumable(null);
+  }
 
   return (
     <>

@@ -271,7 +271,7 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     setMsgs((m) => [...m, { role: "assistant", content: ONBOARD_STEPS[0].prompt }]);
   }
 
-  const showOnboardCta = open && !onboarding && profile.data && !profile.data.main_goals;
+  const showOnboardCta = open && !onboarding && !resumable && profile.data && !profile.data.main_goals;
 
   // Load any saved half-finished setup so it can be resumed.
   useEffect(() => {

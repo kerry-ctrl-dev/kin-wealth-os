@@ -10,11 +10,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
+          "glow-gold bg-[image:var(--gradient-gold)] text-[color:var(--gold-foreground)] shadow-[var(--shadow-elegant)] hover:brightness-[1.04]",
+        primary:
           "bg-primary text-primary-foreground shadow-[var(--shadow-elegant)] hover:bg-primary/92",
+        emerald:
+          "bg-[color:var(--emerald)] text-[color:var(--gold-foreground)] shadow-[var(--shadow-soft)] hover:brightness-[1.05]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-[var(--shadow-soft)] hover:bg-destructive/92",
         outline:
-          "border border-input/80 bg-background/35 shadow-[var(--shadow-soft)] hover:bg-accent/40 hover:text-accent-foreground",
+          "border border-input/80 bg-background/35 shadow-[var(--shadow-soft)] backdrop-blur-sm hover:border-[color:var(--gold)]/50 hover:bg-accent/25",
         secondary:
           "bg-secondary/70 text-secondary-foreground shadow-[var(--shadow-soft)] hover:bg-secondary/85",
         ghost: "hover:bg-accent/35 hover:text-accent-foreground",

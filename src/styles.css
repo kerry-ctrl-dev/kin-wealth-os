@@ -61,6 +61,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme inline {
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-emerald: var(--emerald);
+}
+
 :root {
   --radius: 0.75rem;
   
@@ -109,6 +115,16 @@
   --success: oklch(0.7 0.15 140);
   --warning: oklch(0.75 0.15 70);
   --danger: oklch(0.63 0.238 25);
+
+  /* Brand accents — gold for calls to action, emerald for positive movement */
+  --gold: oklch(0.78 0.13 84);
+  --gold-strong: oklch(0.72 0.14 78);
+  --gold-foreground: oklch(0.22 0.03 70);
+  --emerald: oklch(0.62 0.14 158);
+  --gradient-gold: linear-gradient(135deg, oklch(0.83 0.12 92), oklch(0.72 0.14 78));
+  --glow-gold: 0 0 0 1px oklch(0.78 0.13 84 / 0.35), 0 8px 24px oklch(0.78 0.13 84 / 0.28);
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(0.55 0.02 260 / 0.18);
   
   /* Gradients - subtle and elegant */
   --gradient-primary: linear-gradient(135deg, oklch(0.58 0.14 250), oklch(0.65 0.12 240));
@@ -132,11 +148,12 @@
 
 .dark {
   /* Dark mode option (future enhancement) */
-  --background: oklch(0.12 0.015 260);
+  /* Charcoal-navy base instead of near-black */
+  --background: oklch(0.19 0.022 265);
   --foreground: oklch(0.95 0.004 250);
-  --card: oklch(0.16 0.018 260);
+  --card: oklch(0.235 0.024 264);
   --card-foreground: oklch(0.95 0.004 250);
-  --popover: oklch(0.18 0.02 260);
+  --popover: oklch(0.245 0.024 264);
   --popover-foreground: oklch(0.95 0.004 250);
   
   --primary: oklch(0.7 0.16 250);
@@ -154,28 +171,37 @@
   --destructive: oklch(0.68 0.2 25);
   --destructive-foreground: oklch(0.95 0.004 250);
   
-  --border: oklch(0.25 0.02 260);
-  --input: oklch(0.22 0.018 260);
+  --border: oklch(0.32 0.022 262);
+  --input: oklch(0.27 0.02 262);
   --ring: oklch(0.7 0.16 250);
   
   --success: oklch(0.72 0.16 140);
   --warning: oklch(0.78 0.16 70);
   --danger: oklch(0.68 0.2 25);
+
+  --gold: oklch(0.82 0.13 88);
+  --gold-strong: oklch(0.75 0.14 80);
+  --gold-foreground: oklch(0.18 0.03 70);
+  --emerald: oklch(0.75 0.15 158);
+  --gradient-gold: linear-gradient(135deg, oklch(0.87 0.12 95), oklch(0.74 0.14 78));
+  --glow-gold: 0 0 0 1px oklch(0.82 0.13 88 / 0.4), 0 10px 30px oklch(0.82 0.13 88 / 0.28);
+  --glass-bg: oklch(0.24 0.024 262 / 0.55);
+  --glass-border: oklch(0.86 0.02 250 / 0.12);
   
   --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 250), oklch(0.68 0.14 240));
-  --gradient-card: linear-gradient(135deg, oklch(0.16 0.018 260), oklch(0.14 0.016 260));
+  --gradient-card: linear-gradient(150deg, oklch(0.245 0.026 264), oklch(0.205 0.022 266));
   
   --shadow-elegant: 0 4px 12px oklch(0 0 0 / 0.4);
   --shadow-card: 0 1px 3px oklch(0 0 0 / 0.2), 0 1px 2px oklch(0 0 0 / 0.15);
   --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.15);
   
-  --sidebar: oklch(0.14 0.016 260);
+  --sidebar: oklch(0.175 0.022 266);
   --sidebar-foreground: oklch(0.92 0.005 250);
   --sidebar-primary: oklch(0.7 0.16 250);
-  --sidebar-primary-foreground: oklch(0.12 0.015 260);
-  --sidebar-accent: oklch(0.25 0.02 260);
+  --sidebar-primary-foreground: oklch(0.16 0.018 264);
+  --sidebar-accent: oklch(0.28 0.022 264);
   --sidebar-accent-foreground: oklch(0.95 0.004 250);
-  --sidebar-border: oklch(0.25 0.02 260);
+  --sidebar-border: oklch(0.3 0.022 264);
   --sidebar-ring: oklch(0.7 0.16 250);
 }
 
@@ -195,6 +221,109 @@
       radial-gradient(400px 300px at 100% 0%, oklch(0.58 0.14 250 / 0.04), transparent 70%),
       radial-gradient(400px 300px at 0% 100%, oklch(0.7 0.15 140 / 0.03), transparent 70%);
     background-attachment: fixed;
+  }
+
+  /* Dark: layered charcoal-navy depth instead of flat black */
+  .dark body {
+    background-image:
+      radial-gradient(1100px 700px at 82% -10%, oklch(0.42 0.06 262 / 0.5), transparent 65%),
+      radial-gradient(900px 620px at 0% 100%, oklch(0.34 0.05 200 / 0.34), transparent 68%),
+      radial-gradient(700px 500px at 50% 40%, oklch(0.78 0.13 84 / 0.05), transparent 70%),
+      linear-gradient(155deg, oklch(0.21 0.026 268) 0%, oklch(0.165 0.02 262) 55%, oklch(0.185 0.024 250) 100%);
+  }
+}
+
+/* ── Premium surface + motion primitives ─────────────────────────────── */
+
+@utility glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.06) inset, var(--shadow-card);
+}
+
+@utility glow-gold {
+  transition: box-shadow 0.28s ease, transform 0.18s ease, filter 0.24s ease;
+  &:hover {
+    box-shadow: var(--glow-gold);
+  }
+  &:active {
+    box-shadow: 0 0 0 1px oklch(0.78 0.13 84 / 0.45);
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-panel-in {
+  animation: panel-in 0.34s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes nav-highlight {
+  from {
+    opacity: 0;
+    transform: scaleX(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility nav-active {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--gold) 16%, transparent),
+    color-mix(in oklab, var(--emerald) 8%, transparent)
+  );
+  animation: nav-highlight 0.3s ease both;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--gradient-gold);
+  }
+}
+
+@keyframes aria-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.8 0.13 86 / 0.28), var(--shadow-elegant);
+  }
+  50% {
+    box-shadow: 0 0 0 10px oklch(0.8 0.13 86 / 0), 0 10px 28px oklch(0.8 0.13 86 / 0.3);
+  }
+}
+
+@utility aria-orb {
+  background: linear-gradient(
+    135deg,
+    var(--gold) 0%,
+    color-mix(in oklab, var(--gold) 55%, var(--primary)) 55%,
+    var(--emerald) 100%
+  );
+  animation: aria-pulse 3.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-orb,
+  .animate-panel-in,
+  .nav-active {
+    animation: none !important;
   }
 }
 

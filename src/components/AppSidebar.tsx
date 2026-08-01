@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileQuery } from "@/lib/queries";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
+import { cn } from "@/lib/utils";
 
 type NavItem = { title: string; url: string; icon: typeof LayoutDashboard; hint: string };
 type NavSection = { label: string; items: NavItem[] };
@@ -136,7 +137,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-sidebar-border bg-sidebar-accent/40">
+          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[color:var(--glass-border)] bg-[image:var(--gradient-gold)]/10 shadow-[var(--shadow-soft)] backdrop-blur-md">
             <img src={logo} alt="MalinGu logo" className="h-6 w-6" />
           </div>
           {!collapsed && (
@@ -150,7 +151,7 @@ export function AppSidebar() {
         </div>
         {!collapsed && (
           <div className="px-3 pb-4">
-            <div className="rounded-2xl border border-sidebar-border bg-sidebar-accent/35 p-3.5 shadow-[var(--shadow-card)]">
+            <div className="glass-panel animate-panel-in p-3.5">
               <div className="flex items-center gap-3">
                 {avatarUrl ? (
                   <img
@@ -159,7 +160,7 @@ export function AppSidebar() {
                     className="h-10 w-10 rounded-full border border-sidebar-border object-cover"
                   />
                 ) : (
-                  <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+                  <div className="grid h-10 w-10 place-items-center rounded-full bg-[image:var(--gradient-gold)] text-xs font-semibold text-[color:var(--gold-foreground)]">
                     {initials}
                   </div>
                 )}
@@ -168,7 +169,7 @@ export function AppSidebar() {
                   <div className="truncate text-[11px] text-muted-foreground">{profession}</div>
                 </div>
               </div>
-              <div className="mt-3 rounded-xl border border-sidebar-border bg-background/35 px-3 py-2.5">
+              <div className="mt-3 rounded-xl border border-[color:var(--glass-border)] bg-background/25 px-3 py-2.5 backdrop-blur-sm">
                 <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
                   Workspace
                 </div>
@@ -197,7 +198,12 @@ export function AppSidebar() {
                           className="flex items-center gap-2"
                           onClick={handleNavigate}
                         >
-                          <item.icon className="h-4 w-4 shrink-0" />
+                          <item.icon
+                            className={cn(
+                              "h-4 w-4 shrink-0 transition-colors duration-300",
+                              active && "text-[color:var(--gold)]",
+                            )}
+                          />
                           {!collapsed && <span>{item.title}</span>}
                         </Link>
                       </SidebarMenuButton>
@@ -232,7 +238,7 @@ export function AppSidebar() {
                 </SidebarGroupLabel>
                 {isOpen ? (
                   <SidebarGroupContent>
-                    <SidebarMenu>
+                    <SidebarMenu className="animate-panel-in">
                       {section.items.map((item) => {
                         const active = pathname === item.url;
                         return (
@@ -240,14 +246,26 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               asChild
                               isActive={active}
-                              className="h-auto rounded-xl px-2.5 py-2.5 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-foreground"
+                              className={cn(
+                                "h-auto rounded-xl px-2.5 py-2.5 transition-colors duration-300 data-[active=true]:text-sidebar-foreground",
+                                active
+                                  ? "nav-active data-[active=true]:bg-transparent"
+                                  : "hover:bg-sidebar-accent/40",
+                              )}
                             >
                               <Link
                                 to={item.url}
                                 className="flex items-start gap-3"
                                 onClick={handleNavigate}
                               >
-                                <item.icon className="mt-0.5 h-4 w-4 shrink-0" />
+                                <item.icon
+                                  className={cn(
+                                    "mt-0.5 h-4 w-4 shrink-0 transition-colors duration-300",
+                                    active
+                                      ? "text-[color:var(--gold)]"
+                                      : "text-muted-foreground group-hover/menu-item:text-[color:var(--emerald)]",
+                                  )}
+                                />
                                 <span className="min-w-0">
                                   <span className="block text-sm font-medium">{item.title}</span>
                                   <span className="block truncate text-[11px] text-muted-foreground">

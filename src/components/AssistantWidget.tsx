@@ -236,12 +236,14 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               content: `Asante! I've saved your setup to your dashboard profile.\n\nQuick take on what you shared:\n• Risk: ${nextAnswers.risk_level}\n• Cadence: ${nextAnswers.income_cadence}\n\nBased on Kenyan mid-2026 rates, a common starting split is 40% MMF (net ~9–12%), 30% NSE bluechips (SCOM, EQTY, KCB), 15% REITs (ILAM, Acorn) and 15% cash buffer — tune to your risk. Ask me anything to go deeper.`,
             },
           ]);
-        } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Could not save profile");
-        } finally {
-          setBusy(false);
           setOnboarding(null);
           persistOnboarding(null);
+        } catch (e) {
+          // Keep the saved state so the user can retry / resume later.
+          toast.error(e instanceof Error ? e.message : "Could not save profile");
+          persistOnboarding({ step: ONBOARD_STEPS.length - 1, answers: nextAnswers });
+        } finally {
+          setBusy(false);
         }
       }
       return;

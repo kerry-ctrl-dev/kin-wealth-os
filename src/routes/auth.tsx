@@ -20,7 +20,8 @@ import { lovable } from "@/integrations/lovable";
 
 // Validation rules
 const PASSWORD_MIN_LENGTH = 12;
-const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]/;
+// require at least one lower, one upper, one digit, one symbol, and only allowed chars
+const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 const PASSWORD_PATTERN_MESSAGE =
   "Password must contain uppercase, lowercase, number, and special character";
 
@@ -100,7 +101,8 @@ function AuthPage() {
     navigate({ to: "/dashboard", replace: true });
   }
 
-  async function signUp(email: string, password: string) {
+  // username is optional, only used on sign-up
+  async function signUp(email: string, password: string, username?: string) {
     // Validate input
     if (!isValidEmail(email)) {
       toast.error("Please enter a valid email address");
@@ -127,9 +129,21 @@ function AuthPage() {
         : "Sign up failed. Please try again.";
       return toast.error(errorMessage);
     }
+
+    // If the auth returned a user immediately (e.g. magic link flow with session), store profile
+    try {
+      if (data?.user && username && username.trim()) {
+        // Upsert profile with username
+        await supabase.from("profiles").upsert({ id: data.user.id, username: username.trim() });
+      }
+    } catch (e) {
+      // non-fatal; profile can be created later in onboarding
+      console.error("Failed to save username to profile", e);
+    }
+
     setLoading(false);
 
-    if (data.session) {
+    if (data?.session) {
       toast.success("Welcome to MalinGu");
       navigate({ to: "/dashboard", replace: true });
       return;
@@ -170,9 +184,7 @@ function AuthPage() {
             <Sparkles className="h-5 w-5" />
           </div>
           <h1 className="mt-4 text-xl font-semibold tracking-tight">Preparing your workspace</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Checking your account so we can send you to the right place.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Checking your account...</p>
         </div>
       </div>
     );
@@ -193,28 +205,19 @@ function AuthPage() {
               </div>
               <div>
                 <div className="font-semibold tracking-tight">MalinGu</div>
-                <div className="text-xs text-muted-foreground">
-                  Disciplined investing, clearer decisions
-                </div>
+                <div className="text-xs text-muted-foreground">Disciplined investing</div>
               </div>
             </Link>
-            <div className="rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">
-              Faster sign-in flow
-            </div>
+            <div className="rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">Faster sign-in</div>
           </div>
 
           <div className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-[color:var(--gold)]" />
-              Built to stay calm, fast, and focused
+              Built to stay calm and fast
             </div>
-            <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight">
-              A smoother way to plan, track, and grow your money.
-            </h1>
-            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
-              Review your portfolio, cash flow, goals, and upcoming actions in one cleaner workspace
-              designed to stay quick as your data grows.
-            </p>
+            <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight">Plan, track, and grow your money.</h1>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">One workspace for portfolio, cash flow, and goals.</p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <FeatureCard
@@ -225,20 +228,20 @@ function AuthPage() {
               <FeatureCard
                 icon={<BarChart3 className="h-4 w-4" />}
                 title="Actionable insights"
-                copy="Track ROI, liquidity, and portfolio health in one place."
+                copy="Track ROI, liquidity, and portfolio health."
               />
               <FeatureCard
                 icon={<TrendingUp className="h-4 w-4" />}
                 title="Built for momentum"
-                copy="Move from setup to your dashboard with less friction."
+                copy="Move from setup to your dashboard quickly."
               />
             </div>
           </div>
 
           <div className="grid gap-3 text-sm">
             <TrustRow label="Setup time" value="Under 2 minutes" />
-            <TrustRow label="What you get" value="Portfolio, goals, spending, and alerts" />
-            <TrustRow label="Best for" value="Students, founders, and early investors" />
+            <TrustRow label="What you get" value="Portfolio, goals, spending" />
+            <TrustRow label="Best for" value="Students, founders" />
           </div>
         </div>
       </div>
@@ -256,15 +259,9 @@ function AuthPage() {
 
           <div className="glass-panel animate-panel-in p-6 sm:p-8">
             <div className="rounded-2xl border border-[color:var(--glass-border)] bg-background/25 p-4 backdrop-blur-sm">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-                Welcome back
-              </div>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                Sign in or create your account
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Keep setup fast, then continue into your dashboard and personalized onboarding.
-              </p>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Welcome back</div>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">Sign in or create an account</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Quick setup, then your dashboard.</p>
             </div>
 
             <Tabs defaultValue="signin" className="mt-6">
@@ -277,7 +274,7 @@ function AuthPage() {
               </TabsContent>
               <TabsContent value="signup">
                 <AuthForm
-                  cta="Create account"
+                  cta="Create"
                   loading={loading}
                   onSubmit={signUp}
                   isSignUp={true}
@@ -298,15 +295,13 @@ function AuthPage() {
               <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
                 <path
                   fill="#EA4335"
-                  d="M12 10.2v3.9h5.5c-.24 1.3-1.7 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.6 0 9.3-3.8 9.3-9.3 0-.6 0-1.3-.1-1.9H12z"
+                  d="M12 10.2v3.9h5.5c-.24 1.3-1.7 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.6 0 9.3-3.8 [...]
                 />
               </svg>
               Continue with Google
             </Button>
 
-            <div className="mt-4 text-center text-xs text-muted-foreground">
-              By continuing, you agree to use MalinGu for personal financial planning.
-            </div>
+            <div className="mt-4 text-center text-xs text-muted-foreground">By continuing you agree to our terms.</div>
           </div>
         </div>
       </div>
@@ -323,10 +318,11 @@ function AuthForm({
   cta: string;
   loading: boolean;
   isSignUp: boolean;
-  onSubmit: (email: string, password: string) => unknown | Promise<unknown>;
+  onSubmit: (email: string, password: string, username?: string) => unknown | Promise<unknown>;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -355,7 +351,7 @@ function AuthForm({
       className="mt-4 space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit(email.trim(), password);
+        onSubmit(email.trim(), password, isSignUp ? username.trim() : undefined);
       }}
     >
       <div className="space-y-2">
@@ -370,6 +366,22 @@ function AuthForm({
           autoComplete="email"
         />
       </div>
+
+      {isSignUp && (
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <Input
+            id="username"
+            type="text"
+            required
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Choose a username"
+            autoComplete="username"
+          />
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <div className="relative">
@@ -414,9 +426,7 @@ function AuthForm({
             )}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">
-            Use the email and password tied to your MalinGu account.
-          </p>
+          <p className="text-xs text-muted-foreground">Use the email and password tied to your account.</p>
         )}
       </div>
       <Button
@@ -441,7 +451,7 @@ function FeatureCard({
   copy: string;
 }) {
   return (
-      <div className="glass-panel p-4">
+    <div className="glass-panel p-4">
       <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[color:var(--emerald)]/15 text-[color:var(--emerald)]">
         {icon}
       </div>

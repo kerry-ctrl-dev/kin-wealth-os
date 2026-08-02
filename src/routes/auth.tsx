@@ -43,6 +43,9 @@ function validatePassword(password: string): { valid: boolean; error?: string } 
 }
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search.next === "string" ? search.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — MalinGu" },
@@ -55,10 +58,26 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+// Only allow same-origin relative paths as a post-login destination.
+function safeNext(next?: string) {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return undefined;
+  return next;
+}
+
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = safeNext(next);
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+
+  function goAfterAuth() {
+    if (dest) {
+      window.location.href = dest;
+      return;
+    }
+    navigate({ to: "/dashboard", replace: true });
+  }
 
   useEffect(() => {
     let active = true;
@@ -67,7 +86,10 @@ function AuthPage() {
       .getUser()
       .then(({ data }) => {
         if (!active) return;
-        if (data.user) navigate({ to: "/dashboard", replace: true });
+        if (data.user) {
+          if (dest) window.location.href = dest;
+          else navigate({ to: "/dashboard", replace: true });
+        }
       })
       .finally(() => {
         if (active) setCheckingSession(false);
@@ -76,7 +98,8 @@ function AuthPage() {
     return () => {
       active = false;
     };
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, dest]);
 
   async function signIn(email: string, password: string) {
     // Validate input
@@ -98,7 +121,7 @@ function AuthPage() {
     }
 
     toast.success("Welcome back");
-    navigate({ to: "/dashboard", replace: true });
+    goAfterAuth();
   }
 
   // username is optional, only used on sign-up

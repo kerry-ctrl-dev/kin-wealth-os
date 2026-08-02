@@ -134,7 +134,7 @@ function AuthPage() {
     try {
       if (data?.user && username && username.trim()) {
         // Upsert profile with username
-        await supabase.from("profiles").upsert({ id: data.user.id, username: username.trim() });
+        await supabase.from("profiles").upsert({ id: data.user.id, full_name: username.trim() });
       }
     } catch (e) {
       // non-fatal; profile can be created later in onboarding

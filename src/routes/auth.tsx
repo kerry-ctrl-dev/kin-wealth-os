@@ -142,7 +142,7 @@ function AuthPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+      options: { emailRedirectTo: `${window.location.origin}${dest ?? "/dashboard"}` },
     });
 
     if (error) {
@@ -168,7 +168,7 @@ function AuthPage() {
 
     if (data?.session) {
       toast.success("Welcome to MalinGu");
-      navigate({ to: "/dashboard", replace: true });
+      goAfterAuth();
       return;
     }
 
@@ -177,7 +177,7 @@ function AuthPage() {
 
   async function signInWithGoogle() {
     // Use HTTPS-only redirect URI
-    const redirectUri = window.location.origin;
+    const redirectUri = `${window.location.origin}${dest ?? ""}`;
     if (!redirectUri.startsWith("https://") && !redirectUri.startsWith("http://localhost")) {
       toast.error("Insecure connection detected. Please use HTTPS.");
       return;
@@ -196,7 +196,7 @@ function AuthPage() {
 
     if (result.redirected) return;
     toast.success("Signed in");
-    navigate({ to: "/dashboard", replace: true });
+    goAfterAuth();
   }
 
   if (checkingSession) {

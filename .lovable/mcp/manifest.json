@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://xhjdzfwjxtolpdhkdwgi.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "malingu",
+      "version": "0.1.0",
+      "title": "MalinGu"
+    },
+    "tools": [
+      {
+        "name": "portfolio_summary",
+        "title": "Portfolio summary",
+        "description": "Summarise the signed-in MalinGu user's finances in KES: total invested value by asset category, total income, total expenses and open goals.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_assets",
+        "title": "List investments",
+        "description": "List the signed-in user's investments (MMF, NSE stocks, REITs, bonds, cash, other) with value in KES.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "category": {
+              "description": "Optional asset category filter, e.g. MMF, NSE, REIT, CASH.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max rows to return (default 50).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_expenses",
+        "title": "List expenses",
+        "description": "List the signed-in user's expenses in KES, newest first, optionally filtered by date range or category.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Inclusive start date, YYYY-MM-DD.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Inclusive end date, YYYY-MM-DD.",
+              "type": "string"
+            },
+            "category": {
+              "description": "Optional expense category filter.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max rows to return (default 50).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_goals",
+        "title": "List goals",
+        "description": "List the signed-in user's savings/investment goals with target, current progress and deadline (KES).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "record_expense",
+        "title": "Record an expense",
+        "description": "Record a new expense in KES for the signed-in MalinGu user.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Expense amount in KES."
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Expense category, e.g. Rent, Transport, Food."
+            },
+            "date": {
+              "description": "Expense date, YYYY-MM-DD. Defaults to today.",
+              "type": "string"
+            },
+            "vendor": {
+              "description": "Who was paid.",
+              "type": "string"
+            },
+            "method": {
+              "description": "Payment method, e.g. M-Pesa, Bank, Cash.",
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "category"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "record_income",
+        "title": "Record income",
+        "description": "Record a new income entry in KES for the signed-in MalinGu user.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Income amount in KES."
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Income source, e.g. Salary, Side hustle, Allowance."
+            },
+            "date": {
+              "description": "Date received, YYYY-MM-DD. Defaults to today.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "source"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

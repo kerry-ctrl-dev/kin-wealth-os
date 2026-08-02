@@ -43,6 +43,9 @@ function validatePassword(password: string): { valid: boolean; error?: string } 
 }
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search.next === "string" ? search.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — MalinGu" },
@@ -55,10 +58,26 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+// Only allow same-origin relative paths as a post-login destination.
+function safeNext(next?: string) {
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return undefined;
+  return next;
+}
+
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const dest = safeNext(next);
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+
+  function goAfterAuth() {
+    if (dest) {
+      window.location.href = dest;
+      return;
+    }
+    navigate({ to: "/dashboard", replace: true });
+  }
 
   useEffect(() => {
     let active = true;
@@ -67,7 +86,10 @@ function AuthPage() {
       .getUser()
       .then(({ data }) => {
         if (!active) return;
-        if (data.user) navigate({ to: "/dashboard", replace: true });
+        if (data.user) {
+          if (dest) window.location.href = dest;
+          else navigate({ to: "/dashboard", replace: true });
+        }
       })
       .finally(() => {
         if (active) setCheckingSession(false);
@@ -76,7 +98,8 @@ function AuthPage() {
     return () => {
       active = false;
     };
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, dest]);
 
   async function signIn(email: string, password: string) {
     // Validate input
@@ -98,7 +121,7 @@ function AuthPage() {
     }
 
     toast.success("Welcome back");
-    navigate({ to: "/dashboard", replace: true });
+    goAfterAuth();
   }
 
   // username is optional, only used on sign-up
@@ -119,7 +142,7 @@ function AuthPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+      options: { emailRedirectTo: `${window.location.origin}${dest ?? "/dashboard"}` },
     });
 
     if (error) {
@@ -134,7 +157,7 @@ function AuthPage() {
     try {
       if (data?.user && username && username.trim()) {
         // Upsert profile with username
-        await supabase.from("profiles").upsert({ id: data.user.id, username: username.trim() });
+        await supabase.from("profiles").upsert({ id: data.user.id, full_name: username.trim() });
       }
     } catch (e) {
       // non-fatal; profile can be created later in onboarding
@@ -145,7 +168,7 @@ function AuthPage() {
 
     if (data?.session) {
       toast.success("Welcome to MalinGu");
-      navigate({ to: "/dashboard", replace: true });
+      goAfterAuth();
       return;
     }
 
@@ -154,7 +177,7 @@ function AuthPage() {
 
   async function signInWithGoogle() {
     // Use HTTPS-only redirect URI
-    const redirectUri = window.location.origin;
+    const redirectUri = `${window.location.origin}${dest ?? ""}`;
     if (!redirectUri.startsWith("https://") && !redirectUri.startsWith("http://localhost")) {
       toast.error("Insecure connection detected. Please use HTTPS.");
       return;
@@ -173,7 +196,7 @@ function AuthPage() {
 
     if (result.redirected) return;
     toast.success("Signed in");
-    navigate({ to: "/dashboard", replace: true });
+    goAfterAuth();
   }
 
   if (checkingSession) {
@@ -295,7 +318,16 @@ function AuthPage() {
               <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
                 <path
                   fill="#EA4335"
-                  d="M12 10.2v3.9h5.5c-.24 1.3-1.7 3.8-5.5 3.8-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.6 0 9.3-3.8 [...]
+                  d="M12 4.8c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 2.1 14.7 1.2 12 1.2 8 1.2 4.5 3.5 2.8 6.9l3.2 2.5C6.8 6.7 9.2 4.8 12 4.8z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M22.8 12.2c0-.8-.1-1.4-.2-2H12v3.9h6.1c-.1 1-.8 2.5-2.1 3.5l3.1 2.4c1.8-1.7 2.9-4.2 2.9-7.8z"
+                />
+                <path fill="#FBBC05" d="M6 9.4A6.9 6.9 0 0 0 5.6 12c0 .9.2 1.8.4 2.6L2.8 17.1A11 11 0 0 1 1.6 12c0-1.8.4-3.5 1.2-5.1L6 9.4z" />
+                <path
+                  fill="#34A853"
+                  d="M12 22.8c3 0 5.4-1 7.1-2.8l-3.1-2.4c-.9.6-2.1 1-4 1-2.8 0-5.2-1.9-6-4.6l-3.2 2.5C4.5 20.5 8 22.8 12 22.8z"
                 />
               </svg>
               Continue with Google

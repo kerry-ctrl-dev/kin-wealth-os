@@ -43,9 +43,8 @@ function validatePassword(password: string): { valid: boolean; error?: string } 
 }
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    next: typeof search.next === "string" ? search.next : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { next?: string } =>
+    typeof search.next === "string" ? { next: search.next } : {},
   head: () => ({
     meta: [
       { title: "Sign in — MalinGu" },

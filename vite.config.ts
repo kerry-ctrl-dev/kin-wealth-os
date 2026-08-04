@@ -23,6 +23,9 @@ export default defineConfig({
         strategies: "injectManifest",
         srcDir: "src",
         filename: "sw.ts",
+        // TanStack Start emits the browser bundle to dist/client; keep the worker with it
+        // so it is served from /sw.js at the site root.
+        outDir: "dist/client",
         registerType: "autoUpdate",
         injectRegister: null,
         devOptions: { enabled: false },

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { MSG_DRAIN } from "@/lib/offline-sync-protocol";
 
 /**
  * The service worker's Background Sync queue replays failed POST/PUT/PATCH/DELETE
@@ -31,7 +32,13 @@ export function useOfflineSync(queryClient: QueryClient) {
         id: "malingu-online",
         description: "Syncing your queued changes…",
       });
-      // Give the service worker a moment to drain its queue, then refresh data.
+      // Ask the worker to drain (dedup + conflict checks happen there). It reports
+      // back with a MALINGU_SYNC_DONE message which refreshes the cache.
+      navigator.serviceWorker?.ready
+        .then((registration) => registration.active?.postMessage({ type: MSG_DRAIN }))
+        .catch(() => {
+          /* no worker in dev/preview */
+        });
       window.setTimeout(() => queryClient.invalidateQueries(), 2500);
     };
 

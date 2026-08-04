@@ -18,79 +18,20 @@ export default defineConfig({
     plugins: [
       mcpPlugin(),
       VitePWA({
-        strategies: "generateSW",
+        // injectManifest: we own `src/sw.ts` because the write queue needs custom
+        // de-duplication and conflict resolution logic.
+        strategies: "injectManifest",
+        srcDir: "src",
+        filename: "sw.ts",
+        // TanStack Start emits the browser bundle to dist/client; keep the worker with it
+        // so it is served from /sw.js at the site root.
+        outDir: "dist/client",
         registerType: "autoUpdate",
         injectRegister: null,
-        filename: "sw.js",
         devOptions: { enabled: false },
         manifest: false,
-        workbox: {
+        injectManifest: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-          navigateFallback: "/",
-          navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//, /^\/\.mcp/, /^\/\.well-known/],
-          cleanupOutdatedCaches: true,
-          clientsClaim: true,
-          skipWaiting: true,
-          runtimeCaching: [
-            {
-              // HTML navigations: always try the network first so deploys land immediately.
-              urlPattern: ({ request }) => request.mode === "navigate",
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "malingu-pages",
-                networkTimeoutSeconds: 4,
-                expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 },
-                cacheableResponse: { statuses: [200] },
-              },
-            },
-            {
-              // Same-origin hashed build assets.
-              urlPattern: ({ url, request, sameOrigin }) =>
-                sameOrigin &&
-                (request.destination === "script" ||
-                  request.destination === "style" ||
-                  request.destination === "font") &&
-                url.pathname.startsWith("/_build/"),
-              handler: "CacheFirst",
-              options: {
-                cacheName: "malingu-assets",
-                expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
-                cacheableResponse: { statuses: [200] },
-              },
-            },
-            {
-              // Dashboard data reads (Supabase REST GETs) stay readable offline briefly.
-              urlPattern: ({ url, request }) =>
-                request.method === "GET" && url.pathname.startsWith("/rest/v1/"),
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "malingu-api",
-                networkTimeoutSeconds: 5,
-                expiration: { maxEntries: 60, maxAgeSeconds: 60 * 30 },
-                cacheableResponse: { statuses: [200] },
-              },
-            },
-            // Writes are never cached — they are queued and replayed by Background Sync
-            // when connectivity returns. Supabase uses POST (insert), PATCH (update),
-            // PUT (upsert) and DELETE on /rest/v1/*; server functions POST to /_serverFn/.
-            ...(["POST", "PUT", "PATCH", "DELETE"] as const).map((method) => ({
-              urlPattern: ({ url }: { url: URL }) =>
-                url.pathname.startsWith("/rest/v1/") ||
-                url.pathname.startsWith("/rpc/") ||
-                url.pathname.includes("/_serverFn/"),
-              method,
-              handler: "NetworkOnly" as const,
-              options: {
-                backgroundSync: {
-                  name: "malingu-write-queue",
-                  options: {
-                    // Keep queued changes for 24h, then drop them as stale.
-                    maxRetentionTime: 60 * 24,
-                  },
-                },
-              },
-            })),
-          ],
         },
       }),
     ],

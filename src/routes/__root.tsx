@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { APPEARANCE_BOOT_SCRIPT } from "@/lib/appearance";
 import { registerServiceWorker } from "@/lib/register-sw";
 import { useOfflineSync } from "@/hooks/use-offline-sync";
+import { OfflineConflictDialog } from "@/components/OfflineConflictDialog";
 
 function NotFoundComponent() {
   return (
@@ -169,6 +170,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <OfflineConflictDialog queryClient={queryClient} />
       <Toaster richColors theme="dark" position="top-right" />
     </QueryClientProvider>
   );

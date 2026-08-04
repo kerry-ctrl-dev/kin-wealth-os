@@ -70,6 +70,26 @@ export default defineConfig({
                 cacheableResponse: { statuses: [200] },
               },
             },
+            // Writes are never cached — they are queued and replayed by Background Sync
+            // when connectivity returns. Supabase uses POST (insert), PATCH (update),
+            // PUT (upsert) and DELETE on /rest/v1/*; server functions POST to /_serverFn/.
+            ...(["POST", "PUT", "PATCH", "DELETE"] as const).map((method) => ({
+              urlPattern: ({ url }: { url: URL }) =>
+                url.pathname.startsWith("/rest/v1/") ||
+                url.pathname.startsWith("/rpc/") ||
+                url.pathname.includes("/_serverFn/"),
+              method,
+              handler: "NetworkOnly" as const,
+              options: {
+                backgroundSync: {
+                  name: "malingu-write-queue",
+                  options: {
+                    // Keep queued changes for 24h, then drop them as stale.
+                    maxRetentionTime: 60 * 24,
+                  },
+                },
+              },
+            })),
           ],
         },
       }),

@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { APPEARANCE_BOOT_SCRIPT } from "@/lib/appearance";
 import { registerServiceWorker } from "@/lib/register-sw";
+import { useOfflineSync } from "@/hooks/use-offline-sync";
 
 function NotFoundComponent() {
   return (
@@ -153,6 +154,8 @@ function RootComponent() {
   useEffect(() => {
     registerServiceWorker();
   }, []);
+
+  useOfflineSync(queryClient);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {

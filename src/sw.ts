@@ -25,7 +25,6 @@ import {
 } from "@/lib/offline-sync-protocol";
 
 const sw = self as unknown as {
-  __WB_MANIFEST: any;
   addEventListener: (type: string, listener: (event: any) => void) => void;
   skipWaiting: () => Promise<void> | void;
   clients: {
@@ -38,7 +37,7 @@ const sw = self as unknown as {
 
 // ---------------------------------------------------------------- caching ----
 
-precacheAndRoute(sw.__WB_MANIFEST);
+precacheAndRoute((self as any).__WB_MANIFEST);
 cleanupOutdatedCaches();
 
 const API_CACHE = "malingu-api";

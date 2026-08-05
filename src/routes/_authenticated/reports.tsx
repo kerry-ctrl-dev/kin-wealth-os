@@ -104,7 +104,7 @@ function ReportsPage() {
               <div className="rounded-lg border border-border p-4">
                 <h3 className="font-semibold mb-2">Allocation</h3>
                 {report.allocation.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No assets yet.</p>
+                  <p className="empty-state">Add your first holding to see allocation and returns.</p>
                 ) : (
                   <ul className="text-sm space-y-1">
                     {report.allocation.map((a) => (

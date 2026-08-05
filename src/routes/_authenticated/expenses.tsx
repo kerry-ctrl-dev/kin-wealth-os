@@ -148,8 +148,8 @@ function ExpensesPage() {
               </div>
             ))}
             {all.length === 0 && (
-              <p className="text-sm text-muted-foreground py-6 text-center">
-                No expenses yet. Tap "Add Expense" to start.
+              <p className="empty-state">
+                Log your first expense to see where the money goes.
               </p>
             )}
           </div>
@@ -175,7 +175,7 @@ function ExpensesPage() {
                 </div>
               ))}
             {!monthTotal && (
-              <p className="text-sm text-muted-foreground">No data yet this month.</p>
+              <p className="empty-state">Spend something this month and the breakdown appears here.</p>
             )}
           </div>
         </div>
@@ -253,8 +253,8 @@ function RecurringSection() {
           </div>
         ))}
         {rows.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No recurring expenses yet. Add rent, subscriptions or utilities to automate tracking.
+          <p className="empty-state">
+            Add rent, subscriptions or utilities once — they track themselves.
           </p>
         )}
       </div>
@@ -435,7 +435,7 @@ function AddExpense() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="h-4 w-4" /> Add Expense
+          <Plus className="h-4 w-4" /> Add expense
         </Button>
       </DialogTrigger>
       <DialogContent>

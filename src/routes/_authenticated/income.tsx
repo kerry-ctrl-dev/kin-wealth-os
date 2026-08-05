@@ -116,7 +116,7 @@ function IncomePage() {
                 <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => del.mutate(i.id)}><Trash2 className="h-4 w-4" /></Button></td>
               </tr>
             ))}
-            {(income ?? []).length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">No income yet.</td></tr>}
+            {(income ?? []).length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">Add your first payday to unlock allocation.</td></tr>}
           </tbody>
         </table>
       </div>

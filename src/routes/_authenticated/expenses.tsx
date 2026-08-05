@@ -149,7 +149,7 @@ function ExpensesPage() {
             ))}
             {all.length === 0 && (
               <p className="empty-state">
-                No expenses yet. Tap "Add expense" to start.
+                Log your first expense to see where the money goes.
               </p>
             )}
           </div>

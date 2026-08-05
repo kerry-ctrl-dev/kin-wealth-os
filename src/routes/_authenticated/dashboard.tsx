@@ -699,7 +699,7 @@ function Dashboard() {
                 })}
               {total === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  Add income on the Income page to bootstrap your allocation.
+                  Add income to unlock your allocation plan.
                 </p>
               )}
             </div>

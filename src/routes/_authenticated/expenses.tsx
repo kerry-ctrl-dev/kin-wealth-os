@@ -148,7 +148,7 @@ function ExpensesPage() {
               </div>
             ))}
             {all.length === 0 && (
-              <p className="text-sm text-muted-foreground py-6 text-center">
+              <p className="empty-state">
                 No expenses yet. Tap "Add expense" to start.
               </p>
             )}
@@ -253,7 +253,7 @@ function RecurringSection() {
           </div>
         ))}
         {rows.length === 0 && (
-          <p className="text-sm text-muted-foreground">
+          <p className="empty-state">
             Add rent, subscriptions or utilities once — they track themselves.
           </p>
         )}

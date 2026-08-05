@@ -52,7 +52,7 @@ function BudgetsPage() {
             </div>
           );
         })}
-        {(!budgets || budgets.length === 0) && <p className="text-sm text-muted-foreground">No budgets yet. Add one to start tracking.</p>}
+        {(!budgets || budgets.length === 0) && <p className="text-sm text-muted-foreground">Set a monthly cap to see overspend before it happens.</p>}
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ function AddBudget() {
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add Budget</Button></DialogTrigger>
+      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add budget</Button></DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>New Budget</DialogTitle></DialogHeader>
         <div className="space-y-3">

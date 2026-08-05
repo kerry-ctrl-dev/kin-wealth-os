@@ -79,7 +79,7 @@ function PersonalAssetsPage() {
                 <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => del(r.id)}><Trash2 className="h-4 w-4" /></Button></td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No personal assets yet.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">Add a vehicle or household item to complete your net worth.</td></tr>}
           </tbody>
         </table>
       </div>

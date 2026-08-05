@@ -760,7 +760,7 @@ function Dashboard() {
                 <div className="metric-value">{fmtKES(Number(r.amount))}</div>
               </div>
             ))}
-            {recent.length === 0 && <p className="text-sm text-muted-foreground">No income yet.</p>}
+            {recent.length === 0 && <p className="text-sm text-muted-foreground">Add your first payday to unlock allocation.</p>}
           </div>
         </div>
 
@@ -864,24 +864,24 @@ function QuickActions() {
   const actions = [
     {
       to: "/income",
-      label: "Add Income",
+      label: "Add income",
       icon: Plus,
       detail: "Capture a salary, payment, or side hustle",
     },
     {
       to: "/portfolio",
-      label: "Add Investment",
+      label: "Add investment",
       icon: Wallet,
       detail: "Update holdings and allocation",
     },
     {
       to: "/personal-assets",
-      label: "Add Asset",
+      label: "Add asset",
       icon: HomeIcon,
       detail: "Track property and valuables",
     },
-    { to: "/loans", label: "Record Loan", icon: Coins, detail: "Log debt, lending, or repayments" },
-    { to: "/goals", label: "Create Goal", icon: TargetIcon, detail: "Set a new savings target" },
+    { to: "/loans", label: "Record loan", icon: Coins, detail: "Log debt, lending, or repayments" },
+    { to: "/goals", label: "Create goal", icon: TargetIcon, detail: "Set a new savings target" },
     {
       to: "/reports",
       label: "Reports",

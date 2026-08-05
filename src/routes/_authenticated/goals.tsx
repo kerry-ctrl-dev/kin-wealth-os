@@ -117,7 +117,7 @@ function GoalsPage() {
             </div>
           );
         })}
-        {(goals ?? []).length === 0 && <div className="fintech-card p-6 text-sm text-muted-foreground">Set your first target above to start tracking progress.</div>}
+        {(goals ?? []).length === 0 && <div className="empty-state">Set your first target above to start tracking progress.</div>}
       </div>
     </div>
   );

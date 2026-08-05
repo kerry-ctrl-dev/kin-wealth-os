@@ -175,7 +175,7 @@ function ExpensesPage() {
                 </div>
               ))}
             {!monthTotal && (
-              <p className="text-sm text-muted-foreground">Spend something this month and the breakdown appears here.</p>
+              <p className="empty-state">Spend something this month and the breakdown appears here.</p>
             )}
           </div>
         </div>

@@ -128,7 +128,7 @@ function AlertsPage() {
       <div className="fintech-card p-6">
         <h2 className="font-semibold mb-2">Preview ({preview.length})</h2>
         {preview.length === 0 ? (
-          <p className="text-sm text-muted-foreground">All clear — nothing needs your attention.</p>
+          <p className="empty-state">All clear — nothing needs your attention.</p>
         ) : (
           <ul className="space-y-2 text-sm">
             {preview.map((t) => (
@@ -144,7 +144,7 @@ function AlertsPage() {
       <div className="fintech-card p-6">
         <h2 className="font-semibold mb-2">Recent alerts</h2>
         {(alerts.data ?? []).length === 0 ? (
-          <p className="text-sm text-muted-foreground">Alerts land here the moment a threshold is crossed.</p>
+          <p className="empty-state">Alerts land here the moment a threshold is crossed.</p>
         ) : (
           <ul className="space-y-2 text-sm">
             {(alerts.data ?? []).slice(0, 10).map((a) => (

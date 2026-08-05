@@ -760,7 +760,7 @@ function Dashboard() {
                 <div className="metric-value">{fmtKES(Number(r.amount))}</div>
               </div>
             ))}
-            {recent.length === 0 && <p className="text-sm text-muted-foreground">Add your first payday to unlock allocation.</p>}
+            {recent.length === 0 && <p className="empty-state">Add your first payday to unlock allocation.</p>}
           </div>
         </div>
 

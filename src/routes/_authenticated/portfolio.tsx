@@ -78,7 +78,7 @@ function PortfolioPage() {
               </div>
             ))}
             {allocation.length === 0 && (
-              <p className="text-sm text-muted-foreground">Add your first holding to see allocation and returns.</p>
+              <p className="empty-state">Add your first holding to see allocation and returns.</p>
             )}
           </div>
         </div>

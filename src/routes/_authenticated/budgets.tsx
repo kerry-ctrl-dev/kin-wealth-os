@@ -52,7 +52,7 @@ function BudgetsPage() {
             </div>
           );
         })}
-        {(!budgets || budgets.length === 0) && <p className="text-sm text-muted-foreground">Set a monthly cap to see overspend before it happens.</p>}
+        {(!budgets || budgets.length === 0) && <p className="empty-state">Set a monthly cap to see overspend before it happens.</p>}
       </div>
     </div>
   );

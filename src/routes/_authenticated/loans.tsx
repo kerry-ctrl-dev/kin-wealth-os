@@ -141,7 +141,7 @@ function LoansPage() {
       <div className="mt-8">
         <SectionHeading title="Loanee reports" sub="Generate a printable statement for each person who owes you — contact details, terms, payment instructions and a kind note." />
         {lentRows.length === 0 ? (
-          <div className="fintech-card p-6 text-sm text-muted-foreground">Record a loan you lent to generate a payment statement.</div>
+          <div className="empty-state">Record a loan you lent to generate a payment statement.</div>
         ) : (
           <div className="grid md:grid-cols-2 gap-3">
             {lentRows.map((l) => {

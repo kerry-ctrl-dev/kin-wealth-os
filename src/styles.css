@@ -418,6 +418,32 @@
   letter-spacing: -0.02em;
 }
 
+/* Consistent panel typography across every screen */
+.fintech-card h2,
+.fintech-card h3,
+.card-elevated h2,
+.card-elevated h3 {
+  font-weight: 600;
+  letter-spacing: -0.011em;
+  line-height: 1.25;
+}
+
+/* Shared empty-state surface: calm, glassy, outcome-driven */
+@utility empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px dashed color-mix(in oklab, var(--gold) 22%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--color-card) 55%, transparent);
+  backdrop-filter: blur(10px) saturate(130%);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+}
+
 @utility card-elevated {
   background: var(--color-card);
   border: 1px solid var(--color-border);

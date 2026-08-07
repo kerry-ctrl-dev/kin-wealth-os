@@ -62,7 +62,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" sub="Branded PDF reports for daily, weekly, and monthly views. Raw CSV is optional." />
+      <SectionHeading title="Report Center" sub="PDF or CSV, any period." />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>

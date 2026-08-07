@@ -75,7 +75,7 @@ function LoansPage() {
 
   return (
     <div>
-      <SectionHeading title="Loans & Debt" sub="Track borrowed money — lender, amount, interest, deadline and how it's used." action={<AddDialog />} />
+      <SectionHeading title="Loans & Debt" sub="Who, how much, interest and deadline." action={<AddDialog />} />
 
       <div className="fintech-card p-4 mb-6 flex items-center justify-between">
         <div>
@@ -139,7 +139,7 @@ function LoansPage() {
 
       {/* Loanee reports (lent money) */}
       <div className="mt-8">
-        <SectionHeading title="Loanee reports" sub="Generate a printable statement for each person who owes you — contact details, terms, payment instructions and a kind note." />
+        <SectionHeading title="Loanee reports" sub="Printable statement per borrower." />
         {lentRows.length === 0 ? (
           <div className="empty-state">Record a loan you lent to generate a payment statement.</div>
         ) : (

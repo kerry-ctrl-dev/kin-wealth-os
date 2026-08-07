@@ -83,7 +83,7 @@ function IncomePage() {
           addIncome.mutate({ ...parsed.data, autoAllocate });
         }}
       >
-        <div className="grid sm:grid-cols-[1fr_180px_auto] gap-3 items-end">
+        <div className="bento-grid grid sm:grid-cols-[1fr_180px_auto] gap-3 items-endgrid-cols-[1fr_180px_auto] gap-3 items-end">
           <div className="space-y-2">
             <Label htmlFor="src">Source</Label>
             <Input id="src" value={source} onChange={(e) => setSource(e.target.value)} placeholder="Stipend, side hustle…" />

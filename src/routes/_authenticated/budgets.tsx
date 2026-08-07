@@ -33,7 +33,7 @@ function BudgetsPage() {
   return (
     <div>
       <SectionHeading title="Budgets" sub="Set a monthly cap per category and track burn rate." action={<AddBudget />} />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="bento-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-4grid-cols-2 lg:grid-cols-3 gap-4">
         {(budgets ?? []).map((b) => {
           const spent = monthSpend[b.category] ?? 0;
           const pct = Math.min(100, (spent / Number(b.monthly_limit)) * 100);

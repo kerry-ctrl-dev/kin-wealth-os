@@ -84,7 +84,7 @@ function ExpensesPage() {
         sub="Track spending and stay in control."
         action={<AddExpense />}
       />
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <MetricCard
           label="This Month"
           value={fmtKES(monthTotal)}
@@ -107,7 +107,7 @@ function ExpensesPage() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold tracking-tight">Transactions</h2>
@@ -216,7 +216,7 @@ function RecurringSection() {
         </div>
         <AddRecurring />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="bento-grid grid gap-3 sm:grid-cols-2grid-cols-2">
         {rows.map((r) => (
           <div
             key={r.id}
@@ -323,7 +323,7 @@ function AddRecurring() {
               placeholder="Rent, Netflix, Data bundle…"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <div>
               <Label>Amount (KES)</Label>
               <Input
@@ -447,7 +447,7 @@ function AddExpense() {
             Available cash from income:{" "}
             <span className="font-semibold text-foreground">{fmtKES(available)}</span>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <div>
               <Label>Amount (KES)</Label>
               <Input
@@ -480,7 +480,7 @@ function AddExpense() {
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <div>
               <Label>Payment method</Label>
               <Select value={form.method} onValueChange={(v) => setForm({ ...form, method: v })}>
@@ -505,7 +505,7 @@ function AddExpense() {
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <div>
               <Label>Vendor</Label>
               <Input

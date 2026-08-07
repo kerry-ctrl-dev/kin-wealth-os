@@ -200,7 +200,7 @@ function Onboarding() {
   }
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="gradient-mesh mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="space-y-5">
           <div className="flex items-center gap-3">
@@ -215,7 +215,7 @@ function Onboarding() {
             </div>
           </div>
 
-          <div className="fintech-card relative overflow-hidden p-6">
+          <div className="fintech-card max-lg:clay-card relative overflow-hidden p-6">
             <div
               className="absolute inset-x-0 top-0 h-24 opacity-30"
               style={{ background: "var(--gradient-primary)" }}
@@ -281,7 +281,7 @@ function Onboarding() {
           </div>
         </div>
 
-        <div className="fintech-card p-6 sm:p-7">
+        <div className="fintech-card max-lg:clay-card p-6 sm:p-7">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
@@ -313,7 +313,7 @@ function Onboarding() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-border/70 bg-background/25 p-4 sm:p-5">
+          <div className="mt-6 rounded-2xl border border-border/70 bg-background/25 p-4 max-lg:clay-inset max-lg:border-transparent sm:p-5">
             {cur.content}
           </div>
 
@@ -334,7 +334,7 @@ function Onboarding() {
               variant="ghost"
               onClick={() => setStep((s) => Math.max(0, s - 1))}
               disabled={step === 0}
-              className="rounded-xl"
+              className="rounded-xl max-lg:clay-button"
             >
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
@@ -342,12 +342,12 @@ function Onboarding() {
               <Button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!cur.valid}
-                className="rounded-xl"
+                className="rounded-xl max-lg:clay-button"
               >
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={finish} disabled={!canFinish || busy} className="rounded-xl">
+              <Button onClick={finish} disabled={!canFinish || busy} className="rounded-xl max-lg:clay-button">
                 {busy ? "Finishing…" : "Enter MalinGu"} <ArrowRight className="h-4 w-4" />
               </Button>
             )}

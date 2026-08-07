@@ -428,7 +428,6 @@
 
 @utility bento-grid {
   display: grid;
-  gap: 1rem;
   grid-auto-flow: row dense;
   align-items: start;
 }

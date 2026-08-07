@@ -81,7 +81,7 @@ function GoalsPage() {
         <div className="space-y-2"><Label>Deadline</Label><Input type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} /></div>
         <Button type="submit" disabled={add.isPending}><Plus className="h-4 w-4" /> Add</Button>
       </form>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="bento-grid grid sm:grid-cols-2 gap-4grid-cols-2 gap-4">
         {(goals ?? []).map((g) => {
           const pct = Math.min(100, (Number(g.current) / Number(g.target)) * 100);
           const monthly = monthlyNeeded(g);

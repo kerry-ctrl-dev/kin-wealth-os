@@ -125,6 +125,16 @@
   --glow-gold: 0 0 0 1px oklch(0.78 0.13 84 / 0.35), 0 8px 24px oklch(0.78 0.13 84 / 0.28);
   --glass-bg: oklch(1 0 0 / 0.62);
   --glass-border: oklch(0.55 0.02 260 / 0.18);
+  --glow-ambient: 0 18px 48px -28px oklch(0.58 0.14 250 / 0.35);
+  --clay-bg: oklch(0.985 0.004 260);
+  --clay-border: oklch(1 0 0 / 0.8);
+  --clay-shadow:
+    10px 10px 24px oklch(0.6 0.03 260 / 0.18),
+    -8px -8px 20px oklch(1 0 0 / 0.9),
+    inset 1px 1px 2px oklch(1 0 0 / 0.7);
+  --clay-shadow-sm:
+    6px 6px 14px oklch(0.6 0.03 260 / 0.18),
+    -5px -5px 12px oklch(1 0 0 / 0.85);
   
   /* Gradients - subtle and elegant */
   --gradient-primary: linear-gradient(135deg, oklch(0.58 0.14 250), oklch(0.65 0.12 240));
@@ -187,6 +197,16 @@
   --glow-gold: 0 0 0 1px oklch(0.82 0.13 88 / 0.4), 0 10px 30px oklch(0.82 0.13 88 / 0.28);
   --glass-bg: oklch(0.24 0.024 262 / 0.55);
   --glass-border: oklch(0.86 0.02 250 / 0.12);
+  --glow-ambient: 0 22px 60px -30px oklch(0.7 0.16 250 / 0.45);
+  --clay-bg: oklch(0.27 0.022 262);
+  --clay-border: oklch(0.86 0.02 250 / 0.14);
+  --clay-shadow:
+    12px 12px 28px oklch(0 0 0 / 0.45),
+    -8px -8px 22px oklch(0.42 0.03 262 / 0.35),
+    inset 1px 1px 2px oklch(1 0 0 / 0.06);
+  --clay-shadow-sm:
+    7px 7px 16px oklch(0 0 0 / 0.4),
+    -5px -5px 14px oklch(0.42 0.03 262 / 0.3);
   
   --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 250), oklch(0.68 0.14 240));
   --gradient-card: linear-gradient(150deg, oklch(0.245 0.026 264), oklch(0.205 0.022 266));
@@ -388,11 +408,11 @@
 /* Utility classes for Copilot Money aesthetic */
 
 @utility fintech-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(14px) saturate(135%);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card), var(--glow-ambient);
+  backdrop-filter: blur(18px) saturate(140%);
   transition:
     transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 0.3s ease,
@@ -400,7 +420,69 @@
   &:hover {
     transform: translateY(-2px);
     border-color: color-mix(in oklab, var(--gold) 26%, var(--color-border));
-    box-shadow: 0 12px 32px oklch(0 0 0 / 0.16);
+    box-shadow: 0 12px 32px oklch(0 0 0 / 0.18), var(--glow-ambient);
+  }
+}
+
+/* ── Bento box grid: large primary tiles, nested secondary tools ──────── */
+
+@utility bento-grid {
+  display: grid;
+  grid-auto-flow: row dense;
+}
+
+@utility bento-tile {
+  border-radius: var(--radius-2xl);
+  padding: 1.5rem;
+}
+
+@utility bento-subgrid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* ── Claymorphism (mobile onboarding) ────────────────────────────────── */
+
+@utility clay-card {
+  background: var(--clay-bg);
+  border: 1px solid var(--clay-border);
+  border-radius: 1.75rem;
+  box-shadow: var(--clay-shadow);
+}
+
+@utility clay-button {
+  border-radius: 1.25rem;
+  box-shadow: var(--clay-shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  &:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: inset 0 2px 6px oklch(0 0 0 / 0.18);
+  }
+}
+
+@utility clay-inset {
+  border-radius: 1.25rem;
+  background: color-mix(in oklab, var(--color-card) 70%, transparent);
+  box-shadow:
+    inset 4px 4px 10px oklch(0 0 0 / 0.1),
+    inset -4px -4px 10px oklch(1 0 0 / 0.35);
+}
+
+/* Ambient multi-color gradient mesh behind the app surface */
+@utility gradient-mesh {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(680px 460px at 12% -6%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 68%),
+      radial-gradient(620px 420px at 88% 4%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 70%),
+      radial-gradient(720px 520px at 70% 92%, color-mix(in oklab, var(--emerald) 16%, transparent), transparent 72%);
   }
 }
 

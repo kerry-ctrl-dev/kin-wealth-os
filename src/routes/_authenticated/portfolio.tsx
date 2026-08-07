@@ -59,10 +59,10 @@ function PortfolioPage() {
         sub="All assets, categories, values and liquidity scores."
         action={<AddInvestmentDialog />}
       />
-      <div className="grid lg:grid-cols-3 gap-4 mb-6">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6grid-cols-3 gap-4 mb-6">
         <div className="fintech-card p-6 lg:col-span-2">
           <h2 className="font-semibold tracking-tight mb-3">Category Totals</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="bento-grid grid sm:grid-cols-2 gap-3grid-cols-2 gap-3">
             {allocation.map((c) => (
               <div
                 key={c.category}
@@ -266,7 +266,7 @@ function AddInvestmentDialog() {
             Available cash from income:{" "}
             <span className="font-semibold text-foreground">{fmtKES(available)}</span>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <Field label={categoryNameLabel}>
               <Input
                 list="instrument-suggestions"

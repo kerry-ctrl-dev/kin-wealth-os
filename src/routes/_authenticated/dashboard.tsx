@@ -284,7 +284,7 @@ function Dashboard() {
         sub="Your wealth, your future, your control — all in one Kenyan-built cockpit."
       />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
+      <div className="bento-grid grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
         <div className="fintech-card relative overflow-hidden p-6 sm:p-7">
           <div
             className="absolute inset-0 -z-10 opacity-35"
@@ -375,9 +375,9 @@ function Dashboard() {
 
       <QuickActions />
 
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="bento-grid grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-betweengrid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-semibold tracking-tight truncate">Net worth trend</h2>
               {trend.length > 1 && (
@@ -598,7 +598,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MetricCard
           label="Total Assets"
           value={fmtKES(total)}
@@ -636,7 +636,7 @@ function Dashboard() {
         />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3grid-cols-2 lg:grid-cols-3 gap-3">
         <MetricCard
           label="Available cash"
           value={fmtKES(availableCash)}
@@ -659,7 +659,7 @@ function Dashboard() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-2">
             <div>
@@ -668,7 +668,7 @@ function Dashboard() {
             </div>
             <RiskBadge risk={risk} />
           </div>
-          <div className="grid sm:grid-cols-5 items-center gap-4">
+          <div className="bento-grid grid sm:grid-cols-5 items-center gap-4grid-cols-5 items-center gap-4">
             <div className="sm:col-span-2">
               <AllocationDonut data={allocation} />
             </div>
@@ -745,7 +745,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="bento-grid grid lg:grid-cols-2 gap-4grid-cols-2 gap-4">
         <div className="fintech-card p-6">
           <h2 className="font-semibold tracking-tight mb-3">Recent Income</h2>
           <div className="divide-y divide-border">
@@ -897,7 +897,7 @@ function QuickActions() {
           One tap into the moves that build Mali Yangu the fastest.
         </p>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="bento-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3grid-cols-2 xl:grid-cols-3">
         {actions.map((a) => (
           <Button
             key={a.to}

@@ -56,10 +56,10 @@ function CalendarPage() {
             <Button variant="outline" size="icon" onClick={() => setCursor(new Date(year, month + 1, 1))}><ChevronRight className="h-4 w-4" /></Button>
           </div>
         </div>
-        <div className="grid grid-cols-7 gap-1 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+        <div className="bento-grid grid grid-cols-7 gap-1 text-[10px] uppercase tracking-widest text-muted-foreground mb-1grid-cols-7 gap-1 text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
           {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map((d) => <div key={d} className="text-center py-1">{d}</div>)}
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="bento-grid grid grid-cols-7 gap-1grid-cols-7 gap-1">
           {cells.map((d, idx) => (
             <div key={idx} className={`min-h-[72px] rounded-md border border-border p-1.5 text-xs ${d && sameDay(d, today) ? "bg-primary/10 border-primary/40" : "bg-background/30"}`}>
               {d && (

@@ -65,7 +65,7 @@ function Onboarding() {
     {
       icon: <UserRound className="h-4 w-4" />,
       title: "Tell us about you",
-      sub: "Start with the basics so the app can feel tailored from day one.",
+      sub: "The basics first.",
       content: (
         <div className="space-y-4">
           <Field label="Full name" help="This appears in greetings and dashboard summaries.">
@@ -92,7 +92,7 @@ function Onboarding() {
     {
       icon: <BriefcaseBusiness className="h-4 w-4" />,
       title: "What do you do?",
-      sub: "Your income rhythm helps us frame liquidity and planning suggestions.",
+      sub: "Your income rhythm.",
       content: (
         <div className="space-y-4">
           <Field label="Profession" help="Choose the option closest to your main focus right now.">
@@ -128,7 +128,7 @@ function Onboarding() {
     {
       icon: <PiggyBank className="h-4 w-4" />,
       title: "Investing preferences",
-      sub: "Set your comfort level so your dashboard starts with the right tone.",
+      sub: "Your comfort with risk.",
       content: (
         <div className="space-y-4">
           <Field label="Investment experience" help="Used to shape how advanced the app feels.">

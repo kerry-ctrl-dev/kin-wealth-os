@@ -75,7 +75,7 @@ function RemindersPage() {
     <div>
       <SectionHeading
         title="Reminders"
-        sub="Stay disciplined: investing, bills, goal check-ins, dividends and portfolio reviews."
+        sub="Bills, check-ins and reviews, on time."
       />
       <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6grid-cols-3 gap-4 mb-6">
         <div className="fintech-card p-5 lg:col-span-2">

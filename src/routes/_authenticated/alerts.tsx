@@ -74,7 +74,7 @@ function AlertsPage() {
     <div className="mx-auto w-full max-w-4xl space-y-6">
       <SectionHeading
         title="Alerts & thresholds"
-        sub="Get notified in-app when liquidity, goals, budgets or risk cross your triggers."
+        sub="Get pinged when your triggers hit."
       />
 
       <div className="fintech-card p-6 space-y-6">
@@ -100,7 +100,7 @@ function AlertsPage() {
         />
         <NumberField
           label="Budget usage warning (%)"
-          help="Warn when a category's spend hits this share of its monthly budget."
+          help="Warn at this share of a category budget."
           value={p.budgetOverPct}
           onChange={(n) => setP({ ...p, budgetOverPct: n })}
         />

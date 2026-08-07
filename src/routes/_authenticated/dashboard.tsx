@@ -281,7 +281,7 @@ function Dashboard() {
     <div className="space-y-8">
       <SectionHeading
         title="Mali Yangu Command Center"
-        sub="Your wealth, your future, your control — all in one Kenyan-built cockpit."
+        sub="Your wealth, at a glance."
       />
 
       <div className="bento-grid grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
@@ -559,7 +559,7 @@ function Dashboard() {
             <p className="text-sm text-muted-foreground py-6">
               {trendAll.length > 0
                 ? "Not enough data in this range — try a wider window."
-                : "Snapshots are captured automatically — your trend will appear here as your portfolio evolves."}
+                : "Your trend appears as snapshots build up."}
             </p>
           )}
         </div>

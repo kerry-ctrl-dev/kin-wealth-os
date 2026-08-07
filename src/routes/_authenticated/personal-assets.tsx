@@ -57,7 +57,7 @@ function PersonalAssetsPage() {
 
   return (
     <div>
-      <SectionHeading title="Assets Manager" sub="Vehicles, household items, electronics, clothes, cash — counted toward net worth." action={<AddDialog />} />
+      <SectionHeading title="Assets Manager" sub="Everything you own, counted in net worth." action={<AddDialog />} />
       <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <MetricCard label="Total value" value={fmtKES(total)} icon={<HomeIcon className="h-4 w-4" />} />
         <MetricCard label="Items" value={String(rows.length)} />

@@ -55,7 +55,7 @@ function AppearancePage() {
     <div className="mx-auto w-full max-w-4xl space-y-6">
       <SectionHeading
         title="Appearance"
-        sub="Customize the look, chart colors, widget density and dashboard defaults. Changes save automatically."
+        sub="Theme, colors and density. Saves automatically."
       />
 
       <Section title="Theme" icon={<Palette className="h-4 w-4 text-primary" />}>

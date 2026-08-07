@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </header>
-          <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 py-5 pb-24 sm:px-6 sm:py-6 lg:px-8 lg:py-8 md:pb-8">
+          <main className="gradient-mesh mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 py-5 pb-24 sm:px-6 sm:py-6 lg:px-8 lg:py-8 md:pb-8">
             {children}
           </main>
           <BottomNav />

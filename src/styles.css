@@ -125,6 +125,16 @@
   --glow-gold: 0 0 0 1px oklch(0.78 0.13 84 / 0.35), 0 8px 24px oklch(0.78 0.13 84 / 0.28);
   --glass-bg: oklch(1 0 0 / 0.62);
   --glass-border: oklch(0.55 0.02 260 / 0.18);
+  --glow-ambient: 0 18px 48px -28px oklch(0.58 0.14 250 / 0.35);
+  --clay-bg: oklch(0.985 0.004 260);
+  --clay-border: oklch(1 0 0 / 0.8);
+  --clay-shadow:
+    10px 10px 24px oklch(0.6 0.03 260 / 0.18),
+    -8px -8px 20px oklch(1 0 0 / 0.9),
+    inset 1px 1px 2px oklch(1 0 0 / 0.7);
+  --clay-shadow-sm:
+    6px 6px 14px oklch(0.6 0.03 260 / 0.18),
+    -5px -5px 12px oklch(1 0 0 / 0.85);
   
   /* Gradients - subtle and elegant */
   --gradient-primary: linear-gradient(135deg, oklch(0.58 0.14 250), oklch(0.65 0.12 240));
@@ -187,6 +197,16 @@
   --glow-gold: 0 0 0 1px oklch(0.82 0.13 88 / 0.4), 0 10px 30px oklch(0.82 0.13 88 / 0.28);
   --glass-bg: oklch(0.24 0.024 262 / 0.55);
   --glass-border: oklch(0.86 0.02 250 / 0.12);
+  --glow-ambient: 0 22px 60px -30px oklch(0.7 0.16 250 / 0.45);
+  --clay-bg: oklch(0.27 0.022 262);
+  --clay-border: oklch(0.86 0.02 250 / 0.14);
+  --clay-shadow:
+    12px 12px 28px oklch(0 0 0 / 0.45),
+    -8px -8px 22px oklch(0.42 0.03 262 / 0.35),
+    inset 1px 1px 2px oklch(1 0 0 / 0.06);
+  --clay-shadow-sm:
+    7px 7px 16px oklch(0 0 0 / 0.4),
+    -5px -5px 14px oklch(0.42 0.03 262 / 0.3);
   
   --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 250), oklch(0.68 0.14 240));
   --gradient-card: linear-gradient(150deg, oklch(0.245 0.026 264), oklch(0.205 0.022 266));

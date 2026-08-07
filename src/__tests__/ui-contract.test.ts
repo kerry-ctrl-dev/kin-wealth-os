@@ -93,7 +93,7 @@ describe("CTA + microcopy contract", () => {
 
   const expectedCtas = [
     { file: "src/routes/index.tsx", copy: "Start free" },
-    { file: "src/routes/index.tsx", copy: "See how it works" },
+    { file: "src/routes/index.tsx", copy: "See features" },
     { file: "src/routes/index.tsx", copy: "Open my dashboard" },
     { file: `${ROUTES_DIR}/budgets.tsx`, copy: "Add budget" },
   ];

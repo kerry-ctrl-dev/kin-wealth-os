@@ -81,10 +81,10 @@ function ExpensesPage() {
     <div>
       <SectionHeading
         title="Expenses"
-        sub="Track spending and stay in control."
+        sub="See where money goes."
         action={<AddExpense />}
       />
-      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <MetricCard
           label="This Month"
           value={fmtKES(monthTotal)}
@@ -107,7 +107,7 @@ function ExpensesPage() {
         />
       </div>
 
-      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold tracking-tight">Transactions</h2>
@@ -149,7 +149,7 @@ function ExpensesPage() {
             ))}
             {all.length === 0 && (
               <p className="empty-state">
-                Log your first expense to see where the money goes.
+                Log an expense to see the split.
               </p>
             )}
           </div>
@@ -175,7 +175,7 @@ function ExpensesPage() {
                 </div>
               ))}
             {!monthTotal && (
-              <p className="empty-state">Spend something this month and the breakdown appears here.</p>
+              <p className="empty-state">This month’s breakdown appears here.</p>
             )}
           </div>
         </div>
@@ -216,7 +216,7 @@ function RecurringSection() {
         </div>
         <AddRecurring />
       </div>
-      <div className="bento-grid grid gap-3 sm:grid-cols-2grid-cols-2">
+      <div className="bento-grid grid gap-3 sm:grid-cols-2">
         {rows.map((r) => (
           <div
             key={r.id}
@@ -254,7 +254,7 @@ function RecurringSection() {
         ))}
         {rows.length === 0 && (
           <p className="empty-state">
-            Add rent, subscriptions or utilities once — they track themselves.
+            Add rent or subs once — they repeat.
           </p>
         )}
       </div>
@@ -323,7 +323,7 @@ function AddRecurring() {
               placeholder="Rent, Netflix, Data bundle…"
             />
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div>
               <Label>Amount (KES)</Label>
               <Input
@@ -440,14 +440,14 @@ function AddExpense() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Expense</DialogTitle>
+          <DialogTitle>New expense</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="rounded-2xl border border-border/70 bg-background/30 p-3 text-xs text-muted-foreground">
             Available cash from income:{" "}
             <span className="font-semibold text-foreground">{fmtKES(available)}</span>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div>
               <Label>Amount (KES)</Label>
               <Input
@@ -480,7 +480,7 @@ function AddExpense() {
               </SelectContent>
             </Select>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div>
               <Label>Payment method</Label>
               <Select value={form.method} onValueChange={(v) => setForm({ ...form, method: v })}>
@@ -505,7 +505,7 @@ function AddExpense() {
               />
             </div>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div>
               <Label>Vendor</Label>
               <Input

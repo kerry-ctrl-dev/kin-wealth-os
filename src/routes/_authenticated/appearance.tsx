@@ -55,11 +55,11 @@ function AppearancePage() {
     <div className="mx-auto w-full max-w-4xl space-y-6">
       <SectionHeading
         title="Appearance"
-        sub="Theme, colors and density. Saves automatically."
+        sub="Theme, colors, density."
       />
 
       <Section title="Theme" icon={<Palette className="h-4 w-4 text-primary" />}>
-        <div className="bento-grid grid grid-cols-3 gap-2grid-cols-3 gap-2">
+        <div className="bento-grid grid grid-cols-3 gap-2">
           {(
             [
               { key: "light", label: "Light", icon: Sun },
@@ -90,7 +90,7 @@ function AppearancePage() {
       </Section>
 
       <Section title="Typography">
-        <div className="bento-grid grid gap-4 sm:grid-cols-2grid-cols-2">
+        <div className="bento-grid grid gap-4 sm:grid-cols-2">
           <div>
             <Label className="text-xs uppercase tracking-widest text-muted-foreground">Font</Label>
             <Select value={a.font} onValueChange={(v: FontFamilyKey) => setA({ ...a, font: v })}>
@@ -119,7 +119,7 @@ function AppearancePage() {
       </Section>
 
       <Section title="Accent color">
-        <div className="bento-grid grid grid-cols-4 gap-2 sm:grid-cols-8grid-cols-4 gap-2 sm:grid-cols-8">
+        <div className="bento-grid grid grid-cols-4 gap-2 sm:grid-cols-8">
           {(Object.keys(ACCENTS) as AccentKey[]).map((k) => {
             const ac = ACCENTS[k];
             const active = a.accent === k;
@@ -144,8 +144,8 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Chart palette" sub="Applied to donuts, area charts and analytics.">
-        <div className="bento-grid grid gap-2 sm:grid-cols-2grid-cols-2">
+      <Section title="Chart palette" sub="Used across donuts and charts.">
+        <div className="bento-grid grid gap-2 sm:grid-cols-2">
           {(Object.keys(CHART_PALETTES) as ChartPaletteKey[]).map((k) => {
             const p = CHART_PALETTES[k];
             const active = a.chartPalette === k;
@@ -176,8 +176,8 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Widget density" sub="Trade information density for breathing room.">
-        <div className="bento-grid grid grid-cols-3 gap-2grid-cols-3 gap-2">
+      <Section title="Widget density" sub="Density vs. breathing room.">
+        <div className="bento-grid grid grid-cols-3 gap-2">
           {(Object.keys(DENSITY_LABEL) as DensityKey[]).map((k) => {
             const active = a.density === k;
             return (
@@ -197,7 +197,7 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Default dashboard range" sub="Time window pre-selected when you open the dashboard.">
+      <Section title="Default dashboard range" sub="Default dashboard time window.">
         <Select
           value={a.defaultRange}
           onValueChange={(v: DefaultRangeKey) => {

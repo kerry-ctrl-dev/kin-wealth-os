@@ -56,13 +56,13 @@ function PortfolioPage() {
     <div>
       <SectionHeading
         title="Investments"
-        sub="All assets, categories, values and liquidity scores."
+        sub="Holdings, values, liquidity."
         action={<AddInvestmentDialog />}
       />
-      <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6grid-cols-3 gap-4 mb-6">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6">
         <div className="fintech-card p-6 lg:col-span-2">
           <h2 className="font-semibold tracking-tight mb-3">Category Totals</h2>
-          <div className="bento-grid grid sm:grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid sm:grid-cols-2 gap-3">
             {allocation.map((c) => (
               <div
                 key={c.category}
@@ -78,7 +78,7 @@ function PortfolioPage() {
               </div>
             ))}
             {allocation.length === 0 && (
-              <p className="empty-state">Add your first holding to see allocation and returns.</p>
+              <p className="empty-state">Add a holding to see allocation.</p>
             )}
           </div>
         </div>
@@ -266,7 +266,7 @@ function AddInvestmentDialog() {
             Available cash from income:{" "}
             <span className="font-semibold text-foreground">{fmtKES(available)}</span>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <Field label={categoryNameLabel}>
               <Input
                 list="instrument-suggestions"
@@ -390,7 +390,7 @@ function AddInvestmentDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={add.isPending}>
-              {add.isPending ? "Saving…" : "Save investment"}
+              {add.isPending ? "Saving…" : "Save"}
             </Button>
           </div>
         </form>

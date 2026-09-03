@@ -144,7 +144,7 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Chart palette" sub="Applied to donuts, area charts and analytics.">
+      <Section title="Chart palette" sub="Used across donuts and charts.">
         <div className="bento-grid grid gap-2 sm:grid-cols-2grid-cols-2">
           {(Object.keys(CHART_PALETTES) as ChartPaletteKey[]).map((k) => {
             const p = CHART_PALETTES[k];
@@ -176,7 +176,7 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Widget density" sub="Trade information density for breathing room.">
+      <Section title="Widget density" sub="Density vs. breathing room.">
         <div className="bento-grid grid grid-cols-3 gap-2grid-cols-3 gap-2">
           {(Object.keys(DENSITY_LABEL) as DensityKey[]).map((k) => {
             const active = a.density === k;
@@ -197,7 +197,7 @@ function AppearancePage() {
         </div>
       </Section>
 
-      <Section title="Default dashboard range" sub="Time window pre-selected when you open the dashboard.">
+      <Section title="Default dashboard range" sub="Default dashboard time window.">
         <Select
           value={a.defaultRange}
           onValueChange={(v: DefaultRangeKey) => {

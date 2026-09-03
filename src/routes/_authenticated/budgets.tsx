@@ -32,7 +32,7 @@ function BudgetsPage() {
 
   return (
     <div>
-      <SectionHeading title="Budgets" sub="Set a monthly cap per category and track burn rate." action={<AddBudget />} />
+      <SectionHeading title="Budgets" sub="Caps per category, live burn." action={<AddBudget />} />
       <div className="bento-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-4grid-cols-2 lg:grid-cols-3 gap-4">
         {(budgets ?? []).map((b) => {
           const spent = monthSpend[b.category] ?? 0;
@@ -52,7 +52,7 @@ function BudgetsPage() {
             </div>
           );
         })}
-        {(!budgets || budgets.length === 0) && <p className="empty-state">Set a monthly cap to see overspend before it happens.</p>}
+        {(!budgets || budgets.length === 0) && <p className="empty-state">Set a cap to catch overspend early.</p>}
       </div>
     </div>
   );
@@ -78,7 +78,7 @@ function AddBudget() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add budget</Button></DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>New Budget</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>New budget</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div><Label>Category</Label><Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Food, Transport, …" /></div>
           <div><Label>Monthly limit (KES)</Label><Input type="number" value={limit} onChange={(e) => setLimit(e.target.value)} /></div>

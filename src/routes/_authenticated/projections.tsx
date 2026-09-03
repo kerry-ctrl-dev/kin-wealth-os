@@ -37,7 +37,7 @@ function Projections() {
 
   return (
     <div>
-      <SectionHeading title="Future Projections" sub="See where consistent investing could take you." />
+      <SectionHeading title="Projections" sub="Where steady investing lands you." />
       <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
         <div className="fintech-card p-6 space-y-3">
           <h2 className="font-semibold">Inputs</h2>

@@ -65,7 +65,7 @@ function GoalsPage() {
 
   return (
     <div>
-      <SectionHeading title="Goals" sub="Set targets and get monthly contribution suggestions." />
+      <SectionHeading title="Goals" sub="Targets with monthly math." />
       <form
         className="fintech-card p-5 grid sm:grid-cols-[1fr_140px_140px_160px_auto] gap-3 items-end mb-6"
         onSubmit={(e) => {
@@ -117,7 +117,7 @@ function GoalsPage() {
             </div>
           );
         })}
-        {(goals ?? []).length === 0 && <div className="empty-state">Set your first target above to start tracking progress.</div>}
+        {(goals ?? []).length === 0 && <div className="empty-state">Set a target to track progress.</div>}
       </div>
     </div>
   );
@@ -174,7 +174,7 @@ function ContributeDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="secondary" disabled={done}>Log contribution</Button>
+        <Button size="sm" variant="secondary" disabled={done}>Contribute</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader><DialogTitle>Contribute to {goalName}</DialogTitle></DialogHeader>
@@ -199,7 +199,7 @@ function ContributeDialog({
             <p className="text-[11px] text-muted-foreground mt-1">Picking an income source deducts this contribution from its available balance.</p>
           </div>
           <div className="flex justify-end">
-            <Button type="submit" disabled={log.isPending}>{log.isPending ? "Saving…" : "Log contribution"}</Button>
+            <Button type="submit" disabled={log.isPending}>{log.isPending ? "Saving…" : "Save"}</Button>
           </div>
         </form>
       </DialogContent>

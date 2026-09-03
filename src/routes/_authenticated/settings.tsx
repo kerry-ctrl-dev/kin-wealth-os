@@ -169,7 +169,7 @@ function SettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8">
-      <SectionHeading title="Settings" sub="Manage your profile and preferences" />
+      <SectionHeading title="Settings" sub="Profile and preferences." />
 
       <div className="fintech-card p-6 sm:p-7 space-y-5">
         <div className="flex items-center justify-between gap-3">

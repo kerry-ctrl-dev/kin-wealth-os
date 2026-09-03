@@ -56,7 +56,7 @@ function PortfolioPage() {
     <div>
       <SectionHeading
         title="Investments"
-        sub="All assets, categories, values and liquidity scores."
+        sub="Holdings, values, liquidity."
         action={<AddInvestmentDialog />}
       />
       <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6grid-cols-3 gap-4 mb-6">
@@ -78,7 +78,7 @@ function PortfolioPage() {
               </div>
             ))}
             {allocation.length === 0 && (
-              <p className="empty-state">Add your first holding to see allocation and returns.</p>
+              <p className="empty-state">Add a holding to see allocation.</p>
             )}
           </div>
         </div>
@@ -390,7 +390,7 @@ function AddInvestmentDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={add.isPending}>
-              {add.isPending ? "Saving…" : "Save investment"}
+              {add.isPending ? "Saving…" : "Save"}
             </Button>
           </div>
         </form>

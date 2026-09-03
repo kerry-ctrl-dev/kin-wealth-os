@@ -280,7 +280,7 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       <SectionHeading
-        title="Mali Yangu Command Center"
+        title="Command Center"
         sub="Your wealth, at a glance."
       />
 
@@ -760,7 +760,7 @@ function Dashboard() {
                 <div className="metric-value">{fmtKES(Number(r.amount))}</div>
               </div>
             ))}
-            {recent.length === 0 && <p className="empty-state">Add your first payday to unlock allocation.</p>}
+            {recent.length === 0 && <p className="empty-state">Add a payday to unlock allocation.</p>}
           </div>
         </div>
 
@@ -872,21 +872,21 @@ function QuickActions() {
       to: "/portfolio",
       label: "Add investment",
       icon: Wallet,
-      detail: "Update holdings and allocation",
+      detail: "Holdings and allocation",
     },
     {
       to: "/personal-assets",
       label: "Add asset",
       icon: HomeIcon,
-      detail: "Track property and valuables",
+      detail: "Property and valuables",
     },
-    { to: "/loans", label: "Record loan", icon: Coins, detail: "Log debt, lending, or repayments" },
-    { to: "/goals", label: "Create goal", icon: TargetIcon, detail: "Set a new savings target" },
+    { to: "/loans", label: "Add loan", icon: Coins, detail: "Debt, lending, repayments" },
+    { to: "/goals", label: "Add goal", icon: TargetIcon, detail: "New savings target" },
     {
       to: "/reports",
       label: "Reports",
       icon: FileDown,
-      detail: "Export a polished financial snapshot",
+      detail: "Export your snapshot",
     },
   ] as const;
   return (
@@ -894,7 +894,7 @@ function QuickActions() {
       <div>
         <h2 className="text-sm font-semibold tracking-tight">Quick actions</h2>
         <p className="text-sm text-muted-foreground">
-          One tap into the moves that build Mali Yangu the fastest.
+          Fastest moves first.
         </p>
       </div>
       <div className="bento-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3grid-cols-2 xl:grid-cols-3">

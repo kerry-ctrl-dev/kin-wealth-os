@@ -57,7 +57,7 @@ function PersonalAssetsPage() {
 
   return (
     <div>
-      <SectionHeading title="Assets Manager" sub="Everything you own, counted in net worth." action={<AddDialog />} />
+      <SectionHeading title="Assets Manager" sub="What you own, in net worth." action={<AddDialog />} />
       <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <MetricCard label="Total value" value={fmtKES(total)} icon={<HomeIcon className="h-4 w-4" />} />
         <MetricCard label="Items" value={String(rows.length)} />
@@ -121,7 +121,7 @@ function AddDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add asset</Button></DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>New personal asset</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>New asset</DialogTitle></DialogHeader>
         <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); add.mutate(); }}>
           <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
             <div><Label>Item name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Toyota Vitz / Sofa set" /></div>

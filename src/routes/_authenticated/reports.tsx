@@ -62,7 +62,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" sub="PDF or CSV, any period." />
+      <SectionHeading title="Reports" sub="PDF or CSV, any period." />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>
@@ -73,7 +73,7 @@ function ReportsPage() {
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
               <TabsTrigger value="custom">Custom</TabsTrigger>
             </TabsList>
-            <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Download PDF report</Button>
+            <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Export PDF</Button>
           </div>
 
           {period === "custom" && (

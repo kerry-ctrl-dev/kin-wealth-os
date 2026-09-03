@@ -55,7 +55,7 @@ function AppearancePage() {
     <div className="mx-auto w-full max-w-4xl space-y-6">
       <SectionHeading
         title="Appearance"
-        sub="Theme, colors and density. Saves automatically."
+        sub="Theme, colors, density."
       />
 
       <Section title="Theme" icon={<Palette className="h-4 w-4 text-primary" />}>

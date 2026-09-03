@@ -81,7 +81,7 @@ function ExpensesPage() {
     <div>
       <SectionHeading
         title="Expenses"
-        sub="Track spending and stay in control."
+        sub="See where money goes."
         action={<AddExpense />}
       />
       <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
@@ -149,7 +149,7 @@ function ExpensesPage() {
             ))}
             {all.length === 0 && (
               <p className="empty-state">
-                Log your first expense to see where the money goes.
+                Log an expense to see the split.
               </p>
             )}
           </div>
@@ -175,7 +175,7 @@ function ExpensesPage() {
                 </div>
               ))}
             {!monthTotal && (
-              <p className="empty-state">Spend something this month and the breakdown appears here.</p>
+              <p className="empty-state">This month’s breakdown appears here.</p>
             )}
           </div>
         </div>
@@ -254,7 +254,7 @@ function RecurringSection() {
         ))}
         {rows.length === 0 && (
           <p className="empty-state">
-            Add rent, subscriptions or utilities once — they track themselves.
+            Add rent or subs once — they repeat.
           </p>
         )}
       </div>
@@ -440,7 +440,7 @@ function AddExpense() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Expense</DialogTitle>
+          <DialogTitle>New expense</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="rounded-2xl border border-border/70 bg-background/30 p-3 text-xs text-muted-foreground">

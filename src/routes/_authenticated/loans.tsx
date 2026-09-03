@@ -75,7 +75,7 @@ function LoansPage() {
 
   return (
     <div>
-      <SectionHeading title="Loans & Debt" sub="Who, how much, interest and deadline." action={<AddDialog />} />
+      <SectionHeading title="Loans" sub="Debt, lending, deadlines." action={<AddDialog />} />
 
       <div className="fintech-card p-4 mb-6 flex items-center justify-between">
         <div>
@@ -139,9 +139,9 @@ function LoansPage() {
 
       {/* Loanee reports (lent money) */}
       <div className="mt-8">
-        <SectionHeading title="Loanee reports" sub="Printable statement per borrower." />
+        <SectionHeading title="Loanee reports" sub="One statement per borrower." />
         {lentRows.length === 0 ? (
-          <div className="empty-state">Record a loan you lent to generate a payment statement.</div>
+          <div className="empty-state">Lend money to generate a statement.</div>
         ) : (
           <div className="bento-grid grid md:grid-cols-2 gap-3grid-cols-2 gap-3">
             {lentRows.map((l) => {
@@ -220,9 +220,9 @@ function AddDialog() {
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Record loan</Button></DialogTrigger>
+      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add loan</Button></DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>New loan record</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
         <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); add.mutate(); }}>
           <div>
             <Label>Direction</Label>
@@ -268,7 +268,7 @@ function AddDialog() {
           )}
           <div><Label>{form.direction === "LENT" ? "What is the money for?" : "How will this money be used?"}</Label><Textarea rows={2} value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} placeholder="Rent, school fees, business stock…" /></div>
           <div><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-          <div className="flex justify-end"><Button type="submit" disabled={add.isPending}>{add.isPending ? "Saving…" : "Save record"}</Button></div>
+          <div className="flex justify-end"><Button type="submit" disabled={add.isPending}>{add.isPending ? "Saving…" : "Save"}</Button></div>
         </form>
       </DialogContent>
     </Dialog>

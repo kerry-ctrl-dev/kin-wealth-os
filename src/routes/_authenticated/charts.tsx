@@ -37,7 +37,7 @@ function ChartsPage() {
   return (
     <div>
       <SectionHeading title="Charts" sub="Allocation, growth, liquidity." />
-      <div className="bento-grid grid lg:grid-cols-2 gap-4grid-cols-2 gap-4">
+      <div className="bento-grid grid lg:grid-cols-2 gap-4">
         <div className="fintech-card p-6">
           <h2 className="font-semibold tracking-tight mb-2">Portfolio Allocation</h2>
           <AllocationDonut data={allocation} />

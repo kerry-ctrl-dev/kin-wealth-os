@@ -85,7 +85,7 @@ function LoansPage() {
         <Switch checked={enabled} onCheckedChange={setEnabled} />
       </div>
 
-      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <MetricCard label="You owe (debt)" value={fmtKES(outstanding)} tone={outstanding > 0 ? "warning" : "success"} icon={<ArrowDownLeft className="h-4 w-4" />} />
         <MetricCard label="Owed to you" value={fmtKES(receivable)} tone={receivable > 0 ? "success" : undefined} icon={<ArrowUpRight className="h-4 w-4" />} />
         <MetricCard label="Overdue" value={String(overdue)} tone={overdue > 0 ? "danger" : undefined} />
@@ -143,7 +143,7 @@ function LoansPage() {
         {lentRows.length === 0 ? (
           <div className="empty-state">Lend money to generate a statement.</div>
         ) : (
-          <div className="bento-grid grid md:grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid md:grid-cols-2 gap-3">
             {lentRows.map((l) => {
               const phone = (l as unknown as { contact_phone?: string }).contact_phone;
               const email = (l as unknown as { contact_email?: string }).contact_email;
@@ -234,7 +234,7 @@ function AddDialog() {
               </SelectContent>
             </Select>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div><Label>{form.direction === "LENT" ? "Borrower (who owes you)" : "Lender (who you owe)"}</Label><Input value={form.lender} onChange={(e) => setForm({ ...form, lender: e.target.value })} placeholder={form.direction === "LENT" ? "John D, Mary…" : "KCB, M-Shwari, John D…"} /></div>
             <div><Label>Amount (KES)</Label><Input type="number" min={1} step="0.01" value={form.principal} onChange={(e) => setForm({ ...form, principal: e.target.value })} /></div>
             <div><Label>Interest rate (%)</Label><Input type="number" min={0} step="0.01" value={form.interest_rate} onChange={(e) => setForm({ ...form, interest_rate: e.target.value })} /></div>
@@ -251,7 +251,7 @@ function AddDialog() {
           {form.direction === "LENT" && (
             <div className="rounded-lg border border-border bg-secondary/20 p-3 space-y-3">
               <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Loanee contact & payment (for reports)</div>
-              <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+              <div className="bento-grid grid grid-cols-2 gap-3">
                 <div><Label>Phone number</Label><Input value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} placeholder="+254 7…" /></div>
                 <div><Label>Email</Label><Input type="email" value={form.contact_email} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} placeholder="loanee@example.com" /></div>
                 <div className="col-span-2"><Label>Alternative contact</Label><Input value={form.contact_alt} onChange={(e) => setForm({ ...form, contact_alt: e.target.value })} placeholder="Next of kin, WhatsApp, workplace…" /></div>

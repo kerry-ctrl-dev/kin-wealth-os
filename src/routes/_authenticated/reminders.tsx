@@ -77,7 +77,7 @@ function RemindersPage() {
         title="Reminders"
         sub="Bills and reviews, on time."
       />
-      <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6grid-cols-3 gap-4 mb-6">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4 mb-6">
         <div className="fintech-card p-5 lg:col-span-2">
           <form
             className="bento-grid grid sm:grid-cols-[1fr_140px_140px_160px_auto] gap-3 items-endgrid-cols-[1fr_140px_140px_160px_auto] gap-3 items-end"

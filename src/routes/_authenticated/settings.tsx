@@ -214,7 +214,7 @@ function SettingsPage() {
             <p className="text-xs text-muted-foreground mt-1">JPG/PNG, up to a few MB.</p>
           </div>
         </div>
-        <div className="bento-grid grid gap-4 sm:grid-cols-2grid-cols-2">
+        <div className="bento-grid grid gap-4 sm:grid-cols-2">
           <Field label="Full name">
             <Input
               value={form.full_name}
@@ -385,7 +385,7 @@ function AppearanceSection() {
         </div>
       </div>
 
-      <div className="bento-grid grid gap-4 sm:grid-cols-2grid-cols-2">
+      <div className="bento-grid grid gap-4 sm:grid-cols-2">
         <div>
           <Label className="text-xs uppercase tracking-widest text-muted-foreground">
             Font style

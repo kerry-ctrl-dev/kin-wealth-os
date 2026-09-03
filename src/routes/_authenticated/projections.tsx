@@ -38,7 +38,7 @@ function Projections() {
   return (
     <div>
       <SectionHeading title="Projections" sub="Where steady investing lands you." />
-      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 space-y-3">
           <h2 className="font-semibold">Inputs</h2>
           <div><Label>Starting amount (KES)</Label><Input type="number" value={principal} onChange={(e) => setPrincipal(e.target.value)} /></div>
@@ -59,7 +59,7 @@ function Projections() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="bento-grid grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+          <div className="bento-grid grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
             {milestones.map((m) => (
               <div key={m.y} className="rounded-lg border border-border p-3 bg-background/40">
                 <div className="text-xs uppercase tracking-widest text-muted-foreground">In {m.y} yr</div>

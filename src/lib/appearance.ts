@@ -2,9 +2,10 @@
 // Persisted to localStorage and applied to the <html> element.
 
 export type ThemeMode = "light" | "dark" | "system";
-export type FontFamilyKey = "system" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
+export type FontFamilyKey = "system" | "barlow" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
 export type FontSizeKey = "sm" | "md" | "lg" | "xl";
 export type AccentKey =
+  | "gold"
   | "blue"
   | "emerald"
   | "violet"
@@ -30,10 +31,10 @@ export interface Appearance {
 const KEY = "malingu:appearance";
 
 export const DEFAULT_APPEARANCE: Appearance = {
-  theme: "system",
-  font: "system",
+  theme: "dark",
+  font: "barlow",
   size: "md",
-  accent: "blue",
+  accent: "gold",
   chartPalette: "default",
   density: "comfortable",
   defaultRange: "30D",
@@ -42,6 +43,7 @@ export const DEFAULT_APPEARANCE: Appearance = {
 export const FONT_STACKS: Record<FontFamilyKey, { label: string; stack: string }> = {
   system:
     { label: "System", stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+  barlow: { label: "Barlow", stack: "'Barlow', system-ui, sans-serif" },
   inter: { label: "Inter", stack: "'Inter', system-ui, sans-serif" },
   poppins: { label: "Poppins", stack: "'Poppins', system-ui, sans-serif" },
   "dm-sans": { label: "DM Sans", stack: "'DM Sans', system-ui, sans-serif" },
@@ -61,6 +63,7 @@ export const ACCENTS: Record<
   AccentKey,
   { label: string; swatch: string; light: string; dark: string }
 > = {
+  gold: { label: "MalinGu Gold", swatch: "#D4A843", light: "0.68 0.12 82", dark: "0.74 0.125 85" },
   blue: { label: "Ocean Blue", swatch: "#3b82f6", light: "0.58 0.14 250", dark: "0.7 0.16 250" },
   emerald: { label: "Emerald", swatch: "#10b981", light: "0.6 0.15 155", dark: "0.72 0.16 155" },
   violet: { label: "Violet", swatch: "#8b5cf6", light: "0.55 0.2 290", dark: "0.7 0.18 290" },

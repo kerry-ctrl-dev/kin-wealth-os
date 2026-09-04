@@ -142,9 +142,11 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="leading-tight">
-              <div className="text-sm font-semibold">MalinGu</div>
+              <div className="font-display text-2xl tracking-[0.14em] text-[color:var(--gold)]">
+                MALINGU
+              </div>
               <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                Calm money management
+                Mali Yangu · My Wealth
               </div>
             </div>
           )}

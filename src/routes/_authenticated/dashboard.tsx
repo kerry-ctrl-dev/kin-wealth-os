@@ -285,18 +285,18 @@ function Dashboard() {
         sub="Your wealth, at a glance."
       />
 
-      <div className="bento-grid grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
+      <div className="bento-grid grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
         <div className="fintech-card relative overflow-hidden p-6 sm:p-7">
           <div
-            className="absolute inset-0 -z-10 opacity-35"
-            style={{ background: "var(--gradient-primary)" }}
+            className="pointer-events-none absolute -top-24 -right-24 -z-10 h-64 w-64 rounded-full blur-3xl"
+            style={{ background: "color-mix(in oklab, var(--gold) 12%, transparent)" }}
           />
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-2xl">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[color:var(--gold)]">
                 <Sparkles className="h-3.5 w-3.5" /> Mali Yangu · Today
               </div>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h1 className="mt-2 text-4xl tracking-wide sm:text-5xl">
                 {greeting.text} <span>{greeting.emoji}</span>
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -378,7 +378,7 @@ function Dashboard() {
 
       <div className="bento-grid grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
-          <div className="bento-grid grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-betweengrid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-semibold tracking-tight truncate">Net worth trend</h2>
               {trend.length > 1 && (

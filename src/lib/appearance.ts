@@ -2,9 +2,10 @@
 // Persisted to localStorage and applied to the <html> element.
 
 export type ThemeMode = "light" | "dark" | "system";
-export type FontFamilyKey = "system" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
+export type FontFamilyKey = "system" | "barlow" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
 export type FontSizeKey = "sm" | "md" | "lg" | "xl";
 export type AccentKey =
+  | "gold"
   | "blue"
   | "emerald"
   | "violet"

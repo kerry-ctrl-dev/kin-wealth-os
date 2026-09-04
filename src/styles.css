@@ -157,72 +157,83 @@
 }
 
 .dark {
-  /* Dark mode option (future enhancement) */
-  /* Charcoal-navy base instead of near-black */
-  --background: oklch(0.19 0.022 265);
-  --foreground: oklch(0.95 0.004 250);
-  --card: oklch(0.235 0.024 264);
-  --card-foreground: oklch(0.95 0.004 250);
-  --popover: oklch(0.245 0.024 264);
-  --popover-foreground: oklch(0.95 0.004 250);
-  
-  --primary: oklch(0.7 0.16 250);
-  --primary-foreground: oklch(0.12 0.015 260);
-  
-  --secondary: oklch(0.25 0.02 260);
-  --secondary-foreground: oklch(0.85 0.01 250);
-  
-  --muted: oklch(0.3 0.02 260);
-  --muted-foreground: oklch(0.65 0.01 250);
-  
-  --accent: oklch(0.7 0.16 250);
-  --accent-foreground: oklch(0.12 0.015 260);
-  
+  /* Midnight Gold — prestige dark theme */
+  /* #0B1220 base, #101B2E surfaces, #D4A843 gold, #2E9E7B emerald */
+  --background: oklch(0.163 0.028 264);
+  --foreground: oklch(0.93 0.008 250);
+  --card: oklch(0.205 0.032 264);
+  --card-foreground: oklch(0.93 0.008 250);
+  --popover: oklch(0.215 0.032 264);
+  --popover-foreground: oklch(0.93 0.008 250);
+
+  --primary: oklch(0.74 0.125 85);
+  --primary-foreground: oklch(0.16 0.03 264);
+
+  --secondary: oklch(0.24 0.03 264);
+  --secondary-foreground: oklch(0.9 0.01 250);
+
+  --muted: oklch(0.27 0.025 264);
+  --muted-foreground: oklch(0.62 0.02 250);
+
+  --accent: oklch(0.74 0.125 85);
+  --accent-foreground: oklch(0.16 0.03 264);
+
   --destructive: oklch(0.68 0.2 25);
   --destructive-foreground: oklch(0.95 0.004 250);
-  
-  --border: oklch(0.32 0.022 262);
-  --input: oklch(0.27 0.02 262);
-  --ring: oklch(0.7 0.16 250);
-  
-  --success: oklch(0.72 0.16 140);
-  --warning: oklch(0.78 0.16 70);
+
+  --border: oklch(0.29 0.028 264);
+  --input: oklch(0.25 0.026 264);
+  --ring: oklch(0.74 0.125 85);
+
+  --chart-1: oklch(0.74 0.125 85);   /* Gold */
+  --chart-2: oklch(0.61 0.105 168);  /* Emerald */
+  --chart-3: oklch(0.7 0.11 210);    /* Steel blue */
+  --chart-4: oklch(0.78 0.14 65);    /* Amber */
+  --chart-5: oklch(0.68 0.2 25);     /* Red */
+
+  --success: oklch(0.66 0.12 168);
+  --warning: oklch(0.78 0.15 75);
   --danger: oklch(0.68 0.2 25);
 
-  --gold: oklch(0.82 0.13 88);
-  --gold-strong: oklch(0.75 0.14 80);
-  --gold-foreground: oklch(0.18 0.03 70);
-  --emerald: oklch(0.75 0.15 158);
-  --gradient-gold: linear-gradient(135deg, oklch(0.87 0.12 95), oklch(0.74 0.14 78));
-  --glow-gold: 0 0 0 1px oklch(0.82 0.13 88 / 0.4), 0 10px 30px oklch(0.82 0.13 88 / 0.28);
-  --glass-bg: oklch(0.24 0.024 262 / 0.55);
-  --glass-border: oklch(0.86 0.02 250 / 0.12);
-  --glow-ambient: 0 22px 60px -30px oklch(0.7 0.16 250 / 0.45);
-  --clay-bg: oklch(0.27 0.022 262);
-  --clay-border: oklch(0.86 0.02 250 / 0.14);
+  --gold: oklch(0.74 0.125 85);
+  --gold-strong: oklch(0.68 0.13 78);
+  --gold-foreground: oklch(0.16 0.03 264);
+  --emerald: oklch(0.61 0.105 168);
+  --gradient-gold: linear-gradient(135deg, oklch(0.8 0.12 90), oklch(0.68 0.13 78));
+  --glow-gold: 0 0 0 1px oklch(0.74 0.125 85 / 0.4), 0 10px 30px oklch(0.74 0.125 85 / 0.25);
+  --glass-bg: oklch(0.205 0.032 264 / 0.62);
+  --glass-border: oklch(0.86 0.02 250 / 0.1);
+  --glow-ambient: 0 22px 60px -30px oklch(0.74 0.125 85 / 0.35);
+  --clay-bg: oklch(0.24 0.028 264);
+  --clay-border: oklch(0.86 0.02 250 / 0.12);
   --clay-shadow:
     12px 12px 28px oklch(0 0 0 / 0.45),
-    -8px -8px 22px oklch(0.42 0.03 262 / 0.35),
+    -8px -8px 22px oklch(0.4 0.03 262 / 0.3),
     inset 1px 1px 2px oklch(1 0 0 / 0.06);
   --clay-shadow-sm:
     7px 7px 16px oklch(0 0 0 / 0.4),
-    -5px -5px 14px oklch(0.42 0.03 262 / 0.3);
-  
-  --gradient-primary: linear-gradient(135deg, oklch(0.7 0.16 250), oklch(0.68 0.14 240));
-  --gradient-card: linear-gradient(150deg, oklch(0.245 0.026 264), oklch(0.205 0.022 266));
-  
+    -5px -5px 14px oklch(0.4 0.03 262 / 0.25);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.74 0.125 85), oklch(0.64 0.11 110));
+  --gradient-card: linear-gradient(150deg, oklch(0.215 0.034 264), oklch(0.175 0.028 266));
+
   --shadow-elegant: 0 4px 12px oklch(0 0 0 / 0.4);
-  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.2), 0 1px 2px oklch(0 0 0 / 0.15);
-  --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.15);
-  
-  --sidebar: oklch(0.175 0.022 266);
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.25), 0 1px 2px oklch(0 0 0 / 0.18);
+  --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.2);
+
+  --sidebar: oklch(0.15 0.026 266);
   --sidebar-foreground: oklch(0.92 0.005 250);
-  --sidebar-primary: oklch(0.7 0.16 250);
-  --sidebar-primary-foreground: oklch(0.16 0.018 264);
-  --sidebar-accent: oklch(0.28 0.022 264);
+  --sidebar-primary: oklch(0.74 0.125 85);
+  --sidebar-primary-foreground: oklch(0.16 0.03 264);
+  --sidebar-accent: oklch(0.24 0.028 264);
   --sidebar-accent-foreground: oklch(0.95 0.004 250);
-  --sidebar-border: oklch(0.3 0.022 264);
-  --sidebar-ring: oklch(0.7 0.16 250);
+  --sidebar-border: oklch(0.26 0.026 264);
+  --sidebar-ring: oklch(0.74 0.125 85);
+}
+
+@theme {
+  --font-sans: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Bebas Neue", "Barlow", sans-serif;
 }
 
 @layer base {
@@ -233,23 +244,30 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--app-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    font-family: var(--app-font, "Barlow", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
       'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif);
     font-feature-settings: "cv11", "ss01", "ss03";
-    background-image: 
+    background-image:
       radial-gradient(400px 300px at 100% 0%, oklch(0.58 0.14 250 / 0.04), transparent 70%),
       radial-gradient(400px 300px at 0% 100%, oklch(0.7 0.15 140 / 0.03), transparent 70%);
     background-attachment: fixed;
   }
 
-  /* Dark: layered charcoal-navy depth instead of flat black */
+  /* Midnight prestige typography: Bebas Neue display headings, Barlow body */
+  h1, h2, h3, .font-display {
+    font-family: "Bebas Neue", var(--app-font, "Barlow", sans-serif);
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+
+  /* Dark: Midnight Gold depth — navy vault with a seam of gold light */
   .dark body {
     background-image:
-      radial-gradient(1100px 700px at 82% -10%, oklch(0.42 0.06 262 / 0.5), transparent 65%),
-      radial-gradient(900px 620px at 0% 100%, oklch(0.34 0.05 200 / 0.34), transparent 68%),
-      radial-gradient(700px 500px at 50% 40%, oklch(0.78 0.13 84 / 0.05), transparent 70%),
-      linear-gradient(155deg, oklch(0.21 0.026 268) 0%, oklch(0.165 0.02 262) 55%, oklch(0.185 0.024 250) 100%);
+      radial-gradient(1100px 700px at 82% -10%, oklch(0.4 0.05 262 / 0.5), transparent 65%),
+      radial-gradient(900px 620px at 0% 100%, oklch(0.32 0.05 200 / 0.3), transparent 68%),
+      radial-gradient(700px 500px at 50% 40%, oklch(0.74 0.125 85 / 0.05), transparent 70%),
+      linear-gradient(155deg, oklch(0.18 0.028 268) 0%, oklch(0.14 0.022 262) 55%, oklch(0.155 0.026 250) 100%);
   }
 }
 

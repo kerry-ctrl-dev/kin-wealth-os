@@ -177,6 +177,7 @@ function Dashboard() {
   const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">(
     () => loadAppearance().defaultRange,
   );
+  const [catFilter, setCatFilter] = useState<AssetCategory | "ALL">("ALL");
   const [compare, setCompare] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem("malingu:dash:compare") === "1";

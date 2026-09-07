@@ -147,7 +147,12 @@ export function AppSidebar() {
   }, []);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
           <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[color:var(--glass-border)] bg-[image:var(--gradient-gold)]/10 shadow-[var(--shadow-soft)] backdrop-blur-md">

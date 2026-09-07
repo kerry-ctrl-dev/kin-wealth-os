@@ -155,9 +155,13 @@ export function AppSidebar() {
 
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[color:var(--glass-border)] bg-[image:var(--gradient-gold)]/10 shadow-[var(--shadow-soft)] backdrop-blur-md">
-            <img src={logo} alt="MalinGu logo" className="h-6 w-6" />
-          </div>
+          <img
+            src={logo}
+            alt="MalinGu logo"
+            width={1024}
+            height={1024}
+            className="h-10 w-10 shrink-0 rounded-2xl border border-[color:var(--glass-border)] object-cover shadow-[var(--shadow-soft)]"
+          />
           {!collapsed && (
             <div className="leading-tight">
               <div className="font-display text-2xl tracking-[0.14em] text-[color:var(--gold)]">

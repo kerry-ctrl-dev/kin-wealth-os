@@ -11,16 +11,21 @@ const AssistantWidget = lazy(async () => {
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/70 bg-background/80 px-4 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65 sm:px-5">
             <SidebarTrigger />
             <div className="flex min-w-0 items-center gap-3">
-              <div className="grid h-9 w-9 place-items-center rounded-2xl border border-border/70 bg-card/80 shadow-[var(--shadow-card)]">
-                <img src={logo} alt="" className="h-5 w-5" />
-              </div>
+              <img
+                src={logo}
+                alt=""
+                width={1024}
+                height={1024}
+                loading="lazy"
+                className="h-9 w-9 rounded-xl border border-border/70 object-cover shadow-[var(--shadow-card)]"
+              />
               <div className="min-w-0">
                 <div className="truncate text-sm font-semibold tracking-tight sm:text-base">
                   MalinGu

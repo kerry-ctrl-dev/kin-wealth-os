@@ -669,13 +669,34 @@ function Dashboard() {
             </div>
             <RiskBadge risk={risk} />
           </div>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {([
+              ["ALL", "All"],
+              ["MMF", "MMF"],
+              ["STOCKS", "NSE"],
+              ["REITS", "REITs"],
+            ] as const).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCatFilter(key as AssetCategory | "ALL")}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  catFilter === key
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="bento-grid grid sm:grid-cols-5 items-center gap-4">
             <div className="sm:col-span-2">
               <AllocationDonut data={allocation} />
             </div>
             <div className="sm:col-span-3 space-y-2">
               {(Object.keys(cats) as AssetCategory[])
-                .filter((c) => cats[c] > 0)
+                .filter((c) => cats[c] > 0 && (catFilter === "ALL" || c === catFilter))
                 .map((c) => {
                   const pct = total ? (cats[c] / total) * 100 : 0;
                   return (
@@ -698,6 +719,9 @@ function Dashboard() {
                     </div>
                   );
                 })}
+              {catFilter !== "ALL" && cats[catFilter as AssetCategory] === 0 && (
+                <p className="text-sm text-muted-foreground">Nothing held here yet.</p>
+              )}
               {total === 0 && (
                 <p className="text-sm text-muted-foreground">
                   Add income to unlock your allocation plan.
@@ -705,6 +729,7 @@ function Dashboard() {
               )}
             </div>
           </div>
+
         </div>
 
         <div className="fintech-card p-6">

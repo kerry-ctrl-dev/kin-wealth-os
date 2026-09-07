@@ -86,8 +86,21 @@ const sections: NavSection[] = [
 ];
 
 export function AppSidebar() {
-  const { isMobile, setOpenMobile, state } = useSidebar();
+  const { isMobile, setOpenMobile, setOpen, state } = useSidebar();
   const collapsed = state === "collapsed";
+  const hoverOpened = useRef(false);
+
+  function handleMouseEnter() {
+    if (isMobile || !collapsed) return;
+    hoverOpened.current = true;
+    setOpen(true);
+  }
+  function handleMouseLeave() {
+    if (isMobile || !hoverOpened.current) return;
+    hoverOpened.current = false;
+    setOpen(false);
+  }
+
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const activeSection = useMemo(() => {
     const match = sections.find((section) => section.items.some((item) => item.url === pathname));

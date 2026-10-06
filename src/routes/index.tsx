@@ -109,7 +109,7 @@ function Landing() {
       <section className="relative py-24 px-4 sm:px-8 border-t border-white/10">
         <div className="max-w-5xl mx-auto text-center morph-in">
           <h2 className="text-4xl sm:text-5xl font-black tracking-tight">Money, without spreadsheets.</h2>
-          <p className="mt-5 text-lg text-white/70 max-w-xl mx-auto">Income, investments, spending, advice.</p>
+          <p className="mt-4 text-base sm:text-lg text-white/70 max-w-xl mx-auto">Income, investments, spending, advice.</p>
           <div className="mt-8"><Link to="/auth"><Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-12 px-8 glow-gold">Open my dashboard <ArrowRight className="h-4 w-4" /></Button></Link></div>
         </div>
       </section>

@@ -177,6 +177,7 @@ function Dashboard() {
   const [trendRange, setTrendRange] = useState<"7D" | "30D" | "90D" | "ALL">(
     () => loadAppearance().defaultRange,
   );
+  const [catFilter, setCatFilter] = useState<AssetCategory | "ALL">("ALL");
   const [compare, setCompare] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem("malingu:dash:compare") === "1";
@@ -280,22 +281,22 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       <SectionHeading
-        title="Mali Yangu Command Center"
+        title="Command Center"
         sub="Your wealth, at a glance."
       />
 
-      <div className="bento-grid grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
+      <div className="bento-grid grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
         <div className="fintech-card relative overflow-hidden p-6 sm:p-7">
           <div
-            className="absolute inset-0 -z-10 opacity-35"
-            style={{ background: "var(--gradient-primary)" }}
+            className="pointer-events-none absolute -top-24 -right-24 -z-10 h-64 w-64 rounded-full blur-3xl"
+            style={{ background: "color-mix(in oklab, var(--gold) 12%, transparent)" }}
           />
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-2xl">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-[color:var(--gold)]">
                 <Sparkles className="h-3.5 w-3.5" /> Mali Yangu · Today
               </div>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h1 className="mt-2 text-4xl tracking-wide sm:text-5xl">
                 {greeting.text} <span>{greeting.emoji}</span>
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -375,9 +376,9 @@ function Dashboard() {
 
       <QuickActions />
 
-      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
-          <div className="bento-grid grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-betweengrid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 mb-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-semibold tracking-tight truncate">Net worth trend</h2>
               {trend.length > 1 && (
@@ -598,7 +599,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <MetricCard
           label="Total Assets"
           value={fmtKES(total)}
@@ -636,7 +637,7 @@ function Dashboard() {
         />
       </div>
 
-      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3">
         <MetricCard
           label="Available cash"
           value={fmtKES(availableCash)}
@@ -659,7 +660,7 @@ function Dashboard() {
         />
       </div>
 
-      <div className="bento-grid grid lg:grid-cols-3 gap-4grid-cols-3 gap-4">
+      <div className="bento-grid grid lg:grid-cols-3 gap-4">
         <div className="fintech-card p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-2">
             <div>
@@ -668,13 +669,34 @@ function Dashboard() {
             </div>
             <RiskBadge risk={risk} />
           </div>
-          <div className="bento-grid grid sm:grid-cols-5 items-center gap-4grid-cols-5 items-center gap-4">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {([
+              ["ALL", "All"],
+              ["MMF", "MMF"],
+              ["STOCKS", "NSE"],
+              ["REITS", "REITs"],
+            ] as const).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCatFilter(key as AssetCategory | "ALL")}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                  catFilter === key
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="bento-grid grid sm:grid-cols-5 items-center gap-4">
             <div className="sm:col-span-2">
               <AllocationDonut data={allocation} />
             </div>
             <div className="sm:col-span-3 space-y-2">
               {(Object.keys(cats) as AssetCategory[])
-                .filter((c) => cats[c] > 0)
+                .filter((c) => cats[c] > 0 && (catFilter === "ALL" || c === catFilter))
                 .map((c) => {
                   const pct = total ? (cats[c] / total) * 100 : 0;
                   return (
@@ -697,6 +719,9 @@ function Dashboard() {
                     </div>
                   );
                 })}
+              {catFilter !== "ALL" && cats[catFilter as AssetCategory] === 0 && (
+                <p className="text-sm text-muted-foreground">Nothing held here yet.</p>
+              )}
               {total === 0 && (
                 <p className="text-sm text-muted-foreground">
                   Add income to unlock your allocation plan.
@@ -704,6 +729,7 @@ function Dashboard() {
               )}
             </div>
           </div>
+
         </div>
 
         <div className="fintech-card p-6">
@@ -745,7 +771,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="bento-grid grid lg:grid-cols-2 gap-4grid-cols-2 gap-4">
+      <div className="bento-grid grid lg:grid-cols-2 gap-4">
         <div className="fintech-card p-6">
           <h2 className="font-semibold tracking-tight mb-3">Recent Income</h2>
           <div className="divide-y divide-border">
@@ -760,7 +786,7 @@ function Dashboard() {
                 <div className="metric-value">{fmtKES(Number(r.amount))}</div>
               </div>
             ))}
-            {recent.length === 0 && <p className="empty-state">Add your first payday to unlock allocation.</p>}
+            {recent.length === 0 && <p className="empty-state">Add a payday to unlock allocation.</p>}
           </div>
         </div>
 
@@ -872,21 +898,21 @@ function QuickActions() {
       to: "/portfolio",
       label: "Add investment",
       icon: Wallet,
-      detail: "Update holdings and allocation",
+      detail: "Holdings and allocation",
     },
     {
       to: "/personal-assets",
       label: "Add asset",
       icon: HomeIcon,
-      detail: "Track property and valuables",
+      detail: "Property and valuables",
     },
-    { to: "/loans", label: "Record loan", icon: Coins, detail: "Log debt, lending, or repayments" },
-    { to: "/goals", label: "Create goal", icon: TargetIcon, detail: "Set a new savings target" },
+    { to: "/loans", label: "Add loan", icon: Coins, detail: "Debt, lending, repayments" },
+    { to: "/goals", label: "Add goal", icon: TargetIcon, detail: "New savings target" },
     {
       to: "/reports",
       label: "Reports",
       icon: FileDown,
-      detail: "Export a polished financial snapshot",
+      detail: "Export your snapshot",
     },
   ] as const;
   return (
@@ -894,10 +920,10 @@ function QuickActions() {
       <div>
         <h2 className="text-sm font-semibold tracking-tight">Quick actions</h2>
         <p className="text-sm text-muted-foreground">
-          One tap into the moves that build Mali Yangu the fastest.
+          Fastest moves first.
         </p>
       </div>
-      <div className="bento-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3grid-cols-2 xl:grid-cols-3">
+      <div className="bento-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {actions.map((a) => (
           <Button
             key={a.to}

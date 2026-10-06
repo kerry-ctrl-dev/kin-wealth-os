@@ -75,7 +75,7 @@ function LoansPage() {
 
   return (
     <div>
-      <SectionHeading title="Loans & Debt" sub="Who, how much, interest and deadline." action={<AddDialog />} />
+      <SectionHeading title="Loans" sub="Debt, lending, deadlines." action={<AddDialog />} />
 
       <div className="fintech-card p-4 mb-6 flex items-center justify-between">
         <div>
@@ -85,7 +85,7 @@ function LoansPage() {
         <Switch checked={enabled} onCheckedChange={setEnabled} />
       </div>
 
-      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <MetricCard label="You owe (debt)" value={fmtKES(outstanding)} tone={outstanding > 0 ? "warning" : "success"} icon={<ArrowDownLeft className="h-4 w-4" />} />
         <MetricCard label="Owed to you" value={fmtKES(receivable)} tone={receivable > 0 ? "success" : undefined} icon={<ArrowUpRight className="h-4 w-4" />} />
         <MetricCard label="Overdue" value={String(overdue)} tone={overdue > 0 ? "danger" : undefined} />
@@ -139,11 +139,11 @@ function LoansPage() {
 
       {/* Loanee reports (lent money) */}
       <div className="mt-8">
-        <SectionHeading title="Loanee reports" sub="Printable statement per borrower." />
+        <SectionHeading title="Loanee reports" sub="One statement per borrower." />
         {lentRows.length === 0 ? (
-          <div className="empty-state">Record a loan you lent to generate a payment statement.</div>
+          <div className="empty-state">Lend money to generate a statement.</div>
         ) : (
-          <div className="bento-grid grid md:grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid md:grid-cols-2 gap-3">
             {lentRows.map((l) => {
               const phone = (l as unknown as { contact_phone?: string }).contact_phone;
               const email = (l as unknown as { contact_email?: string }).contact_email;
@@ -220,9 +220,9 @@ function AddDialog() {
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Record loan</Button></DialogTrigger>
+      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add loan</Button></DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>New loan record</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
         <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); add.mutate(); }}>
           <div>
             <Label>Direction</Label>
@@ -234,7 +234,7 @@ function AddDialog() {
               </SelectContent>
             </Select>
           </div>
-          <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+          <div className="bento-grid grid grid-cols-2 gap-3">
             <div><Label>{form.direction === "LENT" ? "Borrower (who owes you)" : "Lender (who you owe)"}</Label><Input value={form.lender} onChange={(e) => setForm({ ...form, lender: e.target.value })} placeholder={form.direction === "LENT" ? "John D, Mary…" : "KCB, M-Shwari, John D…"} /></div>
             <div><Label>Amount (KES)</Label><Input type="number" min={1} step="0.01" value={form.principal} onChange={(e) => setForm({ ...form, principal: e.target.value })} /></div>
             <div><Label>Interest rate (%)</Label><Input type="number" min={0} step="0.01" value={form.interest_rate} onChange={(e) => setForm({ ...form, interest_rate: e.target.value })} /></div>
@@ -251,7 +251,7 @@ function AddDialog() {
           {form.direction === "LENT" && (
             <div className="rounded-lg border border-border bg-secondary/20 p-3 space-y-3">
               <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Loanee contact & payment (for reports)</div>
-              <div className="bento-grid grid grid-cols-2 gap-3grid-cols-2 gap-3">
+              <div className="bento-grid grid grid-cols-2 gap-3">
                 <div><Label>Phone number</Label><Input value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} placeholder="+254 7…" /></div>
                 <div><Label>Email</Label><Input type="email" value={form.contact_email} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} placeholder="loanee@example.com" /></div>
                 <div className="col-span-2"><Label>Alternative contact</Label><Input value={form.contact_alt} onChange={(e) => setForm({ ...form, contact_alt: e.target.value })} placeholder="Next of kin, WhatsApp, workplace…" /></div>
@@ -268,7 +268,7 @@ function AddDialog() {
           )}
           <div><Label>{form.direction === "LENT" ? "What is the money for?" : "How will this money be used?"}</Label><Textarea rows={2} value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} placeholder="Rent, school fees, business stock…" /></div>
           <div><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-          <div className="flex justify-end"><Button type="submit" disabled={add.isPending}>{add.isPending ? "Saving…" : "Save record"}</Button></div>
+          <div className="flex justify-end"><Button type="submit" disabled={add.isPending}>{add.isPending ? "Saving…" : "Save"}</Button></div>
         </form>
       </DialogContent>
     </Dialog>

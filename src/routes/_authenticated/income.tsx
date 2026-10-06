@@ -73,7 +73,7 @@ function IncomePage() {
 
   return (
     <div>
-      <SectionHeading title="Income" sub="Log earnings. Auto-allocate if you want." />
+      <SectionHeading title="Income" sub="Log earnings, auto-allocate." />
       <form
         className="fintech-card p-5 mb-6 space-y-4"
         onSubmit={(e) => {

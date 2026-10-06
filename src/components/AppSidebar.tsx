@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   BellRing,
@@ -86,8 +86,21 @@ const sections: NavSection[] = [
 ];
 
 export function AppSidebar() {
-  const { isMobile, setOpenMobile, state } = useSidebar();
+  const { isMobile, setOpenMobile, setOpen, state } = useSidebar();
   const collapsed = state === "collapsed";
+  const hoverOpened = useRef(false);
+
+  function handleMouseEnter() {
+    if (isMobile || !collapsed) return;
+    hoverOpened.current = true;
+    setOpen(true);
+  }
+  function handleMouseLeave() {
+    if (isMobile || !hoverOpened.current) return;
+    hoverOpened.current = false;
+    setOpen(false);
+  }
+
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const activeSection = useMemo(() => {
     const match = sections.find((section) => section.items.some((item) => item.url === pathname));
@@ -134,17 +147,28 @@ export function AppSidebar() {
   }, []);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[color:var(--glass-border)] bg-[image:var(--gradient-gold)]/10 shadow-[var(--shadow-soft)] backdrop-blur-md">
-            <img src={logo} alt="MalinGu logo" className="h-6 w-6" />
-          </div>
+          <img
+            src={logo}
+            alt="MalinGu logo"
+            width={1024}
+            height={1024}
+            className="h-10 w-10 shrink-0 rounded-2xl border border-[color:var(--glass-border)] object-cover shadow-[var(--shadow-soft)]"
+          />
           {!collapsed && (
             <div className="leading-tight">
-              <div className="text-sm font-semibold">MalinGu</div>
+              <div className="font-display text-2xl tracking-[0.14em] text-[color:var(--gold)]">
+                MALINGU
+              </div>
               <div className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                Calm money management
+                Mali Yangu · My Wealth
               </div>
             </div>
           )}

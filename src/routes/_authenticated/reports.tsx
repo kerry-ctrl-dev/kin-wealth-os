@@ -62,7 +62,7 @@ function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading title="Report Center" sub="PDF or CSV, any period." />
+      <SectionHeading title="Reports" sub="PDF or CSV, any period." />
 
       <div className="fintech-card p-6">
         <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>
@@ -73,7 +73,7 @@ function ReportsPage() {
               <TabsTrigger value="monthly">Monthly</TabsTrigger>
               <TabsTrigger value="custom">Custom</TabsTrigger>
             </TabsList>
-            <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Download PDF report</Button>
+            <Button onClick={exportPDF}><FileText className="h-4 w-4" /> Export PDF</Button>
           </div>
 
           {period === "custom" && (
@@ -91,7 +91,7 @@ function ReportsPage() {
 
           <TabsContent value={period} className="mt-4">
             <div className="text-xs uppercase tracking-widest text-muted-foreground">{report.label}</div>
-            <div className="bento-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
+            <div className="bento-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
               <Metric label="Total Assets" value={fmtKES(report.totalAssets)} />
               <Metric label="ROI" value={fmtPct(report.roi, 2)} />
               <Metric label="Liquidity" value={fmtPct(report.liquidity)} />
@@ -100,7 +100,7 @@ function ReportsPage() {
               <Metric label="New investments" value={`${report.newInvestments} entries`} sub={fmtKES(report.newInvestmentsValue)} />
             </div>
 
-            <div className="bento-grid grid lg:grid-cols-2 gap-4 mt-6grid-cols-2 gap-4 mt-6">
+            <div className="bento-grid grid lg:grid-cols-2 gap-4 mt-6">
               <div className="rounded-lg border border-border p-4">
                 <h3 className="font-semibold mb-2">Allocation</h3>
                 {report.allocation.length === 0 ? (

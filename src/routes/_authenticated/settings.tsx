@@ -169,7 +169,7 @@ function SettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8">
-      <SectionHeading title="Settings" sub="Manage your profile and preferences" />
+      <SectionHeading title="Settings" sub="Profile and preferences." />
 
       <div className="fintech-card p-6 sm:p-7 space-y-5">
         <div className="flex items-center justify-between gap-3">
@@ -214,7 +214,7 @@ function SettingsPage() {
             <p className="text-xs text-muted-foreground mt-1">JPG/PNG, up to a few MB.</p>
           </div>
         </div>
-        <div className="bento-grid grid gap-4 sm:grid-cols-2grid-cols-2">
+        <div className="bento-grid grid gap-4 sm:grid-cols-2">
           <Field label="Full name">
             <Input
               value={form.full_name}
@@ -385,7 +385,7 @@ function AppearanceSection() {
         </div>
       </div>
 
-      <div className="bento-grid grid gap-4 sm:grid-cols-2grid-cols-2">
+      <div className="bento-grid grid gap-4 sm:grid-cols-2">
         <div>
           <Label className="text-xs uppercase tracking-widest text-muted-foreground">
             Font style

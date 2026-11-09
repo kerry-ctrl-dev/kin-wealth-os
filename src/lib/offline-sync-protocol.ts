@@ -14,6 +14,10 @@ export const MSG_SYNCED = "MALINGU_SYNC_DONE";
 export type ConflictKind = "changed" | "missing";
 export type ConflictResolution = "local" | "server" | "merge" | "later";
 
+export function isConflictResolution(value: unknown): value is ConflictResolution {
+  return value === "local" || value === "server" || value === "merge" || value === "later";
+}
+
 export type FieldConflict = {
   field: string;
   /** What the record looked like when the offline edit was made. */

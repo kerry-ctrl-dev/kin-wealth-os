@@ -30,6 +30,22 @@ export interface Appearance {
 
 const KEY = "malingu:appearance";
 
+const INLINE_SCRIPT_ESCAPES: Record<string, string> = {
+  "<": "\\u003C",
+  ">": "\\u003E",
+  "/": "\\u002F",
+  "&": "\\u0026",
+  "\u2028": "\\u2028",
+  "\u2029": "\\u2029",
+};
+
+export function serializeForInlineScript(value: unknown): string {
+  return JSON.stringify(value).replace(
+    /[<>/&\u2028\u2029]/g,
+    (char) => INLINE_SCRIPT_ESCAPES[char],
+  );
+}
+
 export const DEFAULT_APPEARANCE: Appearance = {
   theme: "dark",
   font: "barlow",
@@ -155,15 +171,15 @@ export function applyAppearance(a: Appearance) {
 }
 
 // Serialized inline script that runs before hydration to prevent theme flash.
-export const APPEARANCE_BOOT_SCRIPT = `(function(){try{var raw=localStorage.getItem(${JSON.stringify(
+export const APPEARANCE_BOOT_SCRIPT = `(function(){try{var raw=localStorage.getItem(${serializeForInlineScript(
   KEY,
-)});var a=raw?JSON.parse(raw):null;a=Object.assign(${JSON.stringify(
+)});var a=raw?JSON.parse(raw):null;a=Object.assign(${serializeForInlineScript(
   DEFAULT_APPEARANCE,
-)},a||{});var accents=${JSON.stringify(
+)},a||{});var accents=${serializeForInlineScript(
   ACCENTS,
-)};var fonts=${JSON.stringify(FONT_STACKS)};var sizes=${JSON.stringify(
+)};var fonts=${serializeForInlineScript(FONT_STACKS)};var sizes=${serializeForInlineScript(
   FONT_SIZES,
-)};var palettes=${JSON.stringify(
+)};var palettes=${serializeForInlineScript(
   CHART_PALETTES,
 )};var mode=a.theme;var resolved=mode==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):mode;var r=document.documentElement;r.classList.toggle('dark',resolved==='dark');r.dataset.theme=resolved;var acc=accents[a.accent]||accents.blue;var v=resolved==='dark'?acc.dark:acc.light;r.style.setProperty('--primary','oklch('+v+')');r.style.setProperty('--accent','oklch('+v+')');r.style.setProperty('--ring','oklch('+v+')');r.style.setProperty('--sidebar-primary','oklch('+v+')');r.style.setProperty('--sidebar-ring','oklch('+v+')');r.style.setProperty('--chart-1','oklch('+v+')');var f=fonts[a.font]||fonts.system;r.style.setProperty('--app-font',f.stack);var s=sizes[a.size]||sizes.md;r.style.fontSize=s.px+'px';var p=palettes[a.chartPalette]||palettes.default;if(a.chartPalette!=='default'){p.colors.forEach(function(c,i){r.style.setProperty('--chart-'+(i+1),c);});}r.dataset.density=a.density||'comfortable';}catch(e){}})();`;
 

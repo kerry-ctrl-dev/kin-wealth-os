@@ -25,7 +25,7 @@ jobs:
             exit 1
           fi
       - name: Install dependencies
-        run: npm install --ignore-scripts
-      - run: npm run lint -- --fix
+        run: npm ci --ignore-scripts
+      - run: npm run lint
       - run: npm run build
       - run: npm test

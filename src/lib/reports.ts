@@ -1,5 +1,16 @@
 import type { Tables } from "@/integrations/supabase/types";
-import { totalIncome, totalValue, computeRoi, liquidityRatio, byCategory, computeRisk, CATEGORY_LABEL, fmtKES, fmtPct, type AssetCategory } from "./finance";
+import {
+  totalIncome,
+  totalValue,
+  computeRoi,
+  liquidityRatio,
+  byCategory,
+  computeRisk,
+  CATEGORY_LABEL,
+  fmtKES,
+  fmtPct,
+  type AssetCategory,
+} from "./finance";
 import { netWorth as calcNetWorth, totalLoansOutstanding, totalLoansReceivable, personalAssetsValue } from "./balance";
 
 type Asset = Tables<"assets">;
@@ -12,11 +23,14 @@ type Alert = Tables<"alerts">;
 type PersonalAsset = Tables<"personal_assets">;
 type Loan = Tables<"loans">;
 
-function inRange<T extends { date?: string; created_at?: string }>(rows: T[], field: "date" | "created_at", from: Date, to: Date): T[] {
+type DateField = "date" | "created_at";
+type DateRecord = Partial<Record<DateField, string | null | undefined>>;
+
+function inRange<T extends DateRecord>(rows: T[], field: DateField, from: Date, to: Date): T[] {
   return rows.filter((r) => {
-    const v = (r as any)[field];
-    if (!v) return false;
-    const d = new Date(v);
+    const value = r[field];
+    if (!value) return false;
+    const d = new Date(value);
     return d >= from && d <= to;
   });
 }
@@ -120,21 +134,23 @@ export function buildReport(
   const liq = liquidityRatio(assets);
   const risk = computeRisk(assets);
 
-  // Expenses by category in period
   const expByCat = new Map<string, number>();
-  for (const e of expensesPeriod) expByCat.set(e.category, (expByCat.get(e.category) ?? 0) + Number(e.amount));
-  const expensesByCategory = [...expByCat.entries()].map(([category, value]) => ({ category, value })).sort((a, b) => b.value - a.value);
+  for (const e of expensesPeriod) {
+    expByCat.set(e.category, (expByCat.get(e.category) ?? 0) + Number(e.amount));
+  }
+  const expensesByCategory = [...expByCat.entries()]
+    .map(([category, value]) => ({ category, value }))
+    .sort((a, b) => b.value - a.value);
   const expensesTotal = expensesPeriod.reduce((s, e) => s + Number(e.amount), 0);
 
-  // Budgets vs spent this period
   const budgetsRows = budgets.map((b) => {
     const spent = expByCat.get(b.category) ?? 0;
     const limit = Number(b.monthly_limit);
     return { category: b.category, limit, spent, pct: limit ? (spent / limit) * 100 : 0 };
   });
 
-  // Upcoming reminders (next 14 days)
-  const horizon = new Date(); horizon.setDate(horizon.getDate() + 14);
+  const horizon = new Date();
+  horizon.setDate(horizon.getDate() + 14);
   const upcoming = reminders
     .filter((r) => !r.completed && new Date(r.next_due) <= horizon)
     .sort((a, b) => new Date(a.next_due).getTime() - new Date(b.next_due).getTime())
@@ -148,13 +164,17 @@ export function buildReport(
   const nw = calcNetWorth(assets, personalAssets, loans);
   const paValue = personalAssetsValue(personalAssets);
 
-  // Credit & financial advice
   const debtToAssets = total + paValue > 0 ? debt / (total + paValue) : 0;
   let creditRemark: string;
-  if (debt === 0) creditRemark = "Excellent credit standing: you currently carry no outstanding debt. Keep this discipline to qualify for the best rates when you do need credit.";
-  else if (debtToAssets < 0.2) creditRemark = "Healthy credit standing. Your debt is well below 20% of your asset base — lenders will see you as low-risk.";
-  else if (debtToAssets < 0.5) creditRemark = "Manageable credit position. Aim to keep debt under 30% of assets and prioritise paying down the highest-interest balances first.";
-  else creditRemark = "Credit risk is elevated — debt exceeds 50% of your asset base. Pause new borrowing, restructure existing loans, and accelerate repayments before adding investments.";
+  if (debt === 0) {
+    creditRemark = "Excellent credit standing: you currently carry no outstanding debt. Keep this discipline to qualify for the best rates when you do need credit.";
+  } else if (debtToAssets < 0.2) {
+    creditRemark = "Healthy credit standing. Your debt is well below 20% of your asset base — lenders will see you as low-risk.";
+  } else if (debtToAssets < 0.5) {
+    creditRemark = "Manageable credit position. Aim to keep debt under 30% of assets and prioritise paying down the highest-interest balances first.";
+  } else {
+    creditRemark = "Credit risk is elevated — debt exceeds 50% of your asset base. Pause new borrowing, restructure existing loans, and accelerate repayments before adding investments.";
+  }
 
   const advice: string[] = [];
   if (incomePeriod.length === 0) advice.push("Log every shilling of income — even small entries — so allocations and balances stay accurate.");
@@ -236,7 +256,12 @@ export function toCSV<T extends Record<string, unknown>>(rows: T[], headers?: st
   if (rows.length === 0) return (headers ?? []).join(",");
   const cols = headers ?? Object.keys(rows[0]);
   const head = cols.map(csvCell).join(",");
-  const body = rows.map((r) => cols.map((c) => csvCell((r as any)[c])).join(",")).join("\n");
+  const body = rows
+    .map((r) => {
+      const record = r as Record<string, unknown>;
+      return cols.map((c) => csvCell(record[c])).join(",");
+    })
+    .join("\n");
   return `${head}\n${body}`;
 }
 

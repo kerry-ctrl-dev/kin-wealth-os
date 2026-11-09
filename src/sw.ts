@@ -457,7 +457,8 @@ sw.addEventListener("message", (event: any) => {
   }
   if (data.type === MSG_RESOLVE) {
     if (typeof data.id !== "string" || !isConflictResolution(data.resolution)) return;
+    if (!pendingResolutions.has(data.id)) return;
     const resolve = pendingResolutions.get(data.id);
-    if (resolve) resolve(data.resolution);
+    if (typeof resolve === "function") resolve(data.resolution);
   }
 });

@@ -19,6 +19,7 @@ import {
   SYNC_QUEUE_DB,
   SYNC_QUEUE_STORE,
   SYNC_TAG,
+  isConflictResolution,
   type ConflictResolution,
   type FieldConflict,
   type SyncConflict,
@@ -455,6 +456,9 @@ sw.addEventListener("message", (event: any) => {
     void drainQueue();
   }
   if (data.type === MSG_RESOLVE) {
-    pendingResolutions.get(data.id)?.(data.resolution as ConflictResolution);
+    if (typeof data.id !== "string" || !isConflictResolution(data.resolution)) return;
+    if (!pendingResolutions.has(data.id)) return;
+    const resolve = pendingResolutions.get(data.id);
+    if (typeof resolve === "function") resolve(data.resolution);
   }
 });

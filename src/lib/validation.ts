@@ -61,7 +61,7 @@ export function sanitizeString(input: string, maxLength: number = 1000): string 
   return input
     .trim()
     .substring(0, maxLength)
-    .replace(/[\x00-\x1F\x7F]/g, ""); // Remove control characters
+    .replace(/[\p{Cc}]/gu, ""); // Remove control characters
 }
 
 // Validate category enum
@@ -76,10 +76,10 @@ export function isValidDate(dateString: unknown): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
-// Sanitize error messages - don't expose internal details
+// Sanitize error messages - do not expose internal details
 export function sanitizeErrorMessage(error: unknown): string {
   if (error instanceof Error) {
-    // Don't expose internal error details to the UI
+    // Do not expose internal error details to the UI
     const message = error.message.toLowerCase();
 
     if (message.includes("credentials") || message.includes("auth")) {

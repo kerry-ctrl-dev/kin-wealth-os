@@ -29,10 +29,12 @@ export function dailyMotivation(seed: Date = new Date()): string {
 /** Investment streak in months (consecutive months with ≥1 income/asset entry up to current month). */
 export function computeStreak(dates: string[]): number {
   if (!dates.length) return 0;
-  const months = new Set(dates.map((d) => {
-    const x = new Date(d);
-    return `${x.getFullYear()}-${x.getMonth()}`;
-  }));
+  const months = new Set(
+    dates.map((d) => {
+      const x = new Date(d);
+      return `${x.getFullYear()}-${x.getMonth()}`;
+    }),
+  );
   let streak = 0;
   const cur = new Date();
   cur.setDate(1);
@@ -80,13 +82,23 @@ export function disciplineScore(args: {
  * Wealth Rating (300-850) with a familiar tier label (Poor → Excellent),
  * mirroring how lenders communicate FICO scores.
  */
-export function wealthRating(score: number): { value: number; tier: string; min: number; max: number } {
+export function wealthRating(score: number): {
+  value: number;
+  tier: string;
+  min: number;
+  max: number;
+} {
   const clamped = Math.max(0, Math.min(100, score));
   const value = Math.round(300 + (clamped / 100) * 550); // 300..850
   const tier =
-    value >= 800 ? "Excellent" :
-    value >= 740 ? "Very Good" :
-    value >= 670 ? "Good" :
-    value >= 580 ? "Fair" : "Poor";
+    value >= 800
+      ? "Excellent"
+      : value >= 740
+        ? "Very Good"
+        : value >= 670
+          ? "Good"
+          : value >= 580
+            ? "Fair"
+            : "Poor";
   return { value, tier, min: 300, max: 850 };
 }

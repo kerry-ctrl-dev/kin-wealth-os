@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { DEFAULT_ALERT_PREFS, loadAlertPrefs, saveAlertPrefs, type AlertPrefs } from "@/lib/alert-prefs";
+import {
+  DEFAULT_ALERT_PREFS,
+  loadAlertPrefs,
+  saveAlertPrefs,
+  type AlertPrefs,
+} from "@/lib/alert-prefs";
 import { evaluateAlerts, syncAlertsToDb } from "@/lib/alert-engine";
 import {
   assetsQuery,
@@ -66,22 +71,26 @@ function AlertsPage() {
       .map((s) => Number(s.trim()))
       .filter((n) => Number.isFinite(n) && n > 0 && n <= 100)
       .sort((a, b) => a - b);
-    setP((cur) => ({ ...cur, goalMilestones: nums.length ? nums : DEFAULT_ALERT_PREFS.goalMilestones }));
+    setP((cur) => ({
+      ...cur,
+      goalMilestones: nums.length ? nums : DEFAULT_ALERT_PREFS.goalMilestones,
+    }));
     toast.success("Milestones updated");
   }
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6">
-      <SectionHeading
-        title="Alerts & thresholds"
-        sub="Get pinged when your triggers hit."
-      />
+      <SectionHeading title="Alerts & thresholds" sub="Get pinged when your triggers hit." />
 
       <div className="fintech-card p-6 space-y-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="flex items-center gap-2 font-semibold"><BellRing className="h-4 w-4 text-primary" /> Enable alerts</h2>
-            <p className="text-sm text-muted-foreground mt-1">Master switch — turn off to pause all in-app notifications.</p>
+            <h2 className="flex items-center gap-2 font-semibold">
+              <BellRing className="h-4 w-4 text-primary" /> Enable alerts
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Master switch — turn off to pause all in-app notifications.
+            </p>
           </div>
           <Switch checked={p.enabled} onCheckedChange={(v) => setP({ ...p, enabled: v })} />
         </div>
@@ -112,16 +121,28 @@ function AlertsPage() {
         />
 
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-widest text-muted-foreground">Goal milestones (%)</Label>
+          <Label className="text-xs uppercase tracking-widest text-muted-foreground">
+            Goal milestones (%)
+          </Label>
           <div className="flex gap-2">
-            <Input value={milestonesText} onChange={(e) => setMilestonesText(e.target.value)} placeholder="25, 50, 75, 100" />
-            <Button variant="outline" onClick={applyMilestones}><Save className="h-4 w-4" /> Apply</Button>
+            <Input
+              value={milestonesText}
+              onChange={(e) => setMilestonesText(e.target.value)}
+              placeholder="25, 50, 75, 100"
+            />
+            <Button variant="outline" onClick={applyMilestones}>
+              <Save className="h-4 w-4" /> Apply
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground">Comma-separated percentages. You get one nudge each time a goal crosses one.</p>
+          <p className="text-xs text-muted-foreground">
+            Comma-separated percentages. You get one nudge each time a goal crosses one.
+          </p>
         </div>
 
         <div className="pt-2">
-          <Button onClick={runNow} disabled={!p.enabled}><Zap className="h-4 w-4" /> Evaluate now</Button>
+          <Button onClick={runNow} disabled={!p.enabled}>
+            <Zap className="h-4 w-4" /> Evaluate now
+          </Button>
         </div>
       </div>
 
@@ -133,7 +154,9 @@ function AlertsPage() {
           <ul className="space-y-2 text-sm">
             {preview.map((t) => (
               <li key={t.key} className="rounded-xl border border-border/70 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t.severity} · {t.type}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {t.severity} · {t.type}
+                </div>
                 <div>{t.message}</div>
               </li>
             ))}
@@ -149,7 +172,9 @@ function AlertsPage() {
           <ul className="space-y-2 text-sm">
             {(alerts.data ?? []).slice(0, 10).map((a) => (
               <li key={a.id} className="rounded-xl border border-border/70 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{a.severity} · {a.type} · {new Date(a.date).toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {a.severity} · {a.type} · {new Date(a.date).toLocaleString()}
+                </div>
                 <div>{a.message}</div>
               </li>
             ))}

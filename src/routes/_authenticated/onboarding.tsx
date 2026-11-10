@@ -347,7 +347,11 @@ function Onboarding() {
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={finish} disabled={!canFinish || busy} className="rounded-xl max-lg:clay-button">
+              <Button
+                onClick={finish}
+                disabled={!canFinish || busy}
+                className="rounded-xl max-lg:clay-button"
+              >
                 {busy ? "Finishing…" : "Enter MalinGu"} <ArrowRight className="h-4 w-4" />
               </Button>
             )}

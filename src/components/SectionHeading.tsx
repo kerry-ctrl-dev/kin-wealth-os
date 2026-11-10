@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
 
-export function SectionHeading({ title, sub, action }: { title: string; sub?: string; action?: ReactNode }) {
+export function SectionHeading({
+  title,
+  sub,
+  action,
+}: {
+  title: string;
+  sub?: string;
+  action?: ReactNode;
+}) {
   return (
     <div className="flex items-end justify-between gap-3 mb-5 sm:mb-6 flex-wrap">
       <div className="min-w-0">

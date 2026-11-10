@@ -11,7 +11,12 @@ import {
   fmtPct,
   type AssetCategory,
 } from "./finance";
-import { netWorth as calcNetWorth, totalLoansOutstanding, totalLoansReceivable, personalAssetsValue } from "./balance";
+import {
+  netWorth as calcNetWorth,
+  totalLoansOutstanding,
+  totalLoansReceivable,
+  personalAssetsValue,
+} from "./balance";
 
 type Asset = Tables<"assets">;
 type Income = Tables<"income">;
@@ -43,8 +48,10 @@ export function periodRange(
   custom?: { from: Date; to: Date },
 ): { from: Date; to: Date; label: string } {
   if (period === "custom" && custom) {
-    const from = new Date(custom.from); from.setHours(0, 0, 0, 0);
-    const to = new Date(custom.to); to.setHours(23, 59, 59, 999);
+    const from = new Date(custom.from);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(custom.to);
+    to.setHours(23, 59, 59, 999);
     return {
       from,
       to,
@@ -157,7 +164,9 @@ export function buildReport(
     .slice(0, 12)
     .map((r) => ({ title: r.title, due: r.next_due, kind: r.kind }));
 
-  const alertsRecent = alerts.slice(0, 10).map((a) => ({ severity: a.severity, message: a.message, date: a.date }));
+  const alertsRecent = alerts
+    .slice(0, 10)
+    .map((a) => ({ severity: a.severity, message: a.message, date: a.date }));
 
   const debt = totalLoansOutstanding(loans);
   const receivable = totalLoansReceivable(loans);
@@ -167,30 +176,54 @@ export function buildReport(
   const debtToAssets = total + paValue > 0 ? debt / (total + paValue) : 0;
   let creditRemark: string;
   if (debt === 0) {
-    creditRemark = "Excellent credit standing: you currently carry no outstanding debt. Keep this discipline to qualify for the best rates when you do need credit.";
+    creditRemark =
+      "Excellent credit standing: you currently carry no outstanding debt. Keep this discipline to qualify for the best rates when you do need credit.";
   } else if (debtToAssets < 0.2) {
-    creditRemark = "Healthy credit standing. Your debt is well below 20% of your asset base — lenders will see you as low-risk.";
+    creditRemark =
+      "Healthy credit standing. Your debt is well below 20% of your asset base — lenders will see you as low-risk.";
   } else if (debtToAssets < 0.5) {
-    creditRemark = "Manageable credit position. Aim to keep debt under 30% of assets and prioritise paying down the highest-interest balances first.";
+    creditRemark =
+      "Manageable credit position. Aim to keep debt under 30% of assets and prioritise paying down the highest-interest balances first.";
   } else {
-    creditRemark = "Credit risk is elevated — debt exceeds 50% of your asset base. Pause new borrowing, restructure existing loans, and accelerate repayments before adding investments.";
+    creditRemark =
+      "Credit risk is elevated — debt exceeds 50% of your asset base. Pause new borrowing, restructure existing loans, and accelerate repayments before adding investments.";
   }
 
   const advice: string[] = [];
-  if (incomePeriod.length === 0) advice.push("Log every shilling of income — even small entries — so allocations and balances stay accurate.");
-  if (expensesTotal > incomePeriod.reduce((s, i) => s + Number(i.amount), 0)) advice.push("You spent more than you earned this period. Trim a non-essential category before next cycle.");
-  if (liq < 0.3) advice.push("Build a liquid cash/MMF buffer covering at least 3 months of expenses before adding illiquid investments.");
-  if (roi < 0) advice.push("Your portfolio ROI is negative — rebalance toward stable instruments (MMF, REITs) until conditions improve.");
-  if (debt > 0 && receivable > 0) advice.push("Collect outstanding receivables and use them to retire high-interest debt first.");
-  if (goals.length === 0) advice.push("Set at least one financial goal — disciplined contributors hit targets 3× more often.");
-  if (allocation.some((a) => a.category === "STOCKS" && a.pct > 60)) advice.push("Reduce single-asset concentration: cap NSE stocks at 40–50% of the portfolio.");
-  if (advice.length === 0) advice.push("You're on track. Stay consistent and review allocations monthly.");
+  if (incomePeriod.length === 0)
+    advice.push(
+      "Log every shilling of income — even small entries — so allocations and balances stay accurate.",
+    );
+  if (expensesTotal > incomePeriod.reduce((s, i) => s + Number(i.amount), 0))
+    advice.push(
+      "You spent more than you earned this period. Trim a non-essential category before next cycle.",
+    );
+  if (liq < 0.3)
+    advice.push(
+      "Build a liquid cash/MMF buffer covering at least 3 months of expenses before adding illiquid investments.",
+    );
+  if (roi < 0)
+    advice.push(
+      "Your portfolio ROI is negative — rebalance toward stable instruments (MMF, REITs) until conditions improve.",
+    );
+  if (debt > 0 && receivable > 0)
+    advice.push("Collect outstanding receivables and use them to retire high-interest debt first.");
+  if (goals.length === 0)
+    advice.push(
+      "Set at least one financial goal — disciplined contributors hit targets 3× more often.",
+    );
+  if (allocation.some((a) => a.category === "STOCKS" && a.pct > 60))
+    advice.push("Reduce single-asset concentration: cap NSE stocks at 40–50% of the portfolio.");
+  if (advice.length === 0)
+    advice.push("You're on track. Stay consistent and review allocations monthly.");
 
   const insights: string[] = [];
-  if (incomePeriod.length === 0) insights.push("No income recorded this period — add entries to keep your streak.");
+  if (incomePeriod.length === 0)
+    insights.push("No income recorded this period — add entries to keep your streak.");
   if (liq < 0.3) insights.push("Liquidity is critically low — top up your MMF buffer.");
   if (roi < 0) insights.push("Portfolio ROI is negative — review allocations.");
-  if (allocation.some((a) => a.category === "STOCKS" && a.pct > 60)) insights.push("Stock concentration above 60% — diversify.");
+  if (allocation.some((a) => a.category === "STOCKS" && a.pct > 60))
+    insights.push("Stock concentration above 60% — diversify.");
   if (insights.length === 0) insights.push("Portfolio looks healthy. Stay consistent.");
 
   return {
@@ -205,7 +238,10 @@ export function buildReport(
     liquidity: liq * 100,
     risk,
     allocation,
-    goalsProgress: goals.map((g) => ({ name: g.name, pct: Math.min(100, (Number(g.current) / (Number(g.target) || 1)) * 100) })),
+    goalsProgress: goals.map((g) => ({
+      name: g.name,
+      pct: Math.min(100, (Number(g.current) / (Number(g.target) || 1)) * 100),
+    })),
     insights,
     netWorth: nw,
     personalAssetsValue: paValue,
@@ -213,8 +249,15 @@ export function buildReport(
     loansReceivable: receivable,
     expensesTotal,
     expensesByCategory,
-    expensesList: expensesPeriod.slice(0, 20).map((e) => ({ date: e.date, vendor: e.vendor ?? e.category, category: e.category, amount: Number(e.amount) })),
-    incomeList: incomePeriod.slice(0, 20).map((i) => ({ date: i.date, source: i.source, amount: Number(i.amount) })),
+    expensesList: expensesPeriod.slice(0, 20).map((e) => ({
+      date: e.date,
+      vendor: e.vendor ?? e.category,
+      category: e.category,
+      amount: Number(e.amount),
+    })),
+    incomeList: incomePeriod
+      .slice(0, 20)
+      .map((i) => ({ date: i.date, source: i.source, amount: Number(i.amount) })),
     budgets: budgetsRows,
     upcoming,
     alerts: alertsRecent,
@@ -234,7 +277,8 @@ export function reportToText(r: Report): string {
   lines.push(`New investments: ${r.newInvestments} worth ${fmtKES(r.newInvestmentsValue)}`);
   lines.push("");
   lines.push("Allocation:");
-  for (const a of r.allocation) lines.push(`  - ${CATEGORY_LABEL[a.category]}: ${fmtKES(a.value)} (${fmtPct(a.pct)})`);
+  for (const a of r.allocation)
+    lines.push(`  - ${CATEGORY_LABEL[a.category]}: ${fmtKES(a.value)} (${fmtPct(a.pct)})`);
   lines.push("");
   lines.push("Goals:");
   for (const g of r.goalsProgress) lines.push(`  - ${g.name}: ${fmtPct(g.pct)}`);

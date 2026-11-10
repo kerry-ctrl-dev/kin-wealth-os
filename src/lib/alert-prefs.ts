@@ -1,11 +1,11 @@
 // User-configurable alert thresholds, persisted to localStorage.
 
 export interface AlertPrefs {
-  liquidityMinPct: number;      // e.g. 30 → warn when liquidity below 30%
-  goalMilestones: number[];     // e.g. [25, 50, 75, 100]
-  stockConcMaxPct: number;      // e.g. 60 → warn when any single-category > 60%
-  budgetOverPct: number;        // e.g. 90 → warn when spending hits X% of monthly budget
-  loanDueDays: number;          // warn when loan due within N days
+  liquidityMinPct: number; // e.g. 30 → warn when liquidity below 30%
+  goalMilestones: number[]; // e.g. [25, 50, 75, 100]
+  stockConcMaxPct: number; // e.g. 60 → warn when any single-category > 60%
+  budgetOverPct: number; // e.g. 90 → warn when spending hits X% of monthly budget
+  loanDueDays: number; // warn when loan due within N days
   enabled: boolean;
 }
 

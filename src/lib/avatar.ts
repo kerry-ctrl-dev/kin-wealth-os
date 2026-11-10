@@ -19,7 +19,9 @@ function isSafeAvatarUrl(url: string): boolean {
 export async function uploadAvatar(file: File, userId: string): Promise<string> {
   const ext = sanitizeImageExtension(file.name);
   const path = `${userId}/avatar-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+  const { error } = await supabase.storage
+    .from("avatars")
+    .upload(path, file, { upsert: true, contentType: file.type });
   if (error) throw error;
   return path;
 }

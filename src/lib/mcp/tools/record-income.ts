@@ -20,7 +20,12 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     const { data, error } = await supabase
       .from("income")
-      .insert({ user_id: userId, amount, source, date: date ?? new Date().toISOString().slice(0, 10) })
+      .insert({
+        user_id: userId,
+        amount,
+        source,
+        date: date ?? new Date().toISOString().slice(0, 10),
+      })
       .select()
       .single();
     if (error) return failed(error.message);

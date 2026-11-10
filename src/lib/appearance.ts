@@ -2,18 +2,11 @@
 // Persisted to localStorage and applied to the <html> element.
 
 export type ThemeMode = "light" | "dark" | "system";
-export type FontFamilyKey = "system" | "barlow" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
+export type FontFamilyKey =
+  "system" | "barlow" | "inter" | "poppins" | "dm-sans" | "space-grotesk" | "roboto";
 export type FontSizeKey = "sm" | "md" | "lg" | "xl";
 export type AccentKey =
-  | "gold"
-  | "blue"
-  | "emerald"
-  | "violet"
-  | "rose"
-  | "amber"
-  | "teal"
-  | "orange"
-  | "slate";
+  "gold" | "blue" | "emerald" | "violet" | "rose" | "amber" | "teal" | "orange" | "slate";
 export type ChartPaletteKey = "default" | "ocean" | "sunset" | "forest" | "mono";
 export type DensityKey = "compact" | "comfortable" | "spacious";
 export type DefaultRangeKey = "7D" | "30D" | "90D" | "ALL";
@@ -57,8 +50,10 @@ export const DEFAULT_APPEARANCE: Appearance = {
 };
 
 export const FONT_STACKS: Record<FontFamilyKey, { label: string; stack: string }> = {
-  system:
-    { label: "System", stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+  system: {
+    label: "System",
+    stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
   barlow: { label: "Barlow", stack: "'Barlow', system-ui, sans-serif" },
   inter: { label: "Inter", stack: "'Inter', system-ui, sans-serif" },
   poppins: { label: "Poppins", stack: "'Poppins', system-ui, sans-serif" },
@@ -92,10 +87,10 @@ export const ACCENTS: Record<
 
 export const CHART_PALETTES: Record<ChartPaletteKey, { label: string; colors: string[] }> = {
   default: { label: "Default", colors: ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#f43f5e"] },
-  ocean:   { label: "Ocean",   colors: ["#0ea5e9", "#22d3ee", "#6366f1", "#14b8a6", "#3b82f6"] },
-  sunset:  { label: "Sunset",  colors: ["#f97316", "#f59e0b", "#ef4444", "#ec4899", "#8b5cf6"] },
-  forest:  { label: "Forest",  colors: ["#10b981", "#84cc16", "#65a30d", "#0d9488", "#14532d"] },
-  mono:    { label: "Mono",    colors: ["#475569", "#64748b", "#94a3b8", "#cbd5e1", "#334155"] },
+  ocean: { label: "Ocean", colors: ["#0ea5e9", "#22d3ee", "#6366f1", "#14b8a6", "#3b82f6"] },
+  sunset: { label: "Sunset", colors: ["#f97316", "#f59e0b", "#ef4444", "#ec4899", "#8b5cf6"] },
+  forest: { label: "Forest", colors: ["#10b981", "#84cc16", "#65a30d", "#0d9488", "#14532d"] },
+  mono: { label: "Mono", colors: ["#475569", "#64748b", "#94a3b8", "#cbd5e1", "#334155"] },
 };
 
 export const DENSITY_LABEL: Record<DensityKey, string> = {

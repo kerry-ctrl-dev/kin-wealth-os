@@ -6,7 +6,8 @@
 // Password requirements
 export const PASSWORD_MIN_LENGTH = 12;
 export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]/;
-export const PASSWORD_PATTERN_MESSAGE = "Password must contain uppercase, lowercase, number, and special character";
+export const PASSWORD_PATTERN_MESSAGE =
+  "Password must contain uppercase, lowercase, number, and special character";
 
 // Email validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

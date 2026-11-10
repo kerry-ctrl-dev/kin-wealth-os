@@ -28,10 +28,26 @@ type OnboardStep =
   | { key: "holdings"; prompt: string };
 
 const ONBOARD_STEPS: OnboardStep[] = [
-  { key: "main_goals", prompt: "Karibu! I'm Aria. Let's set up your Kenyan wealth profile in 4 quick questions.\n\n1️⃣ What are your top 1–3 financial goals right now? (e.g. Buy land in Kiambu by 2028, build KES 500k emergency fund, quit employment in 5 years)" },
-  { key: "risk_level", prompt: "2️⃣ How much investment risk feel right for you — LOW (mostly MMF/T-bills), MEDIUM (mixed with NSE/REITs), or HIGH (heavy stocks/alt)?" },
-  { key: "income_cadence", prompt: "3️⃣ How is your income paid? (monthly salary, weekly/daily hustle, commission, business, mixed…)" },
-  { key: "holdings", prompt: "4️⃣ Roughly, what do you already hold today? (KES in M-Pesa/bank, MMF at Cytonn/Sanlam/etc, NSE stocks, SACCO shares, land/property, etc.)" },
+  {
+    key: "main_goals",
+    prompt:
+      "Karibu! I'm Aria. Let's set up your Kenyan wealth profile in 4 quick questions.\n\n1️⃣ What are your top 1–3 financial goals right now? (e.g. Buy land in Kiambu by 2028, build KES 500k emergency fund, quit employment in 5 years)",
+  },
+  {
+    key: "risk_level",
+    prompt:
+      "2️⃣ How much investment risk feel right for you — LOW (mostly MMF/T-bills), MEDIUM (mixed with NSE/REITs), or HIGH (heavy stocks/alt)?",
+  },
+  {
+    key: "income_cadence",
+    prompt:
+      "3️⃣ How is your income paid? (monthly salary, weekly/daily hustle, commission, business, mixed…)",
+  },
+  {
+    key: "holdings",
+    prompt:
+      "4️⃣ Roughly, what do you already hold today? (KES in M-Pesa/bank, MMF at Cytonn/Sanlam/etc, NSE stocks, SACCO shares, land/property, etc.)",
+  },
 ];
 
 const ONBOARD_KEY = "malingu:aria:onboarding";
@@ -43,7 +59,8 @@ function validateStep(key: OnboardStep["key"], value: string): string | null {
   if (v.length > 500) return "That's a bit long — keep it under 500 characters.";
   if (key === "risk_level" && !/(low|medium|med|high)/i.test(v))
     return "Please answer LOW, MEDIUM or HIGH (you can add a note after it).";
-  if (key === "holdings" && !/[a-z0-9]/i.test(v)) return "Please describe what you hold, or type \"nothing yet\".";
+  if (key === "holdings" && !/[a-z0-9]/i.test(v))
+    return 'Please describe what you hold, or type "nothing yet".';
   return null;
 }
 
@@ -58,8 +75,14 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [onboarding, setOnboarding] = useState<{ step: number; answers: Record<string, string> } | null>(null);
-  const [resumable, setResumable] = useState<{ step: number; answers: Record<string, string> } | null>(null);
+  const [onboarding, setOnboarding] = useState<{
+    step: number;
+    answers: Record<string, string>;
+  } | null>(null);
+  const [resumable, setResumable] = useState<{
+    step: number;
+    answers: Record<string, string>;
+  } | null>(null);
   const qc = useQueryClient();
   const profile = useQuery({ ...profileQuery(), enabled: open });
   const send = useServerFn(chatWithAdvisor);
@@ -185,7 +208,11 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
       const cur = ONBOARD_STEPS[onboarding.step];
       const invalid = validateStep(cur.key, text);
       if (invalid) {
-        setMsgs([...msgs, { role: "user", content: text }, { role: "assistant", content: `⚠️ ${invalid}` }]);
+        setMsgs([
+          ...msgs,
+          { role: "user", content: text },
+          { role: "assistant", content: `⚠️ ${invalid}` },
+        ]);
         setInput("");
         return;
       }
@@ -219,13 +246,20 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
         try {
           const { data: u } = await supabase.auth.getUser();
           if (u.user) {
-            const risk = /HIGH/i.test(nextAnswers.risk_level ?? "") ? "HIGH" : /LOW/i.test(nextAnswers.risk_level ?? "") ? "LOW" : "MEDIUM";
+            const risk = /HIGH/i.test(nextAnswers.risk_level ?? "")
+              ? "HIGH"
+              : /LOW/i.test(nextAnswers.risk_level ?? "")
+                ? "LOW"
+                : "MEDIUM";
             const combinedGoals = `${nextAnswers.main_goals}\n\nIncome cadence: ${nextAnswers.income_cadence}\nCurrent holdings: ${nextAnswers.holdings}`;
-            await supabase.from("profiles").update({
-              main_goals: combinedGoals,
-              risk_level: risk,
-              onboarded: true,
-            }).eq("id", u.user.id);
+            await supabase
+              .from("profiles")
+              .update({
+                main_goals: combinedGoals,
+                risk_level: risk,
+                onboarded: true,
+              })
+              .eq("id", u.user.id);
             qc.invalidateQueries({ queryKey: ["profile"] });
             toast.success("Your profile is saved");
           }
@@ -271,7 +305,8 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     setMsgs((m) => [...m, { role: "assistant", content: ONBOARD_STEPS[0].prompt }]);
   }
 
-  const showOnboardCta = open && !onboarding && !resumable && profile.data && !profile.data.main_goals;
+  const showOnboardCta =
+    open && !onboarding && !resumable && profile.data && !profile.data.main_goals;
 
   // Load any saved half-finished setup so it can be resumed.
   useEffect(() => {
@@ -375,14 +410,19 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
               {open && !onboarding && resumable && (
                 <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm">
                   <div className="flex items-center gap-2 font-medium text-primary">
-                    <Wand2 className="h-4 w-4" /> Resume your setup (step {resumable.step + 1} of {ONBOARD_STEPS.length})
+                    <Wand2 className="h-4 w-4" /> Resume your setup (step {resumable.step + 1} of{" "}
+                    {ONBOARD_STEPS.length})
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     Nothing was saved yet — continue where you left off, or start over.
                   </div>
                   <div className="mt-2 flex gap-2">
-                    <Button size="sm" onClick={resumeOnboarding}>Continue</Button>
-                    <Button size="sm" variant="ghost" onClick={discardOnboarding}>Discard</Button>
+                    <Button size="sm" onClick={resumeOnboarding}>
+                      Continue
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={discardOnboarding}>
+                      Discard
+                    </Button>
                   </div>
                 </div>
               )}
@@ -395,7 +435,8 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
                     <Wand2 className="h-4 w-4" /> Start Kenyan onboarding (4 questions)
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
-                    Aria will collect your goals, risk, income cadence and current holdings, then save them to your profile.
+                    Aria will collect your goals, risk, income cadence and current holdings, then
+                    save them to your profile.
                   </div>
                 </button>
               )}

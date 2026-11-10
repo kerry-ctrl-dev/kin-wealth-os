@@ -52,9 +52,7 @@ export function OfflineConflictDialog({ queryClient }: { queryClient: QueryClien
       }
       if (data.type === MSG_SYNCED) {
         if (data.replayed > 0) {
-          toast.success(
-            `Synced ${data.replayed} queued change${data.replayed === 1 ? "" : "s"}`,
-          );
+          toast.success(`Synced ${data.replayed} queued change${data.replayed === 1 ? "" : "s"}`);
         }
         queryClient.invalidateQueries();
       }

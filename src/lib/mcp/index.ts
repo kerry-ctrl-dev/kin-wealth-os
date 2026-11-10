@@ -6,7 +6,7 @@ import portfolioSummary from "./tools/portfolio-summary";
 import recordExpense from "./tools/record-expense";
 import recordIncome from "./tools/record-income";
 
-const projectRef = import.meta.env['VITE_SUPABASE_PROJECT_ID'] ?? "project-ref-unset";
+const projectRef = import.meta.env["VITE_SUPABASE_PROJECT_ID"] ?? "project-ref-unset";
 
 export default defineMcp({
   name: "malingu",

@@ -116,7 +116,10 @@ function openDb(): Promise<IDBDatabase> {
   });
 }
 
-function tx<T>(mode: IDBTransactionMode, run: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+function tx<T>(
+  mode: IDBTransactionMode,
+  run: (store: IDBObjectStore) => IDBRequest<T>,
+): Promise<T> {
   return openDb().then(
     (db) =>
       new Promise<T>((resolve, reject) => {
@@ -203,8 +206,7 @@ async function enqueue(request: Request): Promise<void> {
     method: request.method,
     headers,
     body,
-    baseline:
-      existing?.baseline ?? (rowId ? await cachedRow(table, rowId) : null),
+    baseline: existing?.baseline ?? (rowId ? await cachedRow(table, rowId) : null),
     resource: table,
     createdAt: existing?.createdAt ?? Date.now(),
     mergedCount: (existing?.mergedCount ?? 0) + 1,
@@ -310,10 +312,7 @@ async function fetchServerRow(record: QueuedWrite): Promise<Record<string, any> 
 }
 
 /** Fields the offline edit touches where the server moved on since the snapshot. */
-function detectConflicts(
-  record: QueuedWrite,
-  server: Record<string, any>,
-): FieldConflict[] {
+function detectConflicts(record: QueuedWrite, server: Record<string, any>): FieldConflict[] {
   const baseline = record.baseline ?? {};
   const local = parseBody(record.body) ?? {};
   const fields = record.method === "DELETE" ? Object.keys(baseline) : Object.keys(local);
@@ -339,7 +338,10 @@ async function replayRecord(record: QueuedWrite): Promise<"sent" | "dropped" | "
 
   // Conflict detection only applies to edits/deletes of an existing row we have a
   // snapshot for. Inserts can't conflict with pre-existing server state.
-  if (record.baseline && (record.method === "PATCH" || record.method === "PUT" || record.method === "DELETE")) {
+  if (
+    record.baseline &&
+    (record.method === "PATCH" || record.method === "PUT" || record.method === "DELETE")
+  ) {
     let server: Record<string, any> | null = null;
     try {
       server = await fetchServerRow(record);
@@ -423,7 +425,10 @@ async function drainQueue(): Promise<void> {
       else remaining += 1;
     }
     if (replayed || dropped || remaining) {
-      const clients = await sw.clients.matchAll({ type: "window", includeUncontrolled: true } as any);
+      const clients = await sw.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      } as any);
       for (const client of clients) {
         client.postMessage({ type: MSG_SYNCED, replayed, dropped, remaining });
       }

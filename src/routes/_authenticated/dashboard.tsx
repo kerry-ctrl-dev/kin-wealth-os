@@ -260,9 +260,7 @@ function Dashboard() {
   // Evaluate configurable alert triggers once data is loaded; write new ones to DB.
   const qcInvalidate = useQueryClient();
   useEffect(() => {
-    if (
-      !assets.data || !goals.data || !expenses.data || !loans.data
-    ) return;
+    if (!assets.data || !goals.data || !expenses.data || !loans.data) return;
     const triggers = evaluateAlerts({
       assets: assets.data,
       goals: goals.data,
@@ -280,10 +278,7 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <SectionHeading
-        title="Overview"
-        sub="Your financial picture, in one place."
-      />
+      <SectionHeading title="Overview" sub="Your financial picture, in one place." />
 
       <div className="bento-grid grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
         <div className="fintech-card relative overflow-hidden p-5 sm:p-7">
@@ -318,8 +313,12 @@ function Dashboard() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-[1.25fr_1fr_1fr]">
             <div className="rounded-2xl border border-[color:var(--glass-border)] bg-background/45 p-4 backdrop-blur-sm">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Net worth</div>
-              <div className="mt-1 metric-value text-3xl font-semibold text-[color:var(--gold)] sm:text-4xl">{fmtKES(nw)}</div>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+                Net worth
+              </div>
+              <div className="mt-1 metric-value text-3xl font-semibold text-[color:var(--gold)] sm:text-4xl">
+                {fmtKES(nw)}
+              </div>
               <div className="mt-1 text-xs text-muted-foreground">Assets minus debt</div>
             </div>
             <OverviewStat
@@ -437,7 +436,9 @@ function Dashboard() {
             >
               <span
                 className="h-2 w-2 rounded-full"
-                style={{ background: compare ? "var(--color-primary)" : "var(--color-muted-foreground)" }}
+                style={{
+                  background: compare ? "var(--color-primary)" : "var(--color-muted-foreground)",
+                }}
               />
               Compare previous {trendRange === "ALL" ? "period" : trendRange}
             </button>
@@ -446,9 +447,7 @@ function Dashboard() {
                 vs previous:{" "}
                 <span
                   className={
-                    prevDelta.vs >= 0
-                      ? "text-[color:var(--success)]"
-                      : "text-[color:var(--danger)]"
+                    prevDelta.vs >= 0 ? "text-[color:var(--success)]" : "text-[color:var(--danger)]"
                   }
                 >
                   {prevDelta.vs >= 0 ? "▲" : "▼"} {fmtPct(Math.abs(prevDelta.vs), 1)}
@@ -466,75 +465,118 @@ function Dashboard() {
                       <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="nwPrev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-muted-foreground)" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="var(--color-muted-foreground)" stopOpacity={0} />
+                      <stop
+                        offset="0%"
+                        stopColor="var(--color-muted-foreground)"
+                        stopOpacity={0.25}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="var(--color-muted-foreground)"
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="d" hide />
                   <YAxis hide domain={["dataMin", "dataMax"]} />
                   <Tooltip
                     cursor={{ stroke: "var(--color-primary)", strokeOpacity: 0.35, strokeWidth: 1 }}
-                    content={((props: { active?: boolean; payload?: Array<{ payload?: { d: string; v: number; p: number | null } }> }) => {
-                      const { active, payload } = props;
-                      if (!active || !payload || !payload.length || !payload[0].payload) return null;
-                      const row = payload[0].payload;
-                      const cur = row.v;
-                      const prev = row.p;
-                      const diff = prev != null ? cur - prev : null;
-                      const pct = prev != null && prev !== 0 ? ((cur - prev) / prev) * 100 : null;
-                      const up = diff != null && diff >= 0;
-                      return (
-                        <div
-                          style={{
-                            background: "var(--color-popover)",
-                            border: "1px solid var(--color-border)",
-                            borderRadius: 12,
-                            padding: "10px 12px",
-                            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
-                            minWidth: 160,
-                          }}
-                        >
-                          <div style={{ color: "var(--color-muted-foreground)", fontSize: 11, marginBottom: 6 }}>
-                            {row.d}
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                            <span style={{ color: "var(--color-muted-foreground)" }}>Current</span>
-                            <span style={{ color: "var(--color-foreground)", fontWeight: 600 }}>{fmtKES(cur)}</span>
-                          </div>
-                          {compare && (
-                            <>
-                              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13, marginTop: 3 }}>
-                                <span style={{ color: "var(--color-muted-foreground)" }}>Previous</span>
-                                <span style={{ color: "var(--color-foreground)", fontWeight: 600 }}>
-                                  {prev == null ? "—" : fmtKES(prev)}
-                                </span>
-                              </div>
-                              {diff != null && (
+                    content={
+                      ((props: {
+                        active?: boolean;
+                        payload?: Array<{ payload?: { d: string; v: number; p: number | null } }>;
+                      }) => {
+                        const { active, payload } = props;
+                        if (!active || !payload || !payload.length || !payload[0].payload)
+                          return null;
+                        const row = payload[0].payload;
+                        const cur = row.v;
+                        const prev = row.p;
+                        const diff = prev != null ? cur - prev : null;
+                        const pct = prev != null && prev !== 0 ? ((cur - prev) / prev) * 100 : null;
+                        const up = diff != null && diff >= 0;
+                        return (
+                          <div
+                            style={{
+                              background: "var(--color-popover)",
+                              border: "1px solid var(--color-border)",
+                              borderRadius: 12,
+                              padding: "10px 12px",
+                              boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+                              minWidth: 160,
+                            }}
+                          >
+                            <div
+                              style={{
+                                color: "var(--color-muted-foreground)",
+                                fontSize: 11,
+                                marginBottom: 6,
+                              }}
+                            >
+                              {row.d}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: 12,
+                                fontSize: 13,
+                              }}
+                            >
+                              <span style={{ color: "var(--color-muted-foreground)" }}>
+                                Current
+                              </span>
+                              <span style={{ color: "var(--color-foreground)", fontWeight: 600 }}>
+                                {fmtKES(cur)}
+                              </span>
+                            </div>
+                            {compare && (
+                              <>
                                 <div
                                   style={{
                                     display: "flex",
                                     justifyContent: "space-between",
                                     gap: 12,
-                                    fontSize: 12,
-                                    marginTop: 6,
-                                    paddingTop: 6,
-                                    borderTop: "1px dashed var(--color-border)",
-                                    color: up ? "var(--success)" : "var(--danger)",
-                                    fontWeight: 600,
+                                    fontSize: 13,
+                                    marginTop: 3,
                                   }}
                                 >
-                                  <span>Δ</span>
-                                  <span>
-                                    {up ? "▲" : "▼"} {fmtKES(Math.abs(diff))}
-                                    {pct != null ? ` (${fmtPct(Math.abs(pct), 1)})` : ""}
+                                  <span style={{ color: "var(--color-muted-foreground)" }}>
+                                    Previous
+                                  </span>
+                                  <span
+                                    style={{ color: "var(--color-foreground)", fontWeight: 600 }}
+                                  >
+                                    {prev == null ? "—" : fmtKES(prev)}
                                   </span>
                                 </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      );
-                    }) as never}
+                                {diff != null && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      gap: 12,
+                                      fontSize: 12,
+                                      marginTop: 6,
+                                      paddingTop: 6,
+                                      borderTop: "1px dashed var(--color-border)",
+                                      color: up ? "var(--success)" : "var(--danger)",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    <span>Δ</span>
+                                    <span>
+                                      {up ? "▲" : "▼"} {fmtKES(Math.abs(diff))}
+                                      {pct != null ? ` (${fmtPct(Math.abs(pct), 1)})` : ""}
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        );
+                      }) as never
+                    }
                   />
                   {compare && (
                     <Area
@@ -668,12 +710,14 @@ function Dashboard() {
             <RiskBadge risk={risk} />
           </div>
           <div className="flex flex-wrap gap-2 mb-4">
-            {([
-              ["ALL", "All"],
-              ["MMF", "MMF"],
-              ["STOCKS", "NSE"],
-              ["REITS", "REITs"],
-            ] as const).map(([key, label]) => (
+            {(
+              [
+                ["ALL", "All"],
+                ["MMF", "MMF"],
+                ["STOCKS", "NSE"],
+                ["REITS", "REITs"],
+              ] as const
+            ).map(([key, label]) => (
               <button
                 key={key}
                 type="button"
@@ -727,7 +771,6 @@ function Dashboard() {
               )}
             </div>
           </div>
-
         </div>
 
         <div className="fintech-card p-6">
@@ -784,7 +827,9 @@ function Dashboard() {
                 <div className="metric-value">{fmtKES(Number(r.amount))}</div>
               </div>
             ))}
-            {recent.length === 0 && <p className="empty-state">Add a payday to unlock allocation.</p>}
+            {recent.length === 0 && (
+              <p className="empty-state">Add a payday to unlock allocation.</p>
+            )}
           </div>
         </div>
 
@@ -917,9 +962,7 @@ function QuickActions() {
     <div className="space-y-3">
       <div>
         <h2 className="text-sm font-semibold tracking-tight">Quick actions</h2>
-        <p className="text-sm text-muted-foreground">
-          Fastest moves first.
-        </p>
+        <p className="text-sm text-muted-foreground">Fastest moves first.</p>
       </div>
       <div className="bento-grid grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {actions.map((a) => (

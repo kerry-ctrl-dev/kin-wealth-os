@@ -81,7 +81,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
 
   // ---- Net Worth breakdown
-  if (y > 700) { doc.addPage(); y = 48; }
+  if (y > 700) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Net Worth", 40, y);
@@ -120,7 +123,11 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 16;
   if (report.allocation.length) {
     const palette: Array<[number, number, number]> = [
-      [59, 130, 246], [16, 185, 129], [245, 158, 11], [139, 92, 246], [236, 72, 153],
+      [59, 130, 246],
+      [16, 185, 129],
+      [245, 158, 11],
+      [139, 92, 246],
+      [236, 72, 153],
     ];
     const barW = W - 80;
     const barH = 18;
@@ -144,13 +151,19 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
       const txt = `${CATEGORY_LABEL[a.category]} ${fmtPct(a.pct)}`;
       doc.text(txt, lx + 14, y);
       lx += doc.getTextWidth(txt) + 32;
-      if (lx > W - 120) { lx = 40; y += 14; }
+      if (lx > W - 120) {
+        lx = 40;
+        y += 14;
+      }
     });
     y += 16;
   }
 
   // ---- Income detail
-  if (y > 680) { doc.addPage(); y = 48; }
+  if (y > 680) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Income This Period", 40, y);
@@ -158,7 +171,11 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     startY: y + 8,
     head: [["Date", "Source", "Amount"]],
     body: report.incomeList.length
-      ? report.incomeList.map((i) => [new Date(i.date).toLocaleDateString(), i.source, fmtKES(i.amount)])
+      ? report.incomeList.map((i) => [
+          new Date(i.date).toLocaleDateString(),
+          i.source,
+          fmtKES(i.amount),
+        ])
       : [["—", "No income recorded", ""]],
     headStyles: { fillColor: [15, 23, 42], textColor: 255 },
     styles: { fontSize: 10, cellPadding: 6 },
@@ -167,7 +184,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Expenses
-  if (y > 680) { doc.addPage(); y = 48; }
+  if (y > 680) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text(`Expenses This Period — ${fmtKES(report.expensesTotal)}`, 40, y);
@@ -175,7 +195,12 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
     startY: y + 8,
     head: [["Date", "Vendor", "Category", "Amount"]],
     body: report.expensesList.length
-      ? report.expensesList.map((e) => [new Date(e.date).toLocaleDateString(), e.vendor, e.category, fmtKES(e.amount)])
+      ? report.expensesList.map((e) => [
+          new Date(e.date).toLocaleDateString(),
+          e.vendor,
+          e.category,
+          fmtKES(e.amount),
+        ])
       : [["—", "No expenses recorded", "", ""]],
     headStyles: { fillColor: [15, 23, 42], textColor: 255 },
     styles: { fontSize: 10, cellPadding: 6 },
@@ -184,7 +209,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Budgets
-  if (y > 680) { doc.addPage(); y = 48; }
+  if (y > 680) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Budgets", 40, y);
@@ -201,7 +229,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Upcoming calendar
-  if (y > 680) { doc.addPage(); y = 48; }
+  if (y > 680) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Upcoming (next 14 days)", 40, y);
@@ -218,7 +249,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Alerts
-  if (y > 680) { doc.addPage(); y = 48; }
+  if (y > 680) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Recent Alerts", 40, y);
@@ -236,7 +270,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 20;
 
   // ---- Goals
-  if (y > 720) { doc.addPage(); y = 48; }
+  if (y > 720) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Goals Progress", 40, y);
@@ -253,7 +290,10 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24;
 
   // ---- Insights
-  if (y > 700) { doc.addPage(); y = 48; }
+  if (y > 700) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Insights", 40, y);
@@ -262,13 +302,19 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   y += 16;
   report.insights.forEach((ins) => {
     const lines = doc.splitTextToSize(`• ${ins}`, W - 80);
-    if (y + lines.length * 14 > 800) { doc.addPage(); y = 48; }
+    if (y + lines.length * 14 > 800) {
+      doc.addPage();
+      y = 48;
+    }
     doc.text(lines, 40, y);
     y += lines.length * 14 + 4;
   });
 
   // ---- Financial Advice
-  if (y > 700) { doc.addPage(); y = 48; }
+  if (y > 700) {
+    doc.addPage();
+    y = 48;
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Financial Advice", 40, y);
@@ -277,13 +323,19 @@ export function exportReportPDF(report: Report, opts?: { profile?: string }) {
   doc.setFontSize(10);
   report.advice.forEach((ins) => {
     const lines = doc.splitTextToSize(`• ${ins}`, W - 80);
-    if (y + lines.length * 14 > 800) { doc.addPage(); y = 48; }
+    if (y + lines.length * 14 > 800) {
+      doc.addPage();
+      y = 48;
+    }
     doc.text(lines, 40, y);
     y += lines.length * 14 + 4;
   });
 
   // ---- Closing remark on credit
-  if (y > 700) { doc.addPage(); y = 48; }
+  if (y > 700) {
+    doc.addPage();
+    y = 48;
+  }
   y += 8;
   doc.setDrawColor(226, 232, 240);
   doc.setFillColor(15, 23, 42);

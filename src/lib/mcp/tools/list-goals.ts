@@ -5,7 +5,8 @@ import { failed, json, unauthenticated } from "./_shared";
 export default defineTool({
   name: "list_goals",
   title: "List goals",
-  description: "List the signed-in user's savings/investment goals with target, current progress and deadline (KES).",
+  description:
+    "List the signed-in user's savings/investment goals with target, current progress and deadline (KES).",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {

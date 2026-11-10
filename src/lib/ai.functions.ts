@@ -55,7 +55,8 @@ ${data.context ?? "(no context provided — ask the user what they'd like to foc
       }),
     });
     if (res.status === 429) return { error: "Rate limit reached. Please wait a moment." };
-    if (res.status === 402) return { error: "AI credits exhausted. Please add credits in workspace settings." };
+    if (res.status === 402)
+      return { error: "AI credits exhausted. Please add credits in workspace settings." };
     if (!res.ok) {
       const t = await res.text().catch(() => "");
       console.error("AI gateway error:", res.status, t);

@@ -13,26 +13,29 @@ export function incomeBalances(
   expenses: Expense[],
 ): Map<string, { amount: number; used: number; remaining: number }> {
   const out = new Map<string, { amount: number; used: number; remaining: number }>();
-  for (const i of income) out.set(i.id, { amount: Number(i.amount), used: 0, remaining: Number(i.amount) });
+  for (const i of income)
+    out.set(i.id, { amount: Number(i.amount), used: 0, remaining: Number(i.amount) });
   for (const a of assets) {
     if (!a.source_income_id) continue;
     const row = out.get(a.source_income_id);
-    if (row) { row.used += Number(a.value); row.remaining = row.amount - row.used; }
+    if (row) {
+      row.used += Number(a.value);
+      row.remaining = row.amount - row.used;
+    }
   }
   for (const e of expenses) {
     if (!e.source_income_id) continue;
     const row = out.get(e.source_income_id);
-    if (row) { row.used += Number(e.amount); row.remaining = row.amount - row.used; }
+    if (row) {
+      row.used += Number(e.amount);
+      row.remaining = row.amount - row.used;
+    }
   }
   return out;
 }
 
 /** Total cash available across all income entries (sum of remaining). */
-export function totalAvailableCash(
-  income: Income[],
-  assets: Asset[],
-  expenses: Expense[],
-): number {
+export function totalAvailableCash(income: Income[], assets: Asset[], expenses: Expense[]): number {
   const map = incomeBalances(income, assets, expenses);
   let sum = 0;
   for (const v of map.values()) sum += Math.max(0, v.remaining);
@@ -47,8 +50,11 @@ export function loanOutstanding(l: Loan): number {
   const ref = Math.min(Date.now(), l.due_date ? new Date(l.due_date).getTime() : Date.now());
   const years = Math.max(0, (ref - start) / (365.25 * 86400_000));
   // interest_period tells us what "rate" means per period. Convert to annual.
-  const period = ((l as unknown as { interest_period?: string }).interest_period ?? "YEARLY").toUpperCase();
-  const periodsPerYear = period === "DAILY" ? 365 : period === "WEEKLY" ? 52 : period === "MONTHLY" ? 12 : 1;
+  const period = (
+    (l as unknown as { interest_period?: string }).interest_period ?? "YEARLY"
+  ).toUpperCase();
+  const periodsPerYear =
+    period === "DAILY" ? 365 : period === "WEEKLY" ? 52 : period === "MONTHLY" ? 12 : 1;
   const annualRate = rate * periodsPerYear;
   const accrued = principal * (1 + annualRate * years);
   return Math.max(0, accrued - Number(l.amount_repaid || 0));
@@ -72,11 +78,7 @@ export function personalAssetsValue(items: PersonalAsset[]): number {
 }
 
 /** Net worth = investments + personal assets + receivables - outstanding debt. */
-export function netWorth(
-  assets: Asset[],
-  personalAssets: PersonalAsset[],
-  loans: Loan[],
-): number {
+export function netWorth(assets: Asset[], personalAssets: PersonalAsset[], loans: Loan[]): number {
   const inv = assets.reduce((s, a) => s + Number(a.value), 0);
   const pa = personalAssetsValue(personalAssets);
   const debt = totalLoansOutstanding(loans);

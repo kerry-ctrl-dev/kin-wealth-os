@@ -55,10 +55,30 @@ export interface AllocationRow {
 
 export function allocateIncome(amount: number): AllocationRow[] {
   return [
-    { category: "MMF", name: DEFAULT_TICKERS.MMF, value: +(amount * ALLOCATION.MMF).toFixed(2), liquidity: LIQUIDITY_SCORE.MMF },
-    { category: "STOCKS", name: DEFAULT_TICKERS.STOCKS, value: +(amount * ALLOCATION.STOCKS).toFixed(2), liquidity: LIQUIDITY_SCORE.STOCKS },
-    { category: "REITS", name: DEFAULT_TICKERS.REITS, value: +(amount * ALLOCATION.REITS).toFixed(2), liquidity: LIQUIDITY_SCORE.REITS },
-    { category: "CASH", name: DEFAULT_TICKERS.CASH, value: +(amount * ALLOCATION.CASH).toFixed(2), liquidity: LIQUIDITY_SCORE.CASH },
+    {
+      category: "MMF",
+      name: DEFAULT_TICKERS.MMF,
+      value: +(amount * ALLOCATION.MMF).toFixed(2),
+      liquidity: LIQUIDITY_SCORE.MMF,
+    },
+    {
+      category: "STOCKS",
+      name: DEFAULT_TICKERS.STOCKS,
+      value: +(amount * ALLOCATION.STOCKS).toFixed(2),
+      liquidity: LIQUIDITY_SCORE.STOCKS,
+    },
+    {
+      category: "REITS",
+      name: DEFAULT_TICKERS.REITS,
+      value: +(amount * ALLOCATION.REITS).toFixed(2),
+      liquidity: LIQUIDITY_SCORE.REITS,
+    },
+    {
+      category: "CASH",
+      name: DEFAULT_TICKERS.CASH,
+      value: +(amount * ALLOCATION.CASH).toFixed(2),
+      liquidity: LIQUIDITY_SCORE.CASH,
+    },
   ];
 }
 
@@ -71,12 +91,20 @@ export function totalIncome(income: Income[]): number {
 }
 
 export function byCategory(assets: Asset[]): Record<AssetCategory, number> {
-  const out: Record<AssetCategory, number> = { MMF: 0, STOCKS: 0, REITS: 0, CASH: 0, REAL_ESTATE: 0 };
+  const out: Record<AssetCategory, number> = {
+    MMF: 0,
+    STOCKS: 0,
+    REITS: 0,
+    CASH: 0,
+    REAL_ESTATE: 0,
+  };
   for (const a of assets) out[a.category as AssetCategory] += Number(a.value);
   return out;
 }
 
-export function allocationPercents(assets: Asset[]): Array<{ category: AssetCategory; value: number; pct: number }> {
+export function allocationPercents(
+  assets: Asset[],
+): Array<{ category: AssetCategory; value: number; pct: number }> {
   const total = totalValue(assets) || 1;
   const cats = byCategory(assets);
   return (Object.keys(cats) as AssetCategory[])
@@ -126,11 +154,31 @@ export function generateAlerts(assets: Asset[], income: Income[]): ComputedAlert
   const stocksPct = byCategory(assets).STOCKS / total;
 
   if (assets.length === 0) return out;
-  if (liq < 0.3) out.push({ type: "LIQUIDITY", severity: "DANGER", message: `Liquidity is critically low (${(liq * 100).toFixed(1)}%). Build a cash buffer.` });
-  else if (liq < 0.5) out.push({ type: "LIQUIDITY", severity: "WARNING", message: `Liquidity below comfort zone (${(liq * 100).toFixed(1)}%).` });
+  if (liq < 0.3)
+    out.push({
+      type: "LIQUIDITY",
+      severity: "DANGER",
+      message: `Liquidity is critically low (${(liq * 100).toFixed(1)}%). Build a cash buffer.`,
+    });
+  else if (liq < 0.5)
+    out.push({
+      type: "LIQUIDITY",
+      severity: "WARNING",
+      message: `Liquidity below comfort zone (${(liq * 100).toFixed(1)}%).`,
+    });
 
-  if (roi < 0) out.push({ type: "PERFORMANCE", severity: "WARNING", message: `Portfolio ROI is negative (${roi.toFixed(2)}%). Review allocation.` });
-  if (stocksPct > 0.6) out.push({ type: "VOLATILITY", severity: "WARNING", message: `Stock exposure is ${(stocksPct * 100).toFixed(0)}% — high volatility risk.` });
+  if (roi < 0)
+    out.push({
+      type: "PERFORMANCE",
+      severity: "WARNING",
+      message: `Portfolio ROI is negative (${roi.toFixed(2)}%). Review allocation.`,
+    });
+  if (stocksPct > 0.6)
+    out.push({
+      type: "VOLATILITY",
+      severity: "WARNING",
+      message: `Stock exposure is ${(stocksPct * 100).toFixed(0)}% — high volatility risk.`,
+    });
   return out;
 }
 
@@ -148,6 +196,10 @@ export function monthlyNeeded(goal: Goal): number {
 }
 
 export const fmtKES = (n: number) =>
-  new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 0 }).format(n || 0);
+  new Intl.NumberFormat("en-KE", {
+    style: "currency",
+    currency: "KES",
+    maximumFractionDigits: 0,
+  }).format(n || 0);
 
 export const fmtPct = (n: number, digits = 1) => `${(n || 0).toFixed(digits)}%`;

@@ -41,7 +41,13 @@ describe("design tokens (glass UI contract)", () => {
   });
 
   it("defines glass and clay tokens for both light and dark themes", () => {
-    for (const token of ["--glass-bg", "--glass-border", "--glow-ambient", "--clay-bg", "--clay-shadow"]) {
+    for (const token of [
+      "--glass-bg",
+      "--glass-border",
+      "--glow-ambient",
+      "--clay-bg",
+      "--clay-shadow",
+    ]) {
       expect(styles.split(token).length - 1).toBeGreaterThanOrEqual(2);
     }
   });
@@ -80,10 +86,9 @@ describe("bento layout coverage", () => {
 
   it("puts net worth before secondary dashboard metrics", () => {
     const dashboard = read(`${ROUTES_DIR}/dashboard.tsx`);
-    expect(dashboard.indexOf(">Net worth</div>")).toBeGreaterThanOrEqual(0);
-    expect(dashboard.indexOf(">Net worth</div>")).toBeLessThan(
-      dashboard.indexOf('label="Available cash"'),
-    );
+    const netWorthAt = dashboard.search(/>\s*Net worth\s*<\/div>/);
+    expect(netWorthAt).toBeGreaterThanOrEqual(0);
+    expect(netWorthAt).toBeLessThan(dashboard.indexOf('label="Available cash"'));
     expect(dashboard).toContain("text-[color:var(--gold)] sm:text-4xl");
     expect(dashboard).not.toContain("Command Center");
   });

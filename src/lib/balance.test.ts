@@ -9,8 +9,10 @@ import {
 } from "./balance";
 
 const income = (id: string, amount: number) => ({ id, amount }) as never;
-const asset = (value: number, source_income_id: string | null = null) => ({ value, source_income_id }) as never;
-const expense = (amount: number, source_income_id: string | null = null) => ({ amount, source_income_id }) as never;
+const asset = (value: number, source_income_id: string | null = null) =>
+  ({ value, source_income_id }) as never;
+const expense = (amount: number, source_income_id: string | null = null) =>
+  ({ amount, source_income_id }) as never;
 const loan = (overrides: Record<string, unknown> = {}) =>
   ({
     principal: 1_000,
@@ -26,9 +28,19 @@ const loan = (overrides: Record<string, unknown> = {}) =>
 
 describe("balance calculations", () => {
   it("rolls investments and expenses into each income balance", () => {
-    const balances = incomeBalances([income("salary", 1_000)], [asset(300, "salary")], [expense(250, "salary")]);
+    const balances = incomeBalances(
+      [income("salary", 1_000)],
+      [asset(300, "salary")],
+      [expense(250, "salary")],
+    );
     expect(balances.get("salary")).toEqual({ amount: 1_000, used: 550, remaining: 450 });
-    expect(totalAvailableCash([income("salary", 1_000)], [asset(300, "salary")], [expense(250, "salary")])).toBe(450);
+    expect(
+      totalAvailableCash(
+        [income("salary", 1_000)],
+        [asset(300, "salary")],
+        [expense(250, "salary")],
+      ),
+    ).toBe(450);
   });
 
   it("never counts overspent income as available cash", () => {
@@ -46,7 +58,11 @@ describe("balance calculations", () => {
   it("keeps borrowings and receivables separate in net worth", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2025-01-01T00:00:00.000Z"));
-    const loans = [loan({ principal: 500 }), loan({ principal: 300, direction: "LENT" }), loan({ principal: 900, status: "REPAID" })];
+    const loans = [
+      loan({ principal: 500 }),
+      loan({ principal: 300, direction: "LENT" }),
+      loan({ principal: 900, status: "REPAID" }),
+    ];
     expect(totalLoansOutstanding(loans)).toBe(500);
     expect(totalLoansReceivable(loans)).toBe(300);
     expect(netWorth([asset(1_000)], [{ value: 200 } as never], loans)).toBe(1_000);

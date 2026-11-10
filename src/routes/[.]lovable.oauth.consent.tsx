@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
 
 type OAuthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: AuthorizationDetails | null; error: Error | null }>;
-  approveAuthorization: (id: string) => Promise<{ data: RedirectResult | null; error: Error | null }>;
+  getAuthorizationDetails: (
+    id: string,
+  ) => Promise<{ data: AuthorizationDetails | null; error: Error | null }>;
+  approveAuthorization: (
+    id: string,
+  ) => Promise<{ data: RedirectResult | null; error: Error | null }>;
   denyAuthorization: (id: string) => Promise<{ data: RedirectResult | null; error: Error | null }>;
 };
 type RedirectResult = { redirect_url?: string; redirect_to?: string };
@@ -84,8 +88,8 @@ function Consent() {
         </div>
         <h1 className="text-xl font-semibold">Connect {clientName} to your account</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {clientName} will be able to read your MalinGu portfolio, expenses and goals, and add income or expense
-          entries — acting as you. You can revoke access at any time.
+          {clientName} will be able to read your MalinGu portfolio, expenses and goals, and add
+          income or expense entries — acting as you. You can revoke access at any time.
         </p>
         {error && (
           <p role="alert" className="mt-4 text-sm text-destructive">
@@ -96,7 +100,12 @@ function Consent() {
           <Button disabled={busy} onClick={() => decide(true)} className="flex-1">
             Approve
           </Button>
-          <Button variant="outline" disabled={busy} onClick={() => decide(false)} className="flex-1">
+          <Button
+            variant="outline"
+            disabled={busy}
+            onClick={() => decide(false)}
+            className="flex-1"
+          >
             Deny
           </Button>
         </div>

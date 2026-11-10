@@ -7,7 +7,11 @@ export function AllocationDonut({
   data: Array<{ category: AssetCategory; value: number; pct: number }>;
 }) {
   if (data.length === 0) {
-    return <div className="text-sm text-muted-foreground">No assets yet — add income to bootstrap allocation.</div>;
+    return (
+      <div className="text-sm text-muted-foreground">
+        No assets yet — add income to bootstrap allocation.
+      </div>
+    );
   }
   return (
     <div className="h-64 w-full">
@@ -33,7 +37,10 @@ export function AllocationDonut({
               borderRadius: 12,
               color: "var(--color-foreground)",
             }}
-            formatter={(v: number, _n, p) => [fmtKES(Number(v)), CATEGORY_LABEL[(p as { payload: { category: AssetCategory } }).payload.category]]}
+            formatter={(v: number, _n, p) => [
+              fmtKES(Number(v)),
+              CATEGORY_LABEL[(p as { payload: { category: AssetCategory } }).payload.category],
+            ]}
           />
         </PieChart>
       </ResponsiveContainer>

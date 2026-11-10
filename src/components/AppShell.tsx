@@ -2,11 +2,7 @@ import type { ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { AssistantWidget } from "@/components/AssistantWidget";
 import { AppSidebar } from "@/components/AppSidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const pageTitles = [
   ["/dashboard", "Dashboard"],
@@ -29,8 +25,10 @@ const pageTitles = [
 ] as const;
 
 function getPageTitle(pathname: string) {
-  return pageTitles.find(([path]) => pathname === path || pathname.startsWith(`${path}/`))?.[1]
-    ?? "Your wealth";
+  return (
+    pageTitles.find(([path]) => pathname === path || pathname.startsWith(`${path}/`))?.[1] ??
+    "Your wealth"
+  );
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -46,7 +44,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="truncate text-[10px] font-medium uppercase text-muted-foreground">
               MalinGu · Personal Wealth
             </p>
-            <h1 className="truncate text-base font-semibold sm:text-lg">{getPageTitle(pathname)}</h1>
+            <h1 className="truncate text-base font-semibold sm:text-lg">
+              {getPageTitle(pathname)}
+            </h1>
           </div>
           <div className="ml-auto hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
             <span className="h-2 w-2 rounded-full bg-[color:var(--emerald)]" />

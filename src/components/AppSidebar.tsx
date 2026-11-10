@@ -135,24 +135,12 @@ export function AppSidebar() {
   }
 
   const primaryItems = useMemo(() => {
-    const urls = new Set([
-      "/dashboard",
-      "/charts",
-      "/portfolio",
-      "/income",
-      "/expenses",
-      "/goals",
-    ]);
+    const urls = new Set(["/dashboard", "/charts", "/portfolio", "/income", "/expenses", "/goals"]);
     return sections.flatMap((section) => section.items).filter((item) => urls.has(item.url));
   }, []);
 
   return (
-    <Sidebar
-      collapsible="icon"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-
+    <Sidebar collapsible="icon" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <SidebarHeader className="border-b border-sidebar-border/80">
         <div className="flex items-center gap-3 px-3 py-3">
           <img
@@ -195,7 +183,10 @@ export function AppSidebar() {
               </div>
               <div className="mt-3 flex items-center justify-between gap-2 border-t border-sidebar-border/70 pt-3">
                 <span className="truncate text-xs text-muted-foreground">{memberLabel}</span>
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[color:var(--emerald)]" aria-label="Workspace active" />
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full bg-[color:var(--emerald)]"
+                  aria-label="Workspace active"
+                />
               </div>
             </div>
           </div>

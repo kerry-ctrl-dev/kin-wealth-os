@@ -10,8 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { loansQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtKES } from "@/lib/finance";
@@ -58,17 +70,25 @@ function LoansPage() {
   const outstanding = totalLoansOutstanding(rows);
   const receivable = totalLoansReceivable(rows);
   const active = rows.filter((l) => l.status === "ACTIVE").length;
-  const overdue = rows.filter((l) => l.due_date && new Date(l.due_date) < new Date() && l.status !== "REPAID").length;
+  const overdue = rows.filter(
+    (l) => l.due_date && new Date(l.due_date) < new Date() && l.status !== "REPAID",
+  ).length;
 
   async function setStatus(id: string, status: (typeof STATUSES)[number]) {
     const { error } = await supabase.from("loans").update({ status }).eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success("Updated"); qc.invalidateQueries({ queryKey: ["loans"] }); }
+    else {
+      toast.success("Updated");
+      qc.invalidateQueries({ queryKey: ["loans"] });
+    }
   }
   async function del(id: string) {
     const { error } = await supabase.from("loans").delete().eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success("Removed"); qc.invalidateQueries({ queryKey: ["loans"] }); }
+    else {
+      toast.success("Removed");
+      qc.invalidateQueries({ queryKey: ["loans"] });
+    }
   }
 
   const lentRows = rows.filter((l) => l.direction === "LENT");
@@ -80,16 +100,36 @@ function LoansPage() {
       <div className="fintech-card p-4 mb-6 flex items-center justify-between">
         <div>
           <div className="text-sm font-medium">Loan tracking</div>
-          <div className="text-xs text-muted-foreground">Toggle off to hide debt from your net-worth display.</div>
+          <div className="text-xs text-muted-foreground">
+            Toggle off to hide debt from your net-worth display.
+          </div>
         </div>
         <Switch checked={enabled} onCheckedChange={setEnabled} />
       </div>
 
       <div className="bento-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <MetricCard label="You owe (debt)" value={fmtKES(outstanding)} tone={outstanding > 0 ? "warning" : "success"} icon={<ArrowDownLeft className="h-4 w-4" />} />
-        <MetricCard label="Owed to you" value={fmtKES(receivable)} tone={receivable > 0 ? "success" : undefined} icon={<ArrowUpRight className="h-4 w-4" />} />
-        <MetricCard label="Overdue" value={String(overdue)} tone={overdue > 0 ? "danger" : undefined} />
-        <MetricCard label="Active records" value={String(active)} icon={<Coins className="h-4 w-4" />} />
+        <MetricCard
+          label="You owe (debt)"
+          value={fmtKES(outstanding)}
+          tone={outstanding > 0 ? "warning" : "success"}
+          icon={<ArrowDownLeft className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Owed to you"
+          value={fmtKES(receivable)}
+          tone={receivable > 0 ? "success" : undefined}
+          icon={<ArrowUpRight className="h-4 w-4" />}
+        />
+        <MetricCard
+          label="Overdue"
+          value={String(overdue)}
+          tone={overdue > 0 ? "danger" : undefined}
+        />
+        <MetricCard
+          label="Active records"
+          value={String(active)}
+          icon={<Coins className="h-4 w-4" />}
+        />
       </div>
 
       <div className="fintech-card overflow-hidden">
@@ -112,27 +152,75 @@ function LoansPage() {
             {rows.map((l) => (
               <tr key={l.id} className="hover:bg-secondary/30">
                 <td className="p-3">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${l.direction === "LENT" ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"}`}>
-                    {l.direction === "LENT" ? <><ArrowUpRight className="h-3 w-3" /> Lent</> : <><ArrowDownLeft className="h-3 w-3" /> Borrowed</>}
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${l.direction === "LENT" ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"}`}
+                  >
+                    {l.direction === "LENT" ? (
+                      <>
+                        <ArrowUpRight className="h-3 w-3" /> Lent
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDownLeft className="h-3 w-3" /> Borrowed
+                      </>
+                    )}
                   </span>
                 </td>
-                <td className="p-3 font-medium">{l.lender}<div className="text-[10px] text-muted-foreground">{l.direction === "LENT" ? "Given out" : "Borrowed"} {new Date(l.borrowed_at).toLocaleDateString()}</div></td>
+                <td className="p-3 font-medium">
+                  {l.lender}
+                  <div className="text-[10px] text-muted-foreground">
+                    {l.direction === "LENT" ? "Given out" : "Borrowed"}{" "}
+                    {new Date(l.borrowed_at).toLocaleDateString()}
+                  </div>
+                </td>
                 <td className="p-3 text-right metric-value">{fmtKES(Number(l.principal))}</td>
                 <td className="p-3 text-right">{Number(l.interest_rate)}%</td>
-                <td className="p-3 text-xs text-muted-foreground">{PERIOD_LABEL[(((l as unknown as { interest_period?: string }).interest_period ?? "MONTHLY") as (typeof PERIODS)[number])]}</td>
+                <td className="p-3 text-xs text-muted-foreground">
+                  {
+                    PERIOD_LABEL[
+                      ((l as unknown as { interest_period?: string }).interest_period ??
+                        "MONTHLY") as (typeof PERIODS)[number]
+                    ]
+                  }
+                </td>
                 <td className="p-3 text-right metric-value">{fmtKES(loanOutstanding(l))}</td>
-                <td className="p-3 text-xs">{l.due_date ? new Date(l.due_date).toLocaleDateString() : "—"}</td>
-                <td className="p-3 text-xs text-muted-foreground max-w-[180px] truncate">{l.purpose ?? "—"}</td>
+                <td className="p-3 text-xs">
+                  {l.due_date ? new Date(l.due_date).toLocaleDateString() : "—"}
+                </td>
+                <td className="p-3 text-xs text-muted-foreground max-w-[180px] truncate">
+                  {l.purpose ?? "—"}
+                </td>
                 <td className="p-3">
-                  <Select value={l.status} onValueChange={(v) => setStatus(l.id, v as (typeof STATUSES)[number])}>
-                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  <Select
+                    value={l.status}
+                    onValueChange={(v) => setStatus(l.id, v as (typeof STATUSES)[number])}
+                  >
+                    <SelectTrigger className="h-7 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </td>
-                <td className="p-3 text-right"><Button size="icon" variant="ghost" onClick={() => del(l.id)}><Trash2 className="h-4 w-4" /></Button></td>
+                <td className="p-3 text-right">
+                  <Button size="icon" variant="ghost" onClick={() => del(l.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </td>
               </tr>
             ))}
-            {rows.length === 0 && <tr><td colSpan={10} className="p-6 text-center text-muted-foreground">No loans recorded.</td></tr>}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={10} className="p-6 text-center text-muted-foreground">
+                  No loans recorded.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -154,7 +242,9 @@ function LoansPage() {
                       <div className="font-semibold">{l.lender}</div>
                       <div className="text-xs text-muted-foreground">
                         Lent {fmtKES(Number(l.principal))} · Outstanding{" "}
-                        <span className="text-foreground metric-value">{fmtKES(loanOutstanding(l))}</span>
+                        <span className="text-foreground metric-value">
+                          {fmtKES(loanOutstanding(l))}
+                        </span>
                       </div>
                       <div className="text-[11px] text-muted-foreground mt-1">
                         {phone ? `📞 ${phone}` : "No phone"} {email ? ` · ✉️ ${email}` : ""}
@@ -179,12 +269,19 @@ function AddDialog() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     direction: "BORROWED" as "BORROWED" | "LENT",
-    lender: "", principal: "", interest_rate: "0",
+    lender: "",
+    principal: "",
+    interest_rate: "0",
     interest_period: "MONTHLY" as (typeof PERIODS)[number],
     borrowed_at: new Date().toISOString().slice(0, 10),
-    due_date: "", purpose: "", notes: "",
-    contact_phone: "", contact_email: "", contact_alt: "",
-    payment_instructions: "", reminder_message: "",
+    due_date: "",
+    purpose: "",
+    notes: "",
+    contact_phone: "",
+    contact_email: "",
+    contact_alt: "",
+    payment_instructions: "",
+    reminder_message: "",
   });
   const add = useMutation({
     mutationFn: async () => {
@@ -206,7 +303,8 @@ function AddDialog() {
         contact_email: parsed.data.contact_email || null,
         contact_alt: parsed.data.contact_alt || null,
         payment_instructions: parsed.data.payment_instructions || null,
-        reminder_message: (parsed.data.reminder_message || defaultReminderMessage(parsed.data.lender)),
+        reminder_message:
+          parsed.data.reminder_message || defaultReminderMessage(parsed.data.lender),
       });
       if (error) throw error;
     },
@@ -214,20 +312,52 @@ function AddDialog() {
       toast.success("Recorded");
       qc.invalidateQueries({ queryKey: ["loans"] });
       setOpen(false);
-      setForm({ direction: "BORROWED", lender: "", principal: "", interest_rate: "0", interest_period: "MONTHLY", borrowed_at: new Date().toISOString().slice(0, 10), due_date: "", purpose: "", notes: "", contact_phone: "", contact_email: "", contact_alt: "", payment_instructions: "", reminder_message: "" });
+      setForm({
+        direction: "BORROWED",
+        lender: "",
+        principal: "",
+        interest_rate: "0",
+        interest_period: "MONTHLY",
+        borrowed_at: new Date().toISOString().slice(0, 10),
+        due_date: "",
+        purpose: "",
+        notes: "",
+        contact_phone: "",
+        contact_email: "",
+        contact_alt: "",
+        payment_instructions: "",
+        reminder_message: "",
+      });
     },
     onError: (e: Error) => toast.error(e.message),
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add loan</Button></DialogTrigger>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="h-4 w-4" /> Add loan
+        </Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); add.mutate(); }}>
+        <DialogHeader>
+          <DialogTitle>New loan</DialogTitle>
+        </DialogHeader>
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            add.mutate();
+          }}
+        >
           <div>
             <Label>Direction</Label>
-            <Select value={form.direction} onValueChange={(v) => setForm({ ...form, direction: v as "BORROWED" | "LENT" })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.direction}
+              onValueChange={(v) => setForm({ ...form, direction: v as "BORROWED" | "LENT" })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="BORROWED">I borrowed (someone lent me money)</SelectItem>
                 <SelectItem value="LENT">I lent (someone owes me money)</SelectItem>
@@ -235,40 +365,151 @@ function AddDialog() {
             </Select>
           </div>
           <div className="bento-grid grid grid-cols-2 gap-3">
-            <div><Label>{form.direction === "LENT" ? "Borrower (who owes you)" : "Lender (who you owe)"}</Label><Input value={form.lender} onChange={(e) => setForm({ ...form, lender: e.target.value })} placeholder={form.direction === "LENT" ? "John D, Mary…" : "KCB, M-Shwari, John D…"} /></div>
-            <div><Label>Amount (KES)</Label><Input type="number" min={1} step="0.01" value={form.principal} onChange={(e) => setForm({ ...form, principal: e.target.value })} /></div>
-            <div><Label>Interest rate (%)</Label><Input type="number" min={0} step="0.01" value={form.interest_rate} onChange={(e) => setForm({ ...form, interest_rate: e.target.value })} /></div>
+            <div>
+              <Label>
+                {form.direction === "LENT" ? "Borrower (who owes you)" : "Lender (who you owe)"}
+              </Label>
+              <Input
+                value={form.lender}
+                onChange={(e) => setForm({ ...form, lender: e.target.value })}
+                placeholder={form.direction === "LENT" ? "John D, Mary…" : "KCB, M-Shwari, John D…"}
+              />
+            </div>
+            <div>
+              <Label>Amount (KES)</Label>
+              <Input
+                type="number"
+                min={1}
+                step="0.01"
+                value={form.principal}
+                onChange={(e) => setForm({ ...form, principal: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Interest rate (%)</Label>
+              <Input
+                type="number"
+                min={0}
+                step="0.01"
+                value={form.interest_rate}
+                onChange={(e) => setForm({ ...form, interest_rate: e.target.value })}
+              />
+            </div>
             <div>
               <Label>Interest period</Label>
-              <Select value={form.interest_period} onValueChange={(v) => setForm({ ...form, interest_period: v as (typeof PERIODS)[number] })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PERIODS.map((p) => <SelectItem key={p} value={p}>{p.charAt(0) + p.slice(1).toLowerCase()} ({PERIOD_LABEL[p]})</SelectItem>)}</SelectContent>
+              <Select
+                value={form.interest_period}
+                onValueChange={(v) =>
+                  setForm({ ...form, interest_period: v as (typeof PERIODS)[number] })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERIODS.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {p.charAt(0) + p.slice(1).toLowerCase()} ({PERIOD_LABEL[p]})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
-            <div><Label>{form.direction === "LENT" ? "Lent on" : "Borrowed on"}</Label><Input type="date" value={form.borrowed_at} onChange={(e) => setForm({ ...form, borrowed_at: e.target.value })} /></div>
-            <div><Label>Deadline</Label><Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} /></div>
+            <div>
+              <Label>{form.direction === "LENT" ? "Lent on" : "Borrowed on"}</Label>
+              <Input
+                type="date"
+                value={form.borrowed_at}
+                onChange={(e) => setForm({ ...form, borrowed_at: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Deadline</Label>
+              <Input
+                type="date"
+                value={form.due_date}
+                onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+              />
+            </div>
           </div>
           {form.direction === "LENT" && (
             <div className="rounded-lg border border-border bg-secondary/20 p-3 space-y-3">
-              <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Loanee contact & payment (for reports)</div>
+              <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Loanee contact & payment (for reports)
+              </div>
               <div className="bento-grid grid grid-cols-2 gap-3">
-                <div><Label>Phone number</Label><Input value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} placeholder="+254 7…" /></div>
-                <div><Label>Email</Label><Input type="email" value={form.contact_email} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} placeholder="loanee@example.com" /></div>
-                <div className="col-span-2"><Label>Alternative contact</Label><Input value={form.contact_alt} onChange={(e) => setForm({ ...form, contact_alt: e.target.value })} placeholder="Next of kin, WhatsApp, workplace…" /></div>
+                <div>
+                  <Label>Phone number</Label>
+                  <Input
+                    value={form.contact_phone}
+                    onChange={(e) => setForm({ ...form, contact_phone: e.target.value })}
+                    placeholder="+254 7…"
+                  />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    value={form.contact_email}
+                    onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
+                    placeholder="loanee@example.com"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label>Alternative contact</Label>
+                  <Input
+                    value={form.contact_alt}
+                    onChange={(e) => setForm({ ...form, contact_alt: e.target.value })}
+                    placeholder="Next of kin, WhatsApp, workplace…"
+                  />
+                </div>
               </div>
               <div>
                 <Label>Your payment details (how they should pay you)</Label>
-                <Textarea rows={2} value={form.payment_instructions} onChange={(e) => setForm({ ...form, payment_instructions: e.target.value })} placeholder="M-Pesa: 07XX XXX XXX (Name)&#10;Bank: KCB · 1234567890 · Account Name" />
+                <Textarea
+                  rows={2}
+                  value={form.payment_instructions}
+                  onChange={(e) => setForm({ ...form, payment_instructions: e.target.value })}
+                  placeholder="M-Pesa: 07XX XXX XXX (Name)&#10;Bank: KCB · 1234567890 · Account Name"
+                />
               </div>
               <div>
                 <Label>Kind message to the loanee</Label>
-                <Textarea rows={3} value={form.reminder_message} onChange={(e) => setForm({ ...form, reminder_message: e.target.value })} placeholder={defaultReminderMessage(form.lender || "friend")} />
+                <Textarea
+                  rows={3}
+                  value={form.reminder_message}
+                  onChange={(e) => setForm({ ...form, reminder_message: e.target.value })}
+                  placeholder={defaultReminderMessage(form.lender || "friend")}
+                />
               </div>
             </div>
           )}
-          <div><Label>{form.direction === "LENT" ? "What is the money for?" : "How will this money be used?"}</Label><Textarea rows={2} value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} placeholder="Rent, school fees, business stock…" /></div>
-          <div><Label>Notes</Label><Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-          <div className="flex justify-end"><Button type="submit" disabled={add.isPending}>{add.isPending ? "Saving…" : "Save"}</Button></div>
+          <div>
+            <Label>
+              {form.direction === "LENT"
+                ? "What is the money for?"
+                : "How will this money be used?"}
+            </Label>
+            <Textarea
+              rows={2}
+              value={form.purpose}
+              onChange={(e) => setForm({ ...form, purpose: e.target.value })}
+              placeholder="Rent, school fees, business stock…"
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              rows={2}
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={add.isPending}>
+              {add.isPending ? "Saving…" : "Save"}
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

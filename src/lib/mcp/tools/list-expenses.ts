@@ -6,7 +6,8 @@ import { failed, json, unauthenticated } from "./_shared";
 export default defineTool({
   name: "list_expenses",
   title: "List expenses",
-  description: "List the signed-in user's expenses in KES, newest first, optionally filtered by date range or category.",
+  description:
+    "List the signed-in user's expenses in KES, newest first, optionally filtered by date range or category.",
   inputSchema: {
     from: z.string().optional().describe("Inclusive start date, YYYY-MM-DD."),
     to: z.string().optional().describe("Inclusive end date, YYYY-MM-DD."),

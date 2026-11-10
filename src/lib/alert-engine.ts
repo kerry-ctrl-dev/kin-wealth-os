@@ -10,7 +10,12 @@ type Budget = Tables<"budgets">;
 type Loan = Tables<"loans">;
 
 type Sev = "INFO" | "WARNING" | "DANGER";
-interface Trigger { key: string; type: string; message: string; severity: Sev }
+interface Trigger {
+  key: string;
+  type: string;
+  message: string;
+  severity: Sev;
+}
 
 function currentMonthKey() {
   const d = new Date();
@@ -99,7 +104,11 @@ export function evaluateAlerts(input: {
     const due = (l as unknown as { due_date?: string }).due_date;
     if (!due) continue;
     const dueTs = new Date(due).getTime();
-    if (dueTs > 0 && dueTs <= horizon && Number((l as unknown as { amount_outstanding?: number }).amount_outstanding ?? 0) > 0) {
+    if (
+      dueTs > 0 &&
+      dueTs <= horizon &&
+      Number((l as unknown as { amount_outstanding?: number }).amount_outstanding ?? 0) > 0
+    ) {
       out.push({
         key: `loan-${l.id}-${prefs.loanDueDays}`,
         type: "loan",

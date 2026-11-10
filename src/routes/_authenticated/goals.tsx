@@ -7,8 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { goalsQuery, incomeQuery, assetsQuery, expensesQuery } from "@/lib/queries";
 import { fmtKES, monthlyNeeded } from "@/lib/finance";
@@ -40,7 +52,10 @@ function GoalsPage() {
     mutationFn: async (v: z.infer<typeof Schema>) => {
       const { data: u } = await supabase.auth.getUser();
       const { error } = await supabase.from("goals").insert({
-        user_id: u.user!.id, name: v.name, target: v.target, current: v.current,
+        user_id: u.user!.id,
+        name: v.name,
+        target: v.target,
+        current: v.current,
         deadline: v.deadline || null,
       });
       if (error) throw error;
@@ -60,7 +75,10 @@ function GoalsPage() {
       const { error } = await supabase.from("goals").delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Goal removed"); qc.invalidateQueries({ queryKey: ["goals"] }); },
+    onSuccess: () => {
+      toast.success("Goal removed");
+      qc.invalidateQueries({ queryKey: ["goals"] });
+    },
   });
 
   return (
@@ -71,15 +89,49 @@ function GoalsPage() {
         onSubmit={(e) => {
           e.preventDefault();
           const parsed = Schema.safeParse(form);
-          if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+          if (!parsed.success) {
+            toast.error(parsed.error.issues[0].message);
+            return;
+          }
           add.mutate(parsed.data);
         }}
       >
-        <div className="space-y-2"><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="MacBook fund" /></div>
-        <div className="space-y-2"><Label>Target (KES)</Label><Input type="number" value={form.target} onChange={(e) => setForm({ ...form, target: e.target.value })} placeholder="200000" /></div>
-        <div className="space-y-2"><Label>Current</Label><Input type="number" value={form.current} onChange={(e) => setForm({ ...form, current: e.target.value })} /></div>
-        <div className="space-y-2"><Label>Deadline</Label><Input type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} /></div>
-        <Button type="submit" disabled={add.isPending}><Plus className="h-4 w-4" /> Add</Button>
+        <div className="space-y-2">
+          <Label>Name</Label>
+          <Input
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="MacBook fund"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Target (KES)</Label>
+          <Input
+            type="number"
+            value={form.target}
+            onChange={(e) => setForm({ ...form, target: e.target.value })}
+            placeholder="200000"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Current</Label>
+          <Input
+            type="number"
+            value={form.current}
+            onChange={(e) => setForm({ ...form, current: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Deadline</Label>
+          <Input
+            type="date"
+            value={form.deadline}
+            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+          />
+        </div>
+        <Button type="submit" disabled={add.isPending}>
+          <Plus className="h-4 w-4" /> Add
+        </Button>
       </form>
       <div className="bento-grid grid sm:grid-cols-2 gap-4">
         {(goals ?? []).map((g) => {
@@ -91,9 +143,14 @@ function GoalsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="font-semibold tracking-tight">{g.name}</h3>
-                  <p className="text-xs text-muted-foreground">Target {fmtKES(Number(g.target))}{g.deadline ? ` · by ${new Date(g.deadline).toLocaleDateString()}` : ""}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Target {fmtKES(Number(g.target))}
+                    {g.deadline ? ` · by ${new Date(g.deadline).toLocaleDateString()}` : ""}
+                  </p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => del.mutate(g.id)}><Trash2 className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => del.mutate(g.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
               <div className="mt-4 space-y-2">
                 <Progress value={pct} className="h-2" />
@@ -103,7 +160,9 @@ function GoalsPage() {
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">{done ? "Goal reached 🎉" : `Suggested monthly: ${fmtKES(monthly)}`}</span>
+                <span className="text-muted-foreground">
+                  {done ? "Goal reached 🎉" : `Suggested monthly: ${fmtKES(monthly)}`}
+                </span>
                 <ContributeDialog
                   goalId={g.id}
                   goalName={g.name}
@@ -117,14 +176,22 @@ function GoalsPage() {
             </div>
           );
         })}
-        {(goals ?? []).length === 0 && <div className="empty-state">Set a target to track progress.</div>}
+        {(goals ?? []).length === 0 && (
+          <div className="empty-state">Set a target to track progress.</div>
+        )}
       </div>
     </div>
   );
 }
 
 function ContributeDialog({
-  goalId, goalName, current, suggested, done, income, balances,
+  goalId,
+  goalName,
+  current,
+  suggested,
+  done,
+  income,
+  balances,
 }: {
   goalId: string;
   goalName: string;
@@ -148,7 +215,10 @@ function ContributeDialog({
         if (amt > bal) throw new Error(`Selected income only has ${fmtKES(bal)} available`);
       }
       const { data: u } = await supabase.auth.getUser();
-      const { error } = await supabase.from("goals").update({ current: current + amt }).eq("id", goalId);
+      const { error } = await supabase
+        .from("goals")
+        .update({ current: current + amt })
+        .eq("id", goalId);
       if (error) throw error;
       if (source !== "OTHER") {
         const { error: eErr } = await supabase.from("expenses").insert({
@@ -174,32 +244,60 @@ function ContributeDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="secondary" disabled={done}>Contribute</Button>
+        <Button size="sm" variant="secondary" disabled={done}>
+          Contribute
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader><DialogTitle>Contribute to {goalName}</DialogTitle></DialogHeader>
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); log.mutate(); }}>
+        <DialogHeader>
+          <DialogTitle>Contribute to {goalName}</DialogTitle>
+        </DialogHeader>
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            log.mutate();
+          }}
+        >
           <div>
             <Label>Amount (KES)</Label>
-            <Input type="number" min={1} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
-            <p className="text-[11px] text-muted-foreground mt-1">Suggested monthly: {fmtKES(suggested)}</p>
+            <Input
+              type="number"
+              min={1}
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Suggested monthly: {fmtKES(suggested)}
+            </p>
           </div>
           <div>
             <Label>Source of funds</Label>
             <Select value={source} onValueChange={setSource}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="OTHER">Other (not tracked)</SelectItem>
                 {income.map((i) => {
                   const r = balances.get(i.id)?.remaining ?? 0;
-                  return <SelectItem key={i.id} value={i.id}>{i.source} — {fmtKES(r)} left</SelectItem>;
+                  return (
+                    <SelectItem key={i.id} value={i.id}>
+                      {i.source} — {fmtKES(r)} left
+                    </SelectItem>
+                  );
                 })}
               </SelectContent>
             </Select>
-            <p className="text-[11px] text-muted-foreground mt-1">Picking an income source deducts this contribution from its available balance.</p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Picking an income source deducts this contribution from its available balance.
+            </p>
           </div>
           <div className="flex justify-end">
-            <Button type="submit" disabled={log.isPending}>{log.isPending ? "Saving…" : "Save"}</Button>
+            <Button type="submit" disabled={log.isPending}>
+              {log.isPending ? "Saving…" : "Save"}
+            </Button>
           </div>
         </form>
       </DialogContent>

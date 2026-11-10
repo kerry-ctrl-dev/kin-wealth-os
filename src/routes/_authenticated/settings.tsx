@@ -498,8 +498,8 @@ function DangerZone() {
         <AlertTriangle className="h-4 w-4" /> Danger zone
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Permanently delete your MalinGu account and every record — income, expenses,
-        investments, goals, loans, reminders and documents. This action cannot be undone.
+        Permanently delete your MalinGu account and every record — income, expenses, investments,
+        goals, loans, reminders and documents. This action cannot be undone.
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>

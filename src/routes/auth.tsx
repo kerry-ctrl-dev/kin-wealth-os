@@ -230,7 +230,9 @@ function AuthPage() {
                 <div className="text-xs text-muted-foreground">Disciplined investing</div>
               </div>
             </Link>
-            <div className="rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">Faster sign-in</div>
+            <div className="rounded-full border border-border/70 bg-background/50 px-3 py-1 text-xs text-muted-foreground">
+              Faster sign-in
+            </div>
           </div>
 
           <div className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center">
@@ -238,8 +240,12 @@ function AuthPage() {
               <Sparkles className="h-3.5 w-3.5 text-[color:var(--gold)]" />
               Built to stay calm and fast
             </div>
-            <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight">Plan, track, and grow your money.</h1>
-            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">One workspace for portfolio, cash flow, and goals.</p>
+            <h1 className="mt-6 text-5xl font-semibold leading-tight tracking-tight">
+              Plan, track, and grow your money.
+            </h1>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+              One workspace for portfolio, cash flow, and goals.
+            </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <FeatureCard
@@ -281,9 +287,15 @@ function AuthPage() {
 
           <div className="glass-panel animate-panel-in p-6 sm:p-8">
             <div className="rounded-2xl border border-[color:var(--glass-border)] bg-background/25 p-4 backdrop-blur-sm">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Welcome back</div>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">Sign in or create an account</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Quick setup, then your dashboard.</p>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+                Welcome back
+              </div>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+                Sign in or create an account
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Quick setup, then your dashboard.
+              </p>
             </div>
 
             <Tabs defaultValue="signin" className="mt-6">
@@ -295,12 +307,7 @@ function AuthPage() {
                 <AuthForm cta="Sign in" loading={loading} onSubmit={signIn} isSignUp={false} />
               </TabsContent>
               <TabsContent value="signup">
-                <AuthForm
-                  cta="Create"
-                  loading={loading}
-                  onSubmit={signUp}
-                  isSignUp={true}
-                />
+                <AuthForm cta="Create" loading={loading} onSubmit={signUp} isSignUp={true} />
               </TabsContent>
             </Tabs>
             <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
@@ -323,7 +330,10 @@ function AuthPage() {
                   fill="#4285F4"
                   d="M22.8 12.2c0-.8-.1-1.4-.2-2H12v3.9h6.1c-.1 1-.8 2.5-2.1 3.5l3.1 2.4c1.8-1.7 2.9-4.2 2.9-7.8z"
                 />
-                <path fill="#FBBC05" d="M6 9.4A6.9 6.9 0 0 0 5.6 12c0 .9.2 1.8.4 2.6L2.8 17.1A11 11 0 0 1 1.6 12c0-1.8.4-3.5 1.2-5.1L6 9.4z" />
+                <path
+                  fill="#FBBC05"
+                  d="M6 9.4A6.9 6.9 0 0 0 5.6 12c0 .9.2 1.8.4 2.6L2.8 17.1A11 11 0 0 1 1.6 12c0-1.8.4-3.5 1.2-5.1L6 9.4z"
+                />
                 <path
                   fill="#34A853"
                   d="M12 22.8c3 0 5.4-1 7.1-2.8l-3.1-2.4c-.9.6-2.1 1-4 1-2.8 0-5.2-1.9-6-4.6l-3.2 2.5C4.5 20.5 8 22.8 12 22.8z"
@@ -332,7 +342,9 @@ function AuthPage() {
               Continue with Google
             </Button>
 
-            <div className="mt-4 text-center text-xs text-muted-foreground">By continuing you agree to our terms.</div>
+            <div className="mt-4 text-center text-xs text-muted-foreground">
+              By continuing you agree to our terms.
+            </div>
           </div>
         </div>
       </div>
@@ -457,7 +469,9 @@ function AuthForm({
             )}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">Use the email and password tied to your account.</p>
+          <p className="text-xs text-muted-foreground">
+            Use the email and password tied to your account.
+          </p>
         )}
       </div>
       <Button

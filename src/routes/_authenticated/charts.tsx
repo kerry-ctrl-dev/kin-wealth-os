@@ -1,8 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Legend, AreaChart, Area,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend,
+  AreaChart,
+  Area,
 } from "recharts";
 import { SectionHeading } from "@/components/SectionHeading";
 import { assetsQuery, snapshotsQuery } from "@/lib/queries";
@@ -29,10 +39,20 @@ function ChartsPage() {
   const allocation = (Object.keys(cats) as AssetCategory[])
     .filter((c) => cats[c] > 0)
     .map((c) => ({ category: c, value: cats[c], pct: total ? (cats[c] / total) * 100 : 0 }));
-  const barData = (Object.keys(cats) as AssetCategory[]).map((c) => ({ name: CATEGORY_LABEL[c], value: cats[c] }));
+  const barData = (Object.keys(cats) as AssetCategory[]).map((c) => ({
+    name: CATEGORY_LABEL[c],
+    value: cats[c],
+  }));
   const axis = { stroke: "var(--color-muted-foreground)", fontSize: 11 };
   const grid = "var(--color-border)";
-  const tt = { contentStyle: { background: "var(--color-popover)", border: "1px solid var(--color-border)", borderRadius: 12, color: "var(--color-foreground)" } };
+  const tt = {
+    contentStyle: {
+      background: "var(--color-popover)",
+      border: "1px solid var(--color-border)",
+      borderRadius: 12,
+      color: "var(--color-foreground)",
+    },
+  };
 
   return (
     <div>
@@ -61,15 +81,23 @@ function ChartsPage() {
           <div className="h-72">
             <ResponsiveContainer>
               <AreaChart data={snaps}>
-                <defs><linearGradient id="nw" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
-                </linearGradient></defs>
+                <defs>
+                  <linearGradient id="nw" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid stroke={grid} strokeDasharray="3 3" />
                 <XAxis dataKey="date" {...axis} />
                 <YAxis {...axis} tickFormatter={(v) => fmtKES(Number(v))} />
                 <Tooltip {...tt} formatter={(v: number) => fmtKES(Number(v))} />
-                <Area type="monotone" dataKey="total" stroke="var(--chart-1)" fill="url(#nw)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="total"
+                  stroke="var(--chart-1)"
+                  fill="url(#nw)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -84,8 +112,22 @@ function ChartsPage() {
                 <YAxis {...axis} />
                 <Tooltip {...tt} />
                 <Legend wrapperStyle={{ color: "var(--color-muted-foreground)", fontSize: 12 }} />
-                <Line type="monotone" dataKey="liquidity" stroke="var(--chart-2)" strokeWidth={2} dot={false} name="Liquidity %" />
-                <Line type="monotone" dataKey="roi" stroke="var(--chart-3)" strokeWidth={2} dot={false} name="ROI %" />
+                <Line
+                  type="monotone"
+                  dataKey="liquidity"
+                  stroke="var(--chart-2)"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Liquidity %"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="roi"
+                  stroke="var(--chart-3)"
+                  strokeWidth={2}
+                  dot={false}
+                  name="ROI %"
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>

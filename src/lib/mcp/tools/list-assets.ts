@@ -6,9 +6,13 @@ import { failed, json, unauthenticated } from "./_shared";
 export default defineTool({
   name: "list_assets",
   title: "List investments",
-  description: "List the signed-in user's investments (MMF, NSE stocks, REITs, bonds, cash, other) with value in KES.",
+  description:
+    "List the signed-in user's investments (MMF, NSE stocks, REITs, bonds, cash, other) with value in KES.",
   inputSchema: {
-    category: z.string().optional().describe("Optional asset category filter, e.g. MMF, NSE, REIT, CASH."),
+    category: z
+      .string()
+      .optional()
+      .describe("Optional asset category filter, e.g. MMF, NSE, REIT, CASH."),
     limit: z.number().int().optional().describe("Max rows to return (default 50)."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },

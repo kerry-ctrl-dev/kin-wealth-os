@@ -6,7 +6,13 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { budgetsQuery, expensesQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { fmtKES } from "@/lib/finance";
@@ -22,12 +28,23 @@ function BudgetsPage() {
   const { data: budgets } = useQuery(budgetsQuery());
   const { data: expenses } = useQuery(expensesQuery());
   const now = new Date();
-  const monthSpend = (expenses ?? []).filter((r) => { const d = new Date(r.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })
-    .reduce<Record<string, number>>((acc, r) => { acc[r.category] = (acc[r.category] ?? 0) + Number(r.amount); return acc; }, {});
+  const monthSpend = (expenses ?? [])
+    .filter((r) => {
+      const d = new Date(r.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
+    .reduce<Record<string, number>>((acc, r) => {
+      acc[r.category] = (acc[r.category] ?? 0) + Number(r.amount);
+      return acc;
+    }, {});
 
   async function del(id: string) {
     const { error } = await supabase.from("budgets").delete().eq("id", id);
-    if (error) toast.error(error.message); else { toast.success("Removed"); qc.invalidateQueries({ queryKey: ["budgets"] }); }
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Removed");
+      qc.invalidateQueries({ queryKey: ["budgets"] });
+    }
   }
 
   return (
@@ -42,17 +59,46 @@ function BudgetsPage() {
             <div key={b.id} className="fintech-card p-5">
               <div className="flex items-center justify-between">
                 <div className="font-semibold">{b.category}</div>
-                <button onClick={() => del(b.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+                <button
+                  onClick={() => del(b.id)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-              <div className="metric-value text-2xl mt-2">{fmtKES(spent)} <span className="text-sm text-muted-foreground">/ {fmtKES(Number(b.monthly_limit))}</span></div>
-              <div className="h-2 rounded bg-muted overflow-hidden mt-2"><div className="h-full" style={{ width: `${pct}%`, background: over ? "var(--danger)" : pct > 80 ? "var(--warning)" : "var(--success)" }} /></div>
-              <div className="text-xs mt-2" style={{ color: over ? "var(--danger)" : "var(--muted-foreground)" }}>
-                {over ? `Over budget by ${fmtKES(spent - Number(b.monthly_limit))}` : `${(100 - pct).toFixed(0)}% remaining`}
+              <div className="metric-value text-2xl mt-2">
+                {fmtKES(spent)}{" "}
+                <span className="text-sm text-muted-foreground">
+                  / {fmtKES(Number(b.monthly_limit))}
+                </span>
+              </div>
+              <div className="h-2 rounded bg-muted overflow-hidden mt-2">
+                <div
+                  className="h-full"
+                  style={{
+                    width: `${pct}%`,
+                    background: over
+                      ? "var(--danger)"
+                      : pct > 80
+                        ? "var(--warning)"
+                        : "var(--success)",
+                  }}
+                />
+              </div>
+              <div
+                className="text-xs mt-2"
+                style={{ color: over ? "var(--danger)" : "var(--muted-foreground)" }}
+              >
+                {over
+                  ? `Over budget by ${fmtKES(spent - Number(b.monthly_limit))}`
+                  : `${(100 - pct).toFixed(0)}% remaining`}
               </div>
             </div>
           );
         })}
-        {(!budgets || budgets.length === 0) && <p className="empty-state">Set a cap to catch overspend early.</p>}
+        {(!budgets || budgets.length === 0) && (
+          <p className="empty-state">Set a cap to catch overspend early.</p>
+        )}
       </div>
     </div>
   );
@@ -68,21 +114,55 @@ function AddBudget() {
     if (!category.trim() || !Number(limit)) return toast.error("Fill all fields");
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user) { setSaving(false); return; }
-    const { error } = await supabase.from("budgets").upsert({ user_id: u.user.id, category: category.trim(), monthly_limit: Number(limit) }, { onConflict: "user_id,category" });
+    if (!u.user) {
+      setSaving(false);
+      return;
+    }
+    const { error } = await supabase
+      .from("budgets")
+      .upsert(
+        { user_id: u.user.id, category: category.trim(), monthly_limit: Number(limit) },
+        { onConflict: "user_id,category" },
+      );
     setSaving(false);
     if (error) toast.error(error.message);
-    else { toast.success("Budget saved"); setOpen(false); setCategory(""); setLimit(""); qc.invalidateQueries({ queryKey: ["budgets"] }); }
+    else {
+      toast.success("Budget saved");
+      setOpen(false);
+      setCategory("");
+      setLimit("");
+      qc.invalidateQueries({ queryKey: ["budgets"] });
+    }
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button><Plus className="h-4 w-4" /> Add budget</Button></DialogTrigger>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="h-4 w-4" /> Add budget
+        </Button>
+      </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>New budget</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>New budget</DialogTitle>
+        </DialogHeader>
         <div className="space-y-3">
-          <div><Label>Category</Label><Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Food, Transport, …" /></div>
-          <div><Label>Monthly limit (KES)</Label><Input type="number" value={limit} onChange={(e) => setLimit(e.target.value)} /></div>
-          <div className="flex justify-end"><Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button></div>
+          <div>
+            <Label>Category</Label>
+            <Input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Food, Transport, …"
+            />
+          </div>
+          <div>
+            <Label>Monthly limit (KES)</Label>
+            <Input type="number" value={limit} onChange={(e) => setLimit(e.target.value)} />
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={save} disabled={saving}>
+              {saving ? "Saving…" : "Save"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

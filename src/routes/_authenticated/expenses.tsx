@@ -79,11 +79,7 @@ function ExpensesPage() {
 
   return (
     <div>
-      <SectionHeading
-        title="Expenses"
-        sub="See where money goes."
-        action={<AddExpense />}
-      />
+      <SectionHeading title="Expenses" sub="See where money goes." action={<AddExpense />} />
       <div className="bento-grid grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <MetricCard
           label="This Month"
@@ -147,11 +143,7 @@ function ExpensesPage() {
                 </div>
               </div>
             ))}
-            {all.length === 0 && (
-              <p className="empty-state">
-                Log an expense to see the split.
-              </p>
-            )}
+            {all.length === 0 && <p className="empty-state">Log an expense to see the split.</p>}
           </div>
         </div>
         <div className="fintech-card p-6">
@@ -174,9 +166,7 @@ function ExpensesPage() {
                   </div>
                 </div>
               ))}
-            {!monthTotal && (
-              <p className="empty-state">This month’s breakdown appears here.</p>
-            )}
+            {!monthTotal && <p className="empty-state">This month’s breakdown appears here.</p>}
           </div>
         </div>
       </div>
@@ -218,10 +208,7 @@ function RecurringSection() {
       </div>
       <div className="bento-grid grid gap-3 sm:grid-cols-2">
         {rows.map((r) => (
-          <div
-            key={r.id}
-            className="rounded-2xl border border-border/70 bg-background/30 p-4"
-          >
+          <div key={r.id} className="rounded-2xl border border-border/70 bg-background/30 p-4">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -252,11 +239,7 @@ function RecurringSection() {
             </div>
           </div>
         ))}
-        {rows.length === 0 && (
-          <p className="empty-state">
-            Add rent or subs once — they repeat.
-          </p>
-        )}
+        {rows.length === 0 && <p className="empty-state">Add rent or subs once — they repeat.</p>}
       </div>
     </div>
   );

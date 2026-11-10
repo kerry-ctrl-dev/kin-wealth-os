@@ -53,10 +53,7 @@ function AppearancePage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6">
-      <SectionHeading
-        title="Appearance"
-        sub="Theme, colors, density."
-      />
+      <SectionHeading title="Appearance" sub="Theme, colors, density." />
 
       <Section title="Theme" icon={<Palette className="h-4 w-4 text-primary" />}>
         <div className="bento-grid grid grid-cols-3 gap-2">
@@ -94,7 +91,9 @@ function AppearancePage() {
           <div>
             <Label className="text-xs uppercase tracking-widest text-muted-foreground">Font</Label>
             <Select value={a.font} onValueChange={(v: FontFamilyKey) => setA({ ...a, font: v })}>
-              <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="mt-2">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {(Object.keys(FONT_STACKS) as FontFamilyKey[]).map((k) => (
                   <SelectItem key={k} value={k}>
@@ -107,10 +106,14 @@ function AppearancePage() {
           <div>
             <Label className="text-xs uppercase tracking-widest text-muted-foreground">Size</Label>
             <Select value={a.size} onValueChange={(v: FontSizeKey) => setA({ ...a, size: v })}>
-              <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="mt-2">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {(Object.keys(FONT_SIZES) as FontSizeKey[]).map((k) => (
-                  <SelectItem key={k} value={k}>{FONT_SIZES[k].label} · {FONT_SIZES[k].px}px</SelectItem>
+                  <SelectItem key={k} value={k}>
+                    {FONT_SIZES[k].label} · {FONT_SIZES[k].px}px
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -187,7 +190,9 @@ function AppearancePage() {
                 onClick={() => setA({ ...a, density: k })}
                 className={cn(
                   "rounded-2xl border p-4 text-sm transition",
-                  active ? "border-primary bg-primary/10" : "border-border/70 hover:border-foreground/40",
+                  active
+                    ? "border-primary bg-primary/10"
+                    : "border-border/70 hover:border-foreground/40",
                 )}
               >
                 {DENSITY_LABEL[k]}
@@ -205,10 +210,14 @@ function AppearancePage() {
             toast.success("Default range saved");
           }}
         >
-          <SelectTrigger className="max-w-xs"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="max-w-xs">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             {(Object.keys(DEFAULT_RANGE_LABEL) as DefaultRangeKey[]).map((k) => (
-              <SelectItem key={k} value={k}>{DEFAULT_RANGE_LABEL[k]}</SelectItem>
+              <SelectItem key={k} value={k}>
+                {DEFAULT_RANGE_LABEL[k]}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

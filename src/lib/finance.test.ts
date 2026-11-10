@@ -41,13 +41,26 @@ describe("finance calculations", () => {
   });
 
   it("classifies concentrated, illiquid portfolios as high risk", () => {
-    expect(computeRisk([asset({ category: "STOCKS", value: 700, liquidity: 3 }), asset({ category: "CASH", value: 300, liquidity: 5 })])).toBe("HIGH");
-    expect(computeRisk([asset({ category: "MMF", value: 500, liquidity: 4 }), asset({ category: "CASH", value: 500, liquidity: 5 })])).toBe("LOW");
+    expect(
+      computeRisk([
+        asset({ category: "STOCKS", value: 700, liquidity: 3 }),
+        asset({ category: "CASH", value: 300, liquidity: 5 }),
+      ]),
+    ).toBe("HIGH");
+    expect(
+      computeRisk([
+        asset({ category: "MMF", value: 500, liquidity: 4 }),
+        asset({ category: "CASH", value: 500, liquidity: 5 }),
+      ]),
+    ).toBe("LOW");
   });
 
   it("raises liquidity, performance, and concentration alerts", () => {
     const alerts = generateAlerts(
-      [asset({ category: "STOCKS", value: 800, liquidity: 3 }), asset({ category: "REITS", value: 200, liquidity: 2 })],
+      [
+        asset({ category: "STOCKS", value: 800, liquidity: 3 }),
+        asset({ category: "REITS", value: 200, liquidity: 2 }),
+      ],
       [income(1_200)],
     );
 

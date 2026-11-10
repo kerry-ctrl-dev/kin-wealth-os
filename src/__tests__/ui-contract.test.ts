@@ -74,13 +74,16 @@ describe("bento layout coverage", () => {
   it("keeps the signed-in frame oriented around the current page and Aria", () => {
     const shell = read("src/components/AppShell.tsx");
     expect(shell).toContain("useRouterState");
-    expect(shell).toContain("Ask Aria");
+    expect(shell).toContain("AssistantWidget");
     expect(shell).toContain("/settings");
   });
 
   it("puts net worth before secondary dashboard metrics", () => {
     const dashboard = read(`${ROUTES_DIR}/dashboard.tsx`);
-    expect(dashboard.indexOf("label: \"Net worth\"")).toBeGreaterThanOrEqual(0);
+    expect(dashboard.indexOf(">Net worth</div>")).toBeGreaterThanOrEqual(0);
+    expect(dashboard.indexOf(">Net worth</div>")).toBeLessThan(
+      dashboard.indexOf('label="Available cash"'),
+    );
     expect(dashboard).toContain("text-[color:var(--gold)] sm:text-4xl");
     expect(dashboard).not.toContain("Command Center");
   });

@@ -1,0 +1,1 @@
+Keep the authenticated route frame in `src/components/AppShell.tsx`, composing the shared sidebar, page header, responsive content area, and Aria widget so signed-in screens share one consistent navigation shell.

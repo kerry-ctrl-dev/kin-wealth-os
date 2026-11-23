@@ -287,7 +287,9 @@ export function AssistantWidget({ defaultOpen = false }: { defaultOpen?: boolean
     setInput("");
     setBusy(true);
     try {
-      const res = await send({ data: { messages: next, context } });
+      const res = await send({
+        data: { messages: next.filter((message) => message.role === "user"), context },
+      });
       if ("error" in res) setMsgs([...next, { role: "assistant", content: `⚠️ ${res.error}` }]);
       else setMsgs([...next, { role: "assistant", content: res.content || "(no response)" }]);
     } catch (e) {

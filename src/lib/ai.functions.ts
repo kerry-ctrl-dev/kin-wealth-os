@@ -1,23 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-const Schema = z.object({
-  messages: z
-    .array(
-      z.object({
-        role: z.enum(["user", "assistant"]),
-        content: z.string().min(1).max(4000),
-      }),
-    )
-    .min(1)
-    .max(50),
-  context: z.string().max(2000).optional(),
-});
+import { advisorChatInputSchema } from "@/lib/ai-chat-schema";
 
 export const chatWithAdvisor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => Schema.parse(d))
+  .inputValidator((d: unknown) => advisorChatInputSchema.parse(d))
   .handler(async ({ data }) => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
@@ -46,12 +33,14 @@ STYLE:
 USER PORTFOLIO SNAPSHOT (live):
 ${data.context ?? "(no context provided — ask the user what they'd like to focus on)"}`;
 
+    const userMessages = data.messages.map(({ content }) => ({ role: "user" as const, content }));
+
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Lovable-API-Key": key },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
-        messages: [{ role: "system", content: sys }, ...data.messages],
+        messages: [{ role: "system", content: sys }, ...userMessages],
       }),
     });
     if (res.status === 429) return { error: "Rate limit reached. Please wait a moment." };

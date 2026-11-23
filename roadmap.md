@@ -1,0 +1,3 @@
+- [ ] Review current security, database, build, and runtime findings; fix confirmed issues.
+- [ ] Enable guarded offline app-shell access and automatic sync on reconnection without changing settled records.
+- [ ] Run focused tests and verify the resulting preview behavior.

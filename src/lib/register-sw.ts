@@ -3,22 +3,39 @@
 // because a stale app-shell SW there would serve deleted chunks and old HTML.
 
 const SW_URL = "/sw.js";
+const PREVIEW_LABEL = /^(?:id-preview|preview)(?:-[a-z0-9]+)?--.+$/;
+const PREVIEW_DOMAINS = [".lovable.app", ".gpt-eng.com", ".gptengineer.run"];
+const PLATFORM_DEV_HOST = /^project--[^.]+-dev\.(?:lovable\.app|gpt-eng\.com|gptengineer\.run)$/;
+
+export function isBlockedServiceWorkerHost(
+  hostname: string,
+  delegatedPreviewHostname?: string,
+): boolean {
+  const host = hostname.toLowerCase();
+  if (delegatedPreviewHostname && host === delegatedPreviewHostname.toLowerCase()) return true;
+
+  const firstLabel = host.split(".")[0] ?? "";
+  if (
+    PREVIEW_LABEL.test(firstLabel) &&
+    PREVIEW_DOMAINS.some((domain) => host.endsWith(domain))
+  ) {
+    return true;
+  }
+  if (PLATFORM_DEV_HOST.test(host)) return true;
+  if (host === "lovableproject.com" || host.endsWith(".lovableproject.com")) return true;
+  if (host === "lovableproject-dev.com" || host.endsWith(".lovableproject-dev.com")) return true;
+  if (host === "beta.lovable.dev" || host.endsWith(".beta.lovable.dev")) return true;
+
+  return false;
+}
 
 function isBlockedContext(): boolean {
   if (!import.meta.env.PROD) return true;
   if (typeof window === "undefined") return true;
   if (window.self !== window.top) return true;
 
-  const host = window.location.hostname;
-  if (host.startsWith("id-preview--") || host.startsWith("preview--")) return true;
-  if (host === "lovableproject.com" || host.endsWith(".lovableproject.com")) return true;
-  if (host === "lovableproject-dev.com" || host.endsWith(".lovableproject-dev.com")) return true;
-  if (host === "beta.lovable.dev" || host.endsWith(".beta.lovable.dev")) return true;
-  if (
-    new URL(window.location.href).searchParams.has("sw") &&
-    new URL(window.location.href).searchParams.get("sw") === "off"
-  )
-    return true;
+  if (isBlockedServiceWorkerHost(window.location.hostname)) return true;
+  if (new URLSearchParams(window.location.search).get("sw") === "off") return true;
 
   return false;
 }
@@ -29,12 +46,19 @@ async function unregisterExisting() {
   await Promise.allSettled(
     registrations
       .filter((registration) => {
-        const scriptUrl =
-          registration.active?.scriptURL ??
-          registration.waiting?.scriptURL ??
-          registration.installing?.scriptURL ??
-          "";
-        return scriptUrl.endsWith(SW_URL);
+        const workers = [
+          registration.active,
+          registration.waiting,
+          registration.installing,
+        ].filter((worker): worker is ServiceWorker => worker !== null);
+        return workers.some((worker) => {
+          try {
+            const scriptUrl = new URL(worker.scriptURL);
+            return scriptUrl.origin === window.location.origin && scriptUrl.pathname === SW_URL;
+          } catch {
+            return false;
+          }
+        });
       })
       .map((registration) => registration.unregister()),
   );

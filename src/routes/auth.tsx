@@ -198,6 +198,29 @@ function AuthPage() {
     goAfterAuth();
   }
 
+  async function signInWithLovable() {
+    const redirectUri = `${window.location.origin}${dest ?? ""}`;
+    if (!redirectUri.startsWith("https://") && !redirectUri.startsWith("http://localhost")) {
+      toast.error("Insecure connection detected. Please use HTTPS.");
+      return;
+    }
+
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("lovable", {
+      redirect_uri: redirectUri,
+    });
+
+    if (result.error) {
+      setLoading(false);
+      toast.error("Lovable sign-in failed. Please try again.");
+      return;
+    }
+
+    if (result.redirected) return;
+    toast.success("Signed in");
+    goAfterAuth();
+  }
+
   if (checkingSession) {
     return (
       <div className="grid min-h-screen place-items-center px-6">
@@ -340,6 +363,17 @@ function AuthPage() {
                 />
               </svg>
               Continue with Google
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-3 h-11 w-full rounded-xl border-[color:var(--glass-border)] bg-background/45 backdrop-blur-sm"
+              disabled={loading}
+              onClick={signInWithLovable}
+            >
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+              Continue with Lovable
             </Button>
 
             <div className="mt-4 text-center text-xs text-muted-foreground">

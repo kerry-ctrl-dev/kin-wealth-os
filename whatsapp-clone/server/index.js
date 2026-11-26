@@ -2,13 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const socketIO = require('socket.io');
+const crypto = require('crypto');
 require('dotenv').config();
+const { isAllowedOrigin, isSafeSignal, verifyFirebaseIdToken } = require('./security');
+
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
@@ -20,39 +27,105 @@ const PORT = process.env.PORT || 5000;
 
 // Store active users
 const activeUsers = new Map();
+const activeCalls = new Map();
+
+io.use(async (socket, next) => {
+  try {
+    if (!isAllowedOrigin(socket.handshake.headers.origin, allowedOrigins)) {
+      return next(new Error('Unauthorized'));
+    }
+
+    const identity = await verifyFirebaseIdToken(socket.handshake.auth?.token);
+    if (!identity) return next(new Error('Unauthorized'));
+
+    socket.data.user = identity;
+    return next();
+  } catch {
+    return next(new Error('Unauthorized'));
+  }
+});
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  const user = socket.data.user;
+  activeUsers.set(socket.id, user);
+  io.emit('user_online', { uid: user.uid, displayName: user.displayName, socketId: socket.id });
 
-  // Handle user joining
-  socket.on('user_join', (userData) => {
-    activeUsers.set(socket.id, userData);
-    io.emit('user_online', { ...userData, socketId: socket.id });
-  });
+  const activeRecipient = (id) =>
+    typeof id === 'string' && id.length > 0 && id.length <= 128 && activeUsers.has(id) ? id : null;
+  const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 
   // Handle messages
   socket.on('send_message', (data) => {
-    io.to(data.recipientId).emit('receive_message', data);
+    if (!isRecord(data)) return;
+    const recipientId = activeRecipient(data.recipientId);
+    const text = typeof data.text === 'string' ? data.text : data.message;
+    if (!recipientId || recipientId === socket.id || typeof text !== 'string' || !text.trim() || text.length > 4000) {
+      return;
+    }
+
+    io.to(recipientId).emit('receive_message', {
+      id: crypto.randomUUID(),
+      sender: user.uid,
+      senderId: user.uid,
+      senderName: user.displayName,
+      recipientId,
+      text,
+      message: text,
+      timestamp: Date.now(),
+    });
   });
 
   // Handle typing indicator
   socket.on('typing', (data) => {
-    io.to(data.recipientId).emit('user_typing', data);
+    if (!isRecord(data)) return;
+    const recipientId = activeRecipient(data.recipientId);
+    if (!recipientId || recipientId === socket.id) return;
+    io.to(recipientId).emit('user_typing', {
+      senderId: user.uid,
+      senderName: user.displayName,
+      isTyping: data.isTyping === true,
+    });
   });
 
   // Handle call initiation
   socket.on('call_user', (data) => {
-    io.to(data.recipientSocketId).emit('incoming_call', {
+    if (!isRecord(data) || !isSafeSignal(data.signal)) return;
+    const recipientSocketId = activeRecipient(data.recipientSocketId);
+    if (!recipientSocketId || recipientSocketId === socket.id) return;
+
+    const now = Date.now();
+    for (const [callId, call] of activeCalls) {
+      if (
+        now - call.createdAt > 120000 ||
+        !activeUsers.has(call.callerSocketId) ||
+        !activeUsers.has(call.recipientSocketId)
+      ) {
+        activeCalls.delete(callId);
+      }
+    }
+
+    const callId = crypto.randomUUID();
+    activeCalls.set(callId, { callerSocketId: socket.id, recipientSocketId, createdAt: now });
+    io.to(recipientSocketId).emit('incoming_call', {
+      callId,
       callerId: socket.id,
-      callerName: data.callerName,
+      callerUid: user.uid,
+      callerName: user.displayName,
       signal: data.signal,
     });
   });
 
   // Handle call answer
   socket.on('answer_call', (data) => {
-    io.to(data.callerId).emit('call_answered', {
+    if (!isRecord(data) || typeof data.callId !== 'string' || !isSafeSignal(data.signal)) return;
+    const call = activeCalls.get(data.callId);
+    if (!call || call.recipientSocketId !== socket.id || !activeUsers.has(call.callerSocketId)) return;
+
+    activeCalls.delete(data.callId);
+    io.to(call.callerSocketId).emit('call_answered', {
+      callId: data.callId,
+      answeredBy: user.uid,
       signal: data.signal,
     });
   });
@@ -60,8 +133,12 @@ io.on('connection', (socket) => {
   // Handle user disconnection
   socket.on('disconnect', () => {
     activeUsers.delete(socket.id);
+    for (const [callId, call] of activeCalls) {
+      if (call.callerSocketId === socket.id || call.recipientSocketId === socket.id) {
+        activeCalls.delete(callId);
+      }
+    }
     io.emit('user_offline', socket.id);
-    console.log(`User disconnected: ${socket.id}`);
   });
 });
 
@@ -71,9 +148,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => {
-  const users = Array.from(activeUsers.values()).map((user, index) => ({
+  const users = Array.from(activeUsers.entries()).map(([socketId, user]) => ({
     ...user,
-    socketId: Array.from(activeUsers.keys())[index],
+    socketId,
   }));
   res.json(users);
 });

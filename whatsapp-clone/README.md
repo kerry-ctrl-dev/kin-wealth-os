@@ -69,7 +69,9 @@ A full-featured real-time messaging application built with React, Firebase, and 
    ```bash
    cd server
    npm install
+   cp .env.example .env
    ```
+   Set `FIREBASE_WEB_API_KEY` to this Firebase project's Web API key and `CLIENT_URL` to the exact frontend origin. The server verifies Firebase ID tokens before accepting sockets; the Web API key is public app configuration, not a private service key.
 
 5. **Run the application**
 
@@ -158,8 +160,9 @@ Get list of active users
 
 ## Socket Events
 
+Socket connections require a valid Firebase ID token and an allowed browser origin. The server assigns sender identity from the verified Firebase account; client-supplied identity fields are ignored.
+
 ### Client → Server
-- `user_join`: User joins the application
 - `send_message`: Send a message
 - `typing`: User is typing
 - `call_user`: Initiate a call

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import CallWindow from '../components/CallWindow';
-import { connectSocket } from '../services/socket';
+import { auth } from '../services/firebase';
+import { connectSocket, disconnectSocket } from '../services/socket';
 import { useChatStore } from '../store/chatStore';
 import { useCallStore } from '../store/callStore';
 
@@ -13,9 +15,14 @@ const Home = () => {
   const incomingCall = useCallStore((state) => state.incomingCall);
 
   useEffect(() => {
-    const socket = connectSocket();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) connectSocket();
+      else disconnectSocket();
+    });
+
     return () => {
-      // Cleanup if needed
+      unsubscribe();
+      disconnectSocket();
     };
   }, []);
 

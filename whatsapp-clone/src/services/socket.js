@@ -1,10 +1,23 @@
 import io from 'socket.io-client';
+import { auth } from './firebase';
 
 let socket = null;
 
 export const connectSocket = () => {
   if (!socket) {
     socket = io(process.env.REACT_APP_SERVER_URL || 'http://localhost:5000', {
+      auth: (callback) => {
+        const currentUser = auth?.currentUser;
+        if (!currentUser) {
+          callback({});
+          return;
+        }
+
+        void currentUser
+          .getIdToken()
+          .then((token) => callback({ token }))
+          .catch(() => callback({}));
+      },
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,

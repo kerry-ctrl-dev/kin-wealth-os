@@ -1,4 +1,5 @@
 - [x] Fix only the six selected security findings and update their statuses.
+- [ ] Update MalinGu root dependencies and lockfiles; verify advisories, tests, type check, and production build.
 - [ ] Review current security, database, build, and runtime findings; fix confirmed issues.
 - [ ] Enable guarded offline app-shell access and automatic sync on reconnection without changing settled records.
 - [ ] Run focused tests and verify the resulting preview behavior.
